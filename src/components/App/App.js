@@ -4,16 +4,13 @@ import { changeMenu, changeOrder } from '../../actions';
 import RenderRoutes from "../routes/routes";
 
 const App = (props) => {
-  const { changeOrder, changeMenu,state } = props;
+  const { changeMenu } = props;
   const url = window.location.pathname.replace("/","");
-  const lastOrders = JSON.parse(localStorage.getItem('order')) || [];
 
   useEffect(() => {
-    if (lastOrders.length !== 0) {
-      changeOrder(lastOrders);
-    };
     changeMenu(url);
   },[])
+  
   return RenderRoutes();
 };
 

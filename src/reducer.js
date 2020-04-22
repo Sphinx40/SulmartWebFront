@@ -36,7 +36,6 @@ const decrementFromOrder = (state, product, quantity) => {
       newState.order = [...newState.order.slice(0,idx),newProduct,...newState.order.slice(idx+1)]
     }
   };
-  localStorage.setItem('order',JSON.stringify(newState.order))
   return newState;
 };
 
@@ -51,14 +50,12 @@ const incrementToOrder = (state, product, quantity) => {
   }else{
     newState.order.push(newProduct)
   };
-  localStorage.setItem('order',JSON.stringify(newState.order))
   return newState;
 };
 
 const deleteFromOrder = (state, idx) => {
   let newState = JSON.parse(JSON.stringify(state));
   newState.order = [...newState.order.slice(0,idx),...newState.order.slice(idx+1)];
-  localStorage.setItem('order',JSON.stringify(newState.order))
   return newState;
 };
 
