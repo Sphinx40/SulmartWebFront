@@ -6,13 +6,13 @@ import RenderRoutes from "../routes/routes";
 const App = (props) => {
   const { changeOrder } = props;
   /* const url = window.location.pathname; */
-  const lastOrders = JSON.parse(localStorage.getItem('order'));
+  const lastOrders = JSON.parse(localStorage.getItem('order')) || [];
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (lastOrders.length !== 0) {
       changeOrder(lastOrders);
     };
-  },[]) */
+  },[])
 
   return RenderRoutes();
 };
