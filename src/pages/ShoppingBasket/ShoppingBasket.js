@@ -9,12 +9,17 @@ const ShoppingBasket = (props) => {
     const { state, clearOrder } = props;
     const { order } = state;
 
+    const onClear = () => {
+        localStorage.setItem('order',JSON.stringify([]))
+        clearOrder()
+    };
+
     return (
         <Segment color='violet' style={{ margin: 20 }} padded='very'>
             {order.length !== 0 ?
             <Fragment>
             <Header>Продукты
-            <Button floated='right' onClick={clearOrder} color='red'><Icon name='trash alternate' />Очистить</Button>
+            <Button floated='right' onClick={onClear} color='red'><Icon name='trash alternate' />Очистить</Button>
             </Header>
             <Divider />
             <QuantityProduct />

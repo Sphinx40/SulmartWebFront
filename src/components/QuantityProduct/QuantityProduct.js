@@ -1,10 +1,15 @@
 import React from "react";
 import { Segment, Image, List, Button, Header } from "semantic-ui-react";
 import { connect } from "react-redux";
-import { incrementToOrder, decrementFromOrder } from "../../actions";
+import { incrementToOrder, decrementFromOrder, deleteFromOrder } from "../../actions";
 
 const QuantityProduct = (props) => {
-  const { state, incrementToOrder, decrementFromOrder } = props;
+  const {
+    state,
+    incrementToOrder,
+    decrementFromOrder,
+    deleteFromOrder
+  } = props;
   const { order } = state;
 
   const onChangeCount = (text, product, quantity) => {
@@ -13,6 +18,10 @@ const QuantityProduct = (props) => {
     } else {
       decrementFromOrder(product, quantity);
     }
+  };
+
+  const onDeleteProduct = (idx) => {
+    deleteFromOrder(idx)
   };
 
   if (order.length !== 0) {
@@ -56,6 +65,14 @@ const QuantityProduct = (props) => {
                       onChangeCount("Minus", item, item.quantity - 1)
                     }
                   />
+                    <Button
+                      size="mini"
+                      color="red"
+                      inverted
+                      icon="trash alternate"
+                      style={{ marginLeft: 10 }}
+                      onClick={() => onDeleteProduct(id)}
+                    />
                 </div>
               </List.Content>
             </List.Item>
@@ -74,4 +91,5 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   incrementToOrder,
   decrementFromOrder,
+  deleteFromOrder
 })(QuantityProduct);

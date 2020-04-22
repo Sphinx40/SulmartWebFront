@@ -8,7 +8,8 @@ import {
   INCREMENT_TO_ORDER,
   GET_PRODUCTS,
   CLEAR_ORDER,
-  CHANGE_ORDER
+  CHANGE_ORDER,
+  DELETE_FROM_ORDER
 } from "./types";
 
 import { doGet } from "./utils/apiActions";
@@ -109,4 +110,11 @@ export const changeOrder = (order) => {
     type: CHANGE_ORDER,
     payload: order
   };
-}
+};
+
+export const deleteFromOrder = (idx) => {
+  return {
+    type: DELETE_FROM_ORDER,
+    payload: idx
+  };
+};

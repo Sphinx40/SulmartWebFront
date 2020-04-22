@@ -1,9 +1,7 @@
 import React from "react";
 import {
-  Container,
   Segment,
   Header,
-  List,
   Input,
   Grid,
   Divider,

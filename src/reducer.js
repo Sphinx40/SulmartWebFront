@@ -8,7 +8,8 @@ import {
   INCREMENT_TO_ORDER,
   GET_PRODUCTS,
   CLEAR_ORDER,
-  CHANGE_ORDER
+  CHANGE_ORDER,
+  DELETE_FROM_ORDER
 } from "./types";
 
 let initial = {
@@ -54,6 +55,12 @@ const incrementToOrder = (state, product, quantity) => {
   return newState;
 };
 
+const deleteFromOrder = (state, idx) => {
+  let newState = JSON.parse(JSON.stringify(state));
+  newState.order = [...newState.order.slice(0,idx),...newState.order.slice(idx+1)];
+  localStorage.setItem('order',JSON.stringify(newState.order))
+  return newState;
+};
 
 const reducer = (state = initial, action) => {
   switch (action.type) {
@@ -110,6 +117,9 @@ const reducer = (state = initial, action) => {
         ...state,
         order: [...action.payload]
       };
+
+    case DELETE_FROM_ORDER:
+      return deleteFromOrder(state,action.payload);
 
     default:
       return state;
