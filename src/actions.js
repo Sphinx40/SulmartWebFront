@@ -10,50 +10,51 @@ import {
   CLEAR_ORDER,
   CHANGE_ORDER,
   DELETE_FROM_ORDER
-} from "./types";
+} from './types';
 
-import { doGet } from "./utils/apiActions";
+import { doGet } from './utils/axiosActions';
+const HEROKU_URI = 'https://helix40.herokuapp.com/';
 
-export const modifyLoader = (boolean) => {
+export const modifyLoader = boolean => {
   return {
     type: MODIFY_LOADER,
-    payload: boolean,
+    payload: boolean
   };
 };
 
-export const changeMenu = (title) => {
+export const changeMenu = title => {
   return {
     type: CHANGE_MENU_TITLE,
-    payload: title,
+    payload: title
   };
 };
 
-export const errorhandler = (error) => {
-  if (typeof error === "string") {
+export const errorhandler = error => {
+  if (typeof error === 'string') {
     return {
       type: PUSH_ERROR,
-      payload: error,
+      payload: error
     };
   } else {
     return {
       type: PUSH_ERROR,
-      payload: error.response.data.error,
+      payload: error.response.data.error
     };
   }
 };
 
 export const getCategories = () => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(modifyLoader(true));
-    doGet(`categories`)
+    doGet(HEROKU_URI + `categories`)
       .then(({ data }) => {
         dispatch(modifyLoader(false));
         dispatch({
           type: GET_CATEGORIES,
-          payload: data.data,
+          payload: data.data
         });
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(modifyLoader(false));
         dispatch(errorhandler(err));
       });
@@ -61,42 +62,42 @@ export const getCategories = () => {
 };
 
 export const getProducts = () => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(modifyLoader(true));
-    doGet(`products`)
+    doGet(HEROKU_URI + `products`)
       .then(({ data }) => {
         dispatch(modifyLoader(false));
         dispatch({
           type: GET_PRODUCTS,
-          payload: data.data,
+          payload: data.data
         });
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(modifyLoader(false));
         dispatch(errorhandler(err));
       });
   };
 };
 
-export const changeDelivery = (number) => {
+export const changeDelivery = number => {
   return {
     type: CHANGE_DELIVERY,
-    payload: number,
+    payload: number
   };
 };
 
 export const incrementToOrder = (product, quantity) => {
-    return {
-        type: INCREMENT_TO_ORDER,
-        payload: {product,quantity}
-    };
+  return {
+    type: INCREMENT_TO_ORDER,
+    payload: { product, quantity }
+  };
 };
 
 export const decrementFromOrder = (product, quantity) => {
-    return {
-        type: DECREMENT_FROM_ORDER,
-        payload: {product,quantity}
-    };
+  return {
+    type: DECREMENT_FROM_ORDER,
+    payload: { product, quantity }
+  };
 };
 
 export const clearOrder = () => {
@@ -105,14 +106,14 @@ export const clearOrder = () => {
   };
 };
 
-export const changeOrder = (order) => {
+export const changeOrder = order => {
   return {
     type: CHANGE_ORDER,
     payload: order
   };
 };
 
-export const deleteFromOrder = (idx) => {
+export const deleteFromOrder = idx => {
   return {
     type: DELETE_FROM_ORDER,
     payload: idx
