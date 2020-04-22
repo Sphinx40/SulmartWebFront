@@ -49,10 +49,10 @@ const CategoriesMenu = (props) => {
     setOnActive("Products")
   };
 
-  // this component is showing up categories
+  // this component is showing up content of categories
   const contentOfCategories = (subCategories) => {
     return (
-      <Menu secondary vertical>
+      <Menu pointing vertical>
         {subCategories.map((item, id) => (
           <Menu.Item
             key={id}

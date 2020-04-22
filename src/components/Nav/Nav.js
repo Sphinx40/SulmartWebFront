@@ -1,42 +1,42 @@
 import React from 'react';
-import { Menu, Label, Image } from 'semantic-ui-react';
+import { Menu, Label, Image, Segment } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { changeMenu } from '../../actions';
 import { Link } from 'react-router-dom';
 
 const Nav = (props) => {
-  const { state } = props;
+  const { state, changeMenu } = props;
   const { menu, order } = state;
 
   const handleItemClick = (e, { name }) => changeMenu(name)
 
     return (
-      <Menu stackable>
-        <Menu.Item>
-          <Image src={require('./AltynOrda.png')} size='mini' />
-        </Menu.Item>
-
+      <Segment attached='top'>
+      <Menu secondary>
         <Menu.Item
-          name='features'
-          active={menu === 'features'}
+          name='Menu'
+          active={menu === 'Menu' || menu === ''}
           onClick={handleItemClick}
           as={Link}
           to={`/`}
-        >Home</Menu.Item>
+        >Меню</Menu.Item>
 
         <Menu.Item
-          name='testimonials'
-          active={menu === 'testimonials'}
+          name='ShoppingBasket'
+          active={menu === 'ShoppingBasket'}
           onClick={handleItemClick}
           as={Link}
-          to={`/Корзина`}
+          to={`/ShoppingBasket`}
         >
           Корзина
           <Label color='violet'>
             {order.length}
           </Label>
         </Menu.Item>
-      </Menu>
+        <Menu.Item position='right'>
+          Алматы
+        </Menu.Item>
+      </Menu></Segment>
     )
 }
 
@@ -44,4 +44,4 @@ const mapStateToProps = (state) => {
   return { state };
 }
 
-export default connect(mapStateToProps,{})(Nav);
+export default connect(mapStateToProps,{ changeMenu })(Nav);

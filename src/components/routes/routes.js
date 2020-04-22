@@ -29,7 +29,7 @@ const RenderRoutes = () => {
       <ErrorNotification />
       <Switch >
       <Route path="/" component={AsyncHome} exact />
-        <Route path="/Корзина" component={ShoppingBasket} />
+        <Route path="/ShoppingBasket" component={ShoppingBasket} />
         <Route path="/Доставка" component={AsyncDelivery} />
         <Route render={() => (
           <div style={{ margin: 'auto', width: '30%' }}>
