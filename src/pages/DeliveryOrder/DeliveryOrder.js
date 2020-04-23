@@ -50,6 +50,12 @@ const DeliveryOrder = props => {
     if (user.street === '') {
       errors.push('Выберите улицу');
     }
+    if (user.house === '') {
+      errors.push('Выберите дом');
+    }
+    if (user.longitude === 0 || user.latitude === 0) {
+      errors.push('Адрес неправильно');
+    }
 
     return errors;
   };
@@ -128,6 +134,33 @@ const DeliveryOrder = props => {
                     />
                   </Table.Cell>
                 </Table.Row>
+
+                <Table.Row>
+                  <Table.Cell>
+                    <Input
+                      placeholder='Дом'
+                      fluid
+                      value={user.house}
+                      onChange={e =>
+                        setUser({ ...user, house: e.target.value })
+                      }
+                    />
+                  </Table.Cell>
+                </Table.Row>
+
+                <Table.Row>
+                  <Table.Cell>
+                    <Input
+                      placeholder='Квартира'
+                      fluid
+                      value={user.appartment}
+                      onChange={e =>
+                        setUser({ ...user, appartment: e.target.value })
+                      }
+                    />
+                  </Table.Cell>
+                </Table.Row>
+                
               </Table.Body>
             </Table>
             <OrderPrice notShowButton={true} />
