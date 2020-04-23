@@ -12,7 +12,7 @@ import {
   DELETE_FROM_ORDER
 } from './types';
 
-import { doGet } from './utils/axiosActions';
+import { doGet } from '../utils/axiosActions';
 const HEROKU_URI = 'https://helix40.herokuapp.com/';
 
 export const modifyLoader = boolean => {

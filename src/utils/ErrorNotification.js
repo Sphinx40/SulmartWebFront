@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Segment } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import { errorhandler } from '../actions'
+import { errorhandler } from '../actions';
 
 const ErrorNotification = ({ state, errorhandler }) => {
     const [openModal, setOpenModal] = useState(false);

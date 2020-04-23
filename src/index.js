@@ -4,10 +4,10 @@ import App from './components/App/App';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
-import reducer from './reducer';
+import reducers from './reducers';
 import 'antd/dist/antd.css';
 
-const store = createStore(reducer, applyMiddleware(ReduxThunk))
+const store = createStore(reducers, applyMiddleware(ReduxThunk))
 
 ReactDOM.render(
     <Provider store={store}>

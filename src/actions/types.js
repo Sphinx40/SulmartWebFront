@@ -10,3 +10,5 @@ export const INCREMENT_TO_ORDER = "INCREMENT_TO_ORDER";
 export const CLEAR_ORDER = "CLEAR_ORDER";
 export const CHANGE_ORDER = "CHANGE_ORDER";
 export const DELETE_FROM_ORDER = "DELETE_FROM_ORDER";
+
+export const GET_ACTION = "GET_ACTION";
