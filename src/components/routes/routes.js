@@ -30,7 +30,7 @@ const RenderRoutes = () => {
       <Switch >
       <Route path="/" component={AsyncHome} exact />
         <Route path="/ShoppingBasket" component={ShoppingBasket} />
-        <Route path="/Доставка" component={AsyncDelivery} />
+        <Route path="/Delivery" component={AsyncDelivery} />
         <Route render={() => (
           <div style={{ margin: 'auto', width: '30%' }}>
           <Image style={{ width: 500, height: 150 }} src='/img/404.png' />

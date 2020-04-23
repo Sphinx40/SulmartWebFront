@@ -11,27 +11,21 @@ import {
 import QuantityProduct from "../../components/QuantityProduct/QuantityProduct";
 import OrderPrice from "../../components/OrderPrice/OrderPrice";
 import Zmap from "../../components/Zmap/Zmap";
-import { Steps } from "antd";
-import {
-  UserOutlined,
-  SolutionOutlined,
-  LoadingOutlined,
-  SmileOutlined,
-} from "@ant-design/icons";
 import { connect } from "react-redux";
-
-const { Step } = Steps;
+import NumberFormat from 'react-number-format';
+import OutputErrors from "../../utils/OutputErrors";
 
 const DeliveryOrder = (props) => {
   const { state } = props;
   const { order } = state;
-
   const [user, setUser] = useState({
     name: '',
     phone: '',
     extraPhone: '',
     street: ''
   });
+
+  const [errors, setErrors] = useState([]);
 
   const validation = () => {
     let errors = [];
@@ -50,21 +44,20 @@ const DeliveryOrder = (props) => {
     };
     if (user.street === "") {
       errors.push("Выберите улицу")
-    };/* 
-    if (errors.length !== 0) {
-
-    }; */
+    };
+    
     return errors;
+  };
+
+  const toOrder = () => {
+    setErrors(validation());
   };
 
   return (
     <Segment padded="very" color="violet" style={{ margin: 20 }}>
       <Header content="Доставка" textAlign="center" />
-{/*       <Steps>
-        <Step status="process" title="Адрес" icon={<LoadingOutlined />} />
-        <Step status="wait" title="Сделано" icon={<SmileOutlined />} />
-      </Steps> */}
       <Divider />
+      
       <QuantityProduct />
       <Grid columns={2} divided>
         <Grid.Row>
@@ -76,26 +69,33 @@ const DeliveryOrder = (props) => {
                           <Input
                             placeholder="Имя"
                             fluid
+                            onChange={(e) => setUser({...user,name: e.target.value})}
                           />
                         </Table.Cell>
                       </Table.Row>
                       <Table.Row>
                         <Table.Cell>
-                          <Input
-                            type="number"
-                            placeholder="Телефон"
-                            fluid
-                          />
+                        <NumberFormat 
+                          format="+7 (###) ###-##-##"
+                          customInput={Input} 
+                          onValueChange={(e) => setUser({...user, phone: e.value})} 
+                          fluid 
+                          mask="_"
+                          placeholder='Телефон номер'
+                        />
                         </Table.Cell>
                       </Table.Row>
 
                       <Table.Row>
                         <Table.Cell>
-                          <Input
-                            type="number"
-                            placeholder="Дополнительный телефон"
-                            fluid
-                          />
+                        <NumberFormat 
+                          format="+7 (###) ###-##-##"
+                          customInput={Input} 
+                          onValueChange={(e) => setUser({...user, extraPhone: e.value})} 
+                          fluid 
+                          mask="_"
+                          placeholder='Дополнительный телефон номер'
+                        />
                         </Table.Cell>
                       </Table.Row>
 
@@ -104,6 +104,7 @@ const DeliveryOrder = (props) => {
                           <Input
                             placeholder="Улица"
                             fluid
+                            onChange={(e) => setUser({...user,street: e.target.value})}
                           />
                         </Table.Cell>
                       </Table.Row>
@@ -111,7 +112,8 @@ const DeliveryOrder = (props) => {
                   </Table>
                   <OrderPrice notShowButton={true} />
                   <Divider />
-                  <Button color="violet" type="submit" disabled={validation().length === 0 ? false : true}>
+                  <OutputErrors errors={errors} />
+                  <Button color="violet" type="submit" onClick={toOrder}>
                     Оформить
                   </Button>
           </Grid.Column>
