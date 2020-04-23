@@ -15,10 +15,18 @@ import { connect } from 'react-redux';
 import NumberFormat from 'react-number-format';
 import OutputErrors from '../../utils/OutputErrors';
 import Recaptcha from 'react-google-invisible-recaptcha';
+import { findCoordsByStreetAndHouse } from '../../actions/zmapActions';
 
 const DeliveryOrder = props => {
-  const { state } = props;
+  const {
+    state,
+    cityName,
+    ymaps,
+    placeMarkCoords,
+    findCoordsByStreetAndHouse
+  } = props;
   const { order } = state;
+
   const [user, setUser] = useState({
     name: '',
     phone: '',
@@ -33,6 +41,20 @@ const DeliveryOrder = props => {
   });
 
   const [errors, setErrors] = useState([]);
+
+  useEffect(() => {
+    if (placeMarkCoords && placeMarkCoords.size === 2) {
+      setUser(prev => {
+        return {
+          ...prev,
+          latitude: placeMarkCoords[0],
+          longitude: placeMarkCoords[1]
+        };
+      });
+    }
+    //eslint-disable-next-line
+  }, [placeMarkCoords]);
+
   let recaptcha;
 
   const validation = () => {
@@ -126,10 +148,23 @@ const DeliveryOrder = props => {
                       fluid
                       value={user.street}
                       onChange={e =>
-                        setUser({ ...user, street: e.target.value, house: '' })
+                        setUser({
+                          ...user,
+                          street: e.target.value,
+                          house: '',
+                          latitude: 0,
+                          longitude: 0
+                        })
                       }
                       onBlur={event => {
-                        // getCoordByStreetNameAndHouse(event.target.value);
+                        //
+
+                        findCoordsByStreetAndHouse(
+                          user.street,
+                          user.house,
+                          cityName,
+                          ymaps
+                        );
                       }}
                     />
                   </Table.Cell>
@@ -142,8 +177,21 @@ const DeliveryOrder = props => {
                       fluid
                       value={user.house}
                       onChange={e =>
-                        setUser({ ...user, house: e.target.value })
+                        setUser({
+                          ...user,
+                          house: e.target.value,
+                          latitude: 0,
+                          longitude: 0
+                        })
                       }
+                      onBlur={event => {
+                        findCoordsByStreetAndHouse(
+                          user.street,
+                          user.house,
+                          cityName,
+                          ymaps
+                        );
+                      }}
                     />
                   </Table.Cell>
                 </Table.Row>
@@ -160,7 +208,6 @@ const DeliveryOrder = props => {
                     />
                   </Table.Cell>
                 </Table.Row>
-                
               </Table.Body>
             </Table>
             <OrderPrice notShowButton={true} />
@@ -222,9 +269,14 @@ const DeliveryOrder = props => {
 };
 
 const mapStateToProps = state => {
-  return { 
-    state: state.Main
+  return {
+    state: state.Main,
+    cityName: state.Zmap.city.name,
+    ymaps: state.Zmap.ymaps,
+    placeMarkCoords: state.Zmap.placeMarkCoords
   };
 };
 
-export default connect(mapStateToProps, {})(DeliveryOrder);
+export default connect(mapStateToProps, { findCoordsByStreetAndHouse })(
+  DeliveryOrder
+);

@@ -4,17 +4,23 @@ import {
   Map,
   Placemark,
   GeolocationControl,
-  TrafficControl,
   ZoomControl
 } from 'react-yandex-maps';
 
+import {
+  setPlaceMarkCoords,
+  setPlaceMarkProperties,
+  setMapCenter,
+  setYmaps
+} from '../../actions/zmapActions';
+import { connect } from 'react-redux';
 //43.26975618015196, 76.93950828938578 Almaty coords
 //37.611347,55.760241
 const Zmap = props => {
-  const [city, setCity] = useState({
-    coords: [43.24946867986241, 76.91736506700802],
-    name: 'Алматы'
-  });
+  // const [city, setCity] = useState({
+  //   coords: [43.24946867986241, 76.91736506700802],
+  //   name: 'Алматы'
+  // });
 
   // const [mapWidth, setMapWidth] = useState(458);
   // const [mapHeight, setMapHeight] = useState(405);
@@ -23,9 +29,40 @@ const Zmap = props => {
   // const [street, setStreet] = useState('');
   // const [house, setHouse] = useState('');
 
-  const { setMapWidth,setMapHeight,setLongitude,setLatitude,setStreet,setHouse } = props;
-  const { mapWidth,mapHeight,longitude,latitude,street,house } = props;
+  //from DeliveryOrder
+  const {
+    // setMapWidth,
+    // setMapHeight,
+    // setLongitude,
+    // setLatitude,
+    setStreet,
+    setHouse
+  } = props;
+  const {
+    mapWidth,
+    mapHeight
+    // , longitude, latitude, street, house
+  } = props;
 
+  //from Reducer and Actions
+  const {
+    setPlaceMarkCoords,
+    setPlaceMarkProperties,
+    setMapCenter,
+    setYmaps
+  } = props;
+  const {
+    city,
+    placeMarkCoords,
+    placeMarkProperties,
+    mapCenter,
+    ymaps
+  } = props;
+  useEffect(() => {
+    setPlaceMarkCoords(city.coords);
+    setMapCenter(city.coords);
+    //eslint-disable-next-line
+  }, []);
   // useEffect(() => {
   //   if (userLocation && userLocation.coords) {
   //     setMapCenter([
@@ -36,10 +73,10 @@ const Zmap = props => {
   //   //eslint-disable-next-line
   // }, [userLocation]);
 
-  const [placeMarkCoords, setPlaceMarkCoords] = useState(city.coords);
-  const [placeMarkProperties, setPlaceMarkProperties] = useState({});
-  const [mapCenter, setMapCenter] = useState(city.coords);
-  const [ymaps, setYmaps] = useState({});
+  // const [placeMarkCoords, setPlaceMarkCoords] = useState(city.coords);
+  // const [placeMarkProperties, setPlaceMarkProperties] = useState({});
+  // const [mapCenter, setMapCenter] = useState(city.coords);
+  // const [ymaps, setYmaps] = useState({});
 
   const loadYmaps = ymaps => {
     setYmaps(ymaps);
@@ -66,6 +103,11 @@ const Zmap = props => {
           streetName = item;
         }
       });
+      streetArray.forEach(item => {
+        if (item.includes('микрорайон')) {
+          streetName = item;
+        }
+      });
       setStreet(streetName);
       if (streetName && streetName.length > 0) {
         ymaps.geocode(city.name + ', ' + streetName).then(result => {
@@ -73,36 +115,14 @@ const Zmap = props => {
           // console.log(coords,'coords')
           setMapCenter(coords);
           setPlaceMarkCoords(coords);
-          setLatitude(coords[0]);
-          setLongitude(coords[1]);
+          setPlaceMarkProperties({
+            iconCaption: streetName
+          });
+          // setLatitude(coords[0]);
+          // setLongitude(coords[1]);
         });
       }
     });
-  };
-
-  const getCoordByStreetNameAndHouse = streetName => {
-    // console.log(ymaps, 'ymaps');
-    if (!ymaps.geocode) return;
-
-    if (house && street && house.length > 0 && street.length > 0) {
-      ymaps
-        .geocode(streetName + ' ' + house + ', ' + city.name)
-        .then(result => {
-          // ymaps.geocode(streetName).then(result => {
-          let coords = result.geoObjects.get(0).geometry.getCoordinates();
-          // console.log(coords, 'getCoordByStreetNameAndHouse');
-
-          if (!(coords[0] === 43.238293 && coords[1] === 76.945465)) {
-            setPlaceMarkProperties({
-              iconCaption: street + ' ' + house
-            });
-            setMapCenter(coords);
-            setPlaceMarkCoords(coords);
-            setLatitude(coords[0]);
-            setLongitude(coords[1]);
-          }
-        });
-    }
   };
 
   const getStreetNameByCoords = coords => {
@@ -113,9 +133,10 @@ const Zmap = props => {
     setStreet('');
     setHouse('');
     setPlaceMarkCoords(coords);
+    // setMapCenter(coords);
     setPlaceMarkProperties({ iconCaption: '...searching' });
-    setLatitude(coords[0]);
-    setLongitude(coords[1]);
+    // setLatitude(coords[0]);
+    // setLongitude(coords[1]);
     // console.log(coords,'coords')
     ymaps
       .geocode(coords)
@@ -126,11 +147,28 @@ const Zmap = props => {
         let houseTemp = '';
         let streetTemp = '';
 
-        if (firstGeoObject.getThoroughfare()) {
-          streetTemp = firstGeoObject.getThoroughfare();
-        } else if (firstGeoObject.getPremise()) {
-          streetTemp = firstGeoObject.getPremise();
-        }
+        let streetArray = firstGeoObject.getAddressLine().split(',');
+        streetArray.forEach(item => {
+          if (
+            item.includes('улица') ||
+            item.includes('проспект') ||
+            item.includes('даңғылы') ||
+            item.includes('көшесі')
+          ) {
+            streetTemp = item;
+          }
+        });
+        streetArray.forEach(item => {
+          if (item.includes('микрорайон')) {
+            streetTemp = item;
+          }
+        });
+
+        // if (firstGeoObject.getThoroughfare()) {
+        //   streetTemp = firstGeoObject.getThoroughfare();
+        // } else if (firstGeoObject.getPremise()) {
+        //   streetTemp = firstGeoObject.getPremise();
+        // }
 
         if (firstGeoObject.getPremiseNumber()) {
           houseTemp = firstGeoObject.getPremiseNumber();
@@ -271,7 +309,23 @@ const Zmap = props => {
 // latitude:43.223790
 // longitude:76.842540
 
-export default Zmap;
+const mapStateToProps = state => {
+  // console.log(state.Zmap.placeMarkCoords,'placeMarkCoords')
+  return {
+    city: state.Zmap.city,
+    placeMarkCoords: state.Zmap.placeMarkCoords,
+    placeMarkProperties: state.Zmap.placeMarkProperties,
+    mapCenter: state.Zmap.mapCenter,
+    ymaps: state.Zmap.ymaps
+  };
+};
+
+export default connect(mapStateToProps, {
+  setPlaceMarkCoords,
+  setPlaceMarkProperties,
+  setMapCenter,
+  setYmaps
+})(Zmap);
 
 // const geocode = ymaps => {
 //   console.log(ymaps, 'ymaps');
@@ -302,4 +356,28 @@ export default Zmap;
 //   const geolocation = getGeoLocation(ymaps);
 //   console.log('object');
 //   console.log(geolocation, 'geolocation');
+// };
+// const getCoordByStreetNameAndHouse = (street,house) => {
+//   // console.log(ymaps, 'ymaps');
+//   if (!ymaps.geocode) return;
+
+//   if (house && street && house.length > 0 && street.length > 0) {
+//     ymaps
+//       .geocode(streetName + ' ' + house + ', ' + city.name)
+//       .then(result => {
+//         // ymaps.geocode(streetName).then(result => {
+//         let coords = result.geoObjects.get(0).geometry.getCoordinates();
+//         // console.log(coords, 'getCoordByStreetNameAndHouse');
+
+//         if (!(coords[0] === 43.238293 && coords[1] === 76.945465)) {
+//           setPlaceMarkProperties({
+//             iconCaption: street + ' ' + house
+//           });
+//           setMapCenter(coords);
+//           setPlaceMarkCoords(coords);
+//           setLatitude(coords[0]);
+//           setLongitude(coords[1]);
+//         }
+//       });
+//   }
 // };
