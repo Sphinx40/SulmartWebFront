@@ -11,139 +11,194 @@ import {
 //43.26975618015196, 76.93950828938578 Almaty coords
 //37.611347,55.760241
 const Zmap = props => {
-  const { userLocation } = props;
-
-  useEffect(() => {
-    if (userLocation && userLocation.coords) {
-      setMapState(prev => {
-        return {
-          ...prev,
-          center: [userLocation.coords.latitude, userLocation.coords.longitude],
-          zoom: 13
-        };
-      });
-      // setCoords([userLocation.coords.latitude, userLocation.coords.longitude]);
-    }
-    //eslint-disable-next-line
-  }, [userLocation]);
-
-  const [placeMarkCoords, setPlaceMarkCoords] = useState([43.3077, 76.85231]);
-  const [placeMarkProperties, setPlaceMarkProperties] = useState({});
-  // const [coords, setCoords] = useState([43.3077, 76.85231]);
-
-  const placeMark = {
-    geometry: placeMarkCoords,
-    properties: placeMarkProperties,
-    // geometry: [43.26975618015196, 76.93950828938578],
-    // properties: {
-    //   iconCaption: 'searching...'
-    //   // hintContent: 'Это хинт',
-    //   // balloonContent: 'Это балун'
-    // },
-    // modules: ['geoObject.addon.balloon', 'geoObject.addon.hint'],
-    options: { draggable: true }
-  };
-
-  const [mapState, setMapState] = useState({
-    center: [43.3077, 76.85231],
-    zoom: 13,
-    controls: []
+  const [city, setCity] = useState({
+    coords: [43.24946867986241, 76.91736506700802],
+    name: 'Алматы'
   });
 
+  // const [mapWidth, setMapWidth] = useState(458);
+  // const [mapHeight, setMapHeight] = useState(405);
+  // const [longitude, setLongitude] = useState(76.91736506700802);
+  // const [latitude, setLatitude] = useState(43.24946867986241);
+  // const [street, setStreet] = useState('');
+  // const [house, setHouse] = useState('');
+
+  const { setMapWidth,setMapHeight,setLongitude,setLatitude,setStreet,setHouse } = props;
+  const { mapWidth,mapHeight,longitude,latitude,street,house } = props;
+
+  // useEffect(() => {
+  //   if (userLocation && userLocation.coords) {
+  //     setMapCenter([
+  //       userLocation.coords.latitude,
+  //       userLocation.coords.longitude
+  //     ]);
+  //   }
+  //   //eslint-disable-next-line
+  // }, [userLocation]);
+
+  const [placeMarkCoords, setPlaceMarkCoords] = useState(city.coords);
+  const [placeMarkProperties, setPlaceMarkProperties] = useState({});
+  const [mapCenter, setMapCenter] = useState(city.coords);
   const [ymaps, setYmaps] = useState({});
 
-  // const geocode = ymaps => {
-  //   // console.log(ymaps, 'ymaps');
-  //   const suggestView = new ymaps.SuggestView('suggest');
-  // };
-  const loadSuggest = ymaps => {
-    const suggestView = new ymaps.SuggestView('suggest', {
+  const loadYmaps = ymaps => {
+    setYmaps(ymaps);
+    let suggestView = new ymaps.SuggestView('suggest', {
       provider: {
         suggest: (request, options) => {
-          return ymaps.suggest('алматы, ' + request);
+          return ymaps.suggest(city.name + ', ' + request);
         }
       }
     });
-    console.log(suggestView, 'suggestView');
-  };
 
-  const geocode = ymaps => {
-    console.log(ymaps, 'ymaps');
-    setYmaps(ymaps);
-  };
-
-  const getStreetName = coords => {
-    console.log(coords, 'coords');
-    setPlaceMarkCoords(coords);
-    setPlaceMarkProperties({ iconCaption: '...searching' });
-    ymaps.geocode(coords).then(function(res) {
-      let firstGeoObject = res.geoObjects.get(0);
-
-      let iconCaptionText = '';
-      let premiseNumber = '';
-      let street = '';
-
-      if (firstGeoObject.getThoroughfare()) {
-        street = firstGeoObject.getThoroughfare();
-      } else if (firstGeoObject.getPremise()) {
-        street = firstGeoObject.getPremise();
-      }
-
-      if (firstGeoObject.getPremiseNumber()) {
-        premiseNumber = firstGeoObject.getPremiseNumber();
-      }
-
-      iconCaptionText = street + ' ' + premiseNumber;
-
-      street = street.replace('улица ', '');
-
-      setPlaceMarkProperties({
-        iconCaption: iconCaptionText
-        // [
-        //   // The name of the municipality or the higher territorial-administrative formation.
-        //   firstGeoObject.getLocalities().length
-        //     ? firstGeoObject.getLocalities()
-        //     : firstGeoObject.getAdministrativeAreas(),
-
-        //   // Getting the path to the toponym; if the method returns null, then requesting the name of the building.
-        //   firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
-        // ]
-        //   .filter(Boolean)
-        //   .join(', '),
-        // // Specifying a string with the address of the object as the balloon content.
-        // balloonContent: firstGeoObject.getAddressLine()
+    suggestView.events.add('select', e => {
+      let streetName = splitByCommaAndReturnStreetName(
+        e.get('item').displayName
+      );
+      let streetArray = e.get('item').displayName.split(',');
+      streetArray.forEach(item => {
+        if (
+          item.includes('улица') ||
+          item.includes('проспект') ||
+          item.includes('даңғылы') ||
+          item.includes('көшесі')
+        ) {
+          streetName = item;
+        }
       });
-      // placeMark = {
-      //   ...placeMark,
-      //   properties: {
-      //     iconCaption: [
-      //       // The name of the municipality or the higher territorial-administrative formation.
-      //       firstGeoObject.getLocalities().length
-      //         ? firstGeoObject.getLocalities()
-      //         : firstGeoObject.getAdministrativeAreas(),
-      //       // Getting the path to the toponym; if the method returns null, then requesting the name of the building.
-      //       firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
-      //     ]
-      //       .filter(Boolean)
-      //       .join(', '),
-      //     // Specifying a string with the address of the object as the balloon content.
-      //     balloonContent: firstGeoObject.getAddressLine()
-      //   }
-      // };
+      setStreet(streetName);
+      if (streetName && streetName.length > 0) {
+        ymaps.geocode(city.name + ', ' + streetName).then(result => {
+          let coords = result.geoObjects.get(0).geometry.getCoordinates();
+          // console.log(coords,'coords')
+          setMapCenter(coords);
+          setPlaceMarkCoords(coords);
+          setLatitude(coords[0]);
+          setLongitude(coords[1]);
+        });
+      }
     });
   };
 
-  const getCoordinates = () => {
+  const getCoordByStreetNameAndHouse = streetName => {
+    // console.log(ymaps, 'ymaps');
+    if (!ymaps.geocode) return;
+
+    if (house && street && house.length > 0 && street.length > 0) {
+      ymaps
+        .geocode(streetName + ' ' + house + ', ' + city.name)
+        .then(result => {
+          // ymaps.geocode(streetName).then(result => {
+          let coords = result.geoObjects.get(0).geometry.getCoordinates();
+          // console.log(coords, 'getCoordByStreetNameAndHouse');
+
+          if (!(coords[0] === 43.238293 && coords[1] === 76.945465)) {
+            setPlaceMarkProperties({
+              iconCaption: street + ' ' + house
+            });
+            setMapCenter(coords);
+            setPlaceMarkCoords(coords);
+            setLatitude(coords[0]);
+            setLongitude(coords[1]);
+          }
+        });
+    }
+  };
+
+  const getStreetNameByCoords = coords => {
+    if (!ymaps.geocode) return;
+    let returnObj = { found: false };
+    // console.log(coords, 'coords');
+
+    setStreet('');
+    setHouse('');
+    setPlaceMarkCoords(coords);
+    setPlaceMarkProperties({ iconCaption: '...searching' });
+    setLatitude(coords[0]);
+    setLongitude(coords[1]);
+    // console.log(coords,'coords')
     ymaps
-      .geocode(
-        'Қазақстан, Алматы, Алатау ауданы, Шаңырақ-2 шағын ауданы, Сырым батыр көшесі'
-      )
-      .then(result => {
-        console.log(
-          result.geoObjects.get(0).geometry.getCoordinates(),
-          'result.geoObjects.get(0).geometry.getCoordinates()'
-        );
+      .geocode(coords)
+      .then(res => {
+        let firstGeoObject = res.geoObjects.get(0);
+
+        let iconCaptionText = '';
+        let houseTemp = '';
+        let streetTemp = '';
+
+        if (firstGeoObject.getThoroughfare()) {
+          streetTemp = firstGeoObject.getThoroughfare();
+        } else if (firstGeoObject.getPremise()) {
+          streetTemp = firstGeoObject.getPremise();
+        }
+
+        if (firstGeoObject.getPremiseNumber()) {
+          houseTemp = firstGeoObject.getPremiseNumber();
+        }
+
+        // streetTemp = removeStreetWord(streetTemp);
+
+        iconCaptionText = streetTemp + ' ' + houseTemp;
+        setPlaceMarkProperties({
+          iconCaption: iconCaptionText
+        });
+
+        // console.log(streetTemp, 'streetTemp');
+        if (
+          streetTemp === null ||
+          streetTemp === '' ||
+          streetTemp.length === 0
+        ) {
+          returnObj = { found: false };
+          return returnObj;
+        } else {
+          // returnObj = { found: true, streetTemp, houseTemp };
+          setStreet(streetTemp);
+          setHouse(houseTemp);
+          return returnObj;
+        }
+      })
+      .catch(err => {
+        returnObj = { found: false };
+        return returnObj;
       });
+  };
+
+  const splitByCommaAndReturnStreetName = text => {
+    let streetArray = text.split(',');
+    streetArray.forEach(item => {
+      if (
+        item.includes('улица') ||
+        item.includes('проспект') ||
+        item.includes('даңғылы') ||
+        item.includes('көшесі')
+      ) {
+        // console.log(item, 'item');
+        return item;
+      }
+    });
+    return '';
+  };
+
+  const removeStreetWord = text => {
+    let tempText = text;
+
+    tempText = tempText.replace('улица ', '');
+    tempText = tempText.replace(' улица', '');
+    tempText = tempText.replace('улица', '');
+
+    tempText = tempText.replace('проспект ', '');
+    tempText = tempText.replace(' проспект', '');
+    tempText = tempText.replace('проспект', '');
+
+    tempText = tempText.replace('даңғылы ', '');
+    tempText = tempText.replace(' даңғылы', '');
+    tempText = tempText.replace('даңғылы', '');
+
+    tempText = tempText.replace('көшесі ', '');
+    tempText = tempText.replace(' көшесі', '');
+    tempText = tempText.replace('көшесі', '');
+    return tempText;
   };
 
   return (
@@ -151,48 +206,57 @@ const Zmap = props => {
       query={{ lang: 'ru_RU', apikey: '2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6' }}
     >
       <div id='map-basics'>
-        <input
+        {/* <input
           type='text'
           className='form-control'
           id='suggest'
           style={{ width: '100%' }}
-          onChange={event => {
-            console.log(event, 'input onSelect is triggered');
+          value={street}
+          onBlur={event => {
+            getCoordByStreetNameAndHouse(event.target.value);
           }}
-        />
+          onChange={event => {
+            setHouse('');
+            setStreet(event.target.value);
+          }}
+        /> */}
         <Map
-          state={mapState}
-          width={640}
-          height={480}
+          state={{ center: mapCenter, zoom: 12, controls: [] }}
+          width={mapWidth}
+          height={mapHeight}
           draggable={true}
           modules={['SuggestView', 'suggest', 'geocode']}
-          onLoad={ymaps => geocode(ymaps)}
+          onLoad={ymaps => loadYmaps(ymaps)}
           onClick={e => {
-            // setCoords([...e.get('coords')]);
-            getStreetName([...e.get('coords')]);
-            // console.log(e, 'e', e.get('coords'));
+            getStreetNameByCoords([...e.get('coords')]);
           }}
         >
-          <TrafficControl options={{ float: 'right' }} />
+          {/* <TrafficControl options={{ float: 'right' }} /> */}
           <GeolocationControl options={{ float: 'left' }} />
 
           <ZoomControl options={{ float: 'right' }} />
           <Placemark
-            {...placeMark}
+            geometry={placeMarkCoords}
+            properties={placeMarkProperties}
+            // geometry: [43.26975618015196, 76.93950828938578],
+            // properties: {
+            //   iconCaption: 'searching...'
+            //   // hintContent: 'Это хинт',
+            //   // balloonContent: 'Это балун'
+            // },
+            // modules: ['geoObject.addon.balloon', 'geoObject.addon.hint'],
+            options={{ draggable: true }}
             // geometry={[...coords]}
             onClick={e => {
-              // getStreetName();
-              // console.log(e.get('target').geometry.getCoordinates(), 'onclick');
-              // console.log(ymaps, 'ymaps');
-              getStreetName([...e.get('target').geometry.getCoordinates()]);
+              getStreetNameByCoords([
+                ...e.get('target').geometry.getCoordinates()
+              ]);
             }}
             // onDragStart={e => console.log(e, 'onDragStart')}
             onDragEnd={e => {
-              getStreetName([...e.get('target').geometry.getCoordinates()]);
-              // console.log(
-              //   e.get('target').geometry.getCoordinates(),
-              //   'ondragand drop'
-              // )
+              getStreetNameByCoords([
+                ...e.get('target').geometry.getCoordinates()
+              ]);
             }}
           />
         </Map>
@@ -202,10 +266,7 @@ const Zmap = props => {
 };
 
 //2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6
-//https://geocode-maps.yandex.ru/1.x/?apikey=2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6&geocode=76.93,43.26&format=json&lang=en_US
-// https://geocode-maps.yandex.ru/1.x/?apikey=2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6&geocode=37.611347,55.760241
 //https://geocode-maps.yandex.ru/1.x/?apikey=2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6&format=json&geocode=Қазақстан, Алматы, Алатау ауданы, Шаңырақ-2 шағын ауданы, Сырым батыр көшесі&lang=en-US
-
 // https://geocode-maps.yandex.ru/1.x/?apikey=2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6&geocode=76.85231,43.3077
 // latitude:43.223790
 // longitude:76.842540
