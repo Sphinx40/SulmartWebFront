@@ -190,7 +190,9 @@ const renderProductsWithOrderQuantity = (products, order, onClickAction) => {
   </List></Segment>
 }
 const mapStateToProps = (state) => {
-  return { state };
+  return { 
+    state: state.Main
+  };
 };
 
 export default connect(mapStateToProps, {

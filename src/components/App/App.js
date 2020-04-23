@@ -15,7 +15,7 @@ const App = (props) => {
 };
 
 const mapStateToProps = (state) => {
-  return { state };
+  return {};
 }
 
 export default connect(mapStateToProps, { changeOrder, changeMenu })(App);

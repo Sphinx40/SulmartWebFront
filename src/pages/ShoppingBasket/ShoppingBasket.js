@@ -32,7 +32,9 @@ const ShoppingBasket = (props) => {
 };
 
 const mapStateToProps = state => {
-    return { state };
+    return { 
+        state: state.Main
+    };
 }
 
 export default connect(mapStateToProps,{ clearOrder })(ShoppingBasket);
