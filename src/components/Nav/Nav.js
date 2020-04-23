@@ -33,6 +33,15 @@ const Nav = (props) => {
             {order.length}
           </Label>
         </Menu.Item>
+        <Menu.Item
+          name='MyOrders'
+          active={menu === 'MyOrders'}
+          onClick={handleItemClick}
+          as={Link}
+          to={`/MyOrders`}
+        >
+          Мои заказы
+        </Menu.Item>
         <Menu.Item position='right'>
           Алматы
         </Menu.Item>

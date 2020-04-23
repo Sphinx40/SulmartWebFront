@@ -9,7 +9,7 @@ const OutputErrors = ({ errors }) => {
   return (
     <Segment raised>
       {errors.map((item, id) => (
-        <Fragment>
+        <Fragment key={id}>
           <Label as="a" style={{ marginTop: 5 }} basic color="red" key={id}>
             {item}
           </Label><br></br>

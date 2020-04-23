@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import {
   Segment,
   Header,
@@ -12,110 +12,132 @@ import QuantityProduct from "../../components/QuantityProduct/QuantityProduct";
 import OrderPrice from "../../components/OrderPrice/OrderPrice";
 import Zmap from "../../components/Zmap/Zmap";
 import { connect } from "react-redux";
-import NumberFormat from 'react-number-format';
+import NumberFormat from "react-number-format";
 import OutputErrors from "../../utils/OutputErrors";
+import Recaptcha from "react-google-invisible-recaptcha";
 
 const DeliveryOrder = (props) => {
   const { state } = props;
   const { order } = state;
   const [user, setUser] = useState({
-    name: '',
-    phone: '',
-    extraPhone: '',
-    street: ''
+    name: "",
+    phone: "",
+    extraPhone: "",
+    street: "",
   });
 
   const [errors, setErrors] = useState([]);
+  let recaptcha;
+
+  
 
   const validation = () => {
     let errors = [];
 
     if (order.length === 0) {
-      errors.push("Выберите продукты")
+      errors.push("Выберите продукты");
     };
     if (user.name === "") {
-      errors.push("Заполните имя")
+      errors.push("Заполните имя");
     };
     if (user.phone === "") {
-      errors.push("Заполните телефон")
-    };
-    if (user.extraPhone === "") {
-      errors.push("Заполните дополнительный телефон")
+      errors.push("Заполните телефон");
     };
     if (user.street === "") {
-      errors.push("Выберите улицу")
+      errors.push("Выберите улицу");
     };
-    
+
     return errors;
   };
 
   const toOrder = () => {
-    setErrors(validation());
+    if (validation().length !== 0) {
+      setErrors(validation());
+    } else {
+      recaptcha.execute();
+    };
+  };
+
+  const onResolved = () => {
+    
   };
 
   return (
     <Segment padded="very" color="violet" style={{ margin: 20 }}>
       <Header content="Доставка" textAlign="center" />
       <Divider />
-      
+
       <QuantityProduct />
       <Grid columns={2} divided>
         <Grid.Row>
           <Grid.Column>
-          <Table>
-                    <Table.Body>
-                      <Table.Row>
-                        <Table.Cell>
-                          <Input
-                            placeholder="Имя"
-                            fluid
-                            onChange={(e) => setUser({...user,name: e.target.value})}
-                          />
-                        </Table.Cell>
-                      </Table.Row>
-                      <Table.Row>
-                        <Table.Cell>
-                        <NumberFormat 
-                          format="+7 (###) ###-##-##"
-                          customInput={Input} 
-                          onValueChange={(e) => setUser({...user, phone: e.value})} 
-                          fluid 
-                          mask="_"
-                          placeholder='Телефон номер'
-                        />
-                        </Table.Cell>
-                      </Table.Row>
+            <Table>
+              <Table.Body>
+                <Table.Row>
+                  <Table.Cell>
+                    <Input
+                      placeholder="Имя"
+                      fluid
+                      onChange={(e) =>
+                        setUser({ ...user, name: e.target.value })
+                      }
+                    />
+                  </Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                  <Table.Cell>
+                    <NumberFormat
+                      format="+7 (###) ###-##-##"
+                      customInput={Input}
+                      onValueChange={(e) =>
+                        setUser({ ...user, phone: e.value })
+                      }
+                      fluid
+                      mask="_"
+                      placeholder="Телефон номер"
+                    />
+                  </Table.Cell>
+                </Table.Row>
 
-                      <Table.Row>
-                        <Table.Cell>
-                        <NumberFormat 
-                          format="+7 (###) ###-##-##"
-                          customInput={Input} 
-                          onValueChange={(e) => setUser({...user, extraPhone: e.value})} 
-                          fluid 
-                          mask="_"
-                          placeholder='Дополнительный телефон номер'
-                        />
-                        </Table.Cell>
-                      </Table.Row>
+                <Table.Row>
+                  <Table.Cell>
+                    <NumberFormat
+                      format="+7 (###) ###-##-##"
+                      customInput={Input}
+                      onValueChange={(e) =>
+                        setUser({ ...user, extraPhone: e.value })
+                      }
+                      fluid
+                      mask="_"
+                      placeholder="Дополнительный телефон номер"
+                    />
+                  </Table.Cell>
+                </Table.Row>
 
-                      <Table.Row>
-                        <Table.Cell>
-                          <Input
-                            placeholder="Улица"
-                            fluid
-                            onChange={(e) => setUser({...user,street: e.target.value})}
-                          />
-                        </Table.Cell>
-                      </Table.Row>
-                    </Table.Body>
-                  </Table>
-                  <OrderPrice notShowButton={true} />
-                  <Divider />
-                  <OutputErrors errors={errors} />
-                  <Button color="violet" type="submit" onClick={toOrder}>
-                    Оформить
-                  </Button>
+                <Table.Row>
+                  <Table.Cell>
+                    <Input
+                      placeholder="Улица"
+                      fluid
+                      onChange={(e) =>
+                        setUser({ ...user, street: e.target.value })
+                      }
+                    />
+                  </Table.Cell>
+                </Table.Row>
+              </Table.Body>
+            </Table>
+            <OrderPrice notShowButton={true} />
+            <Divider />
+            <OutputErrors errors={errors} />
+            <Recaptcha
+              ref={ref => recaptcha = ref}
+              sitekey="6LfUIO0UAAAAAPI8zy0I7xqS6KpVhQ6mbsdMD-7z"
+              onResolved={onResolved}
+            />
+            <Button color="violet" type="submit" onClick={toOrder}>
+              Оформить
+            </Button>
           </Grid.Column>
           <Grid.Column>
             <Zmap />
@@ -126,8 +148,8 @@ const DeliveryOrder = (props) => {
   );
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return { state };
-}
+};
 
 export default connect(mapStateToProps, {})(DeliveryOrder);

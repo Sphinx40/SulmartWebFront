@@ -3,7 +3,6 @@ import Loadable from 'react-loadable';
 import Loading from '../Loading/Loading';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Image } from 'semantic-ui-react';
-
 import Nav from '../Nav/Nav';
 import ErrorNotification from '../../utils/ErrorNotification';
 
@@ -22,15 +21,21 @@ const AsyncDelivery = Loadable({
     loading: Loading
 });
 
+const AsyncMyOrders = Loadable({
+  loader: () => import('../../pages/MyOrders/MyOrders'   /* webpackChunkName: "AsyncDelivery" */),
+  loading: Loading
+});
+
 const RenderRoutes = () => {
     return <Router>
       <Nav />
       <Loading />
       <ErrorNotification />
       <Switch >
-      <Route path="/" component={AsyncHome} exact />
+        <Route path="/" component={AsyncHome} exact />
         <Route path="/ShoppingBasket" component={ShoppingBasket} />
         <Route path="/Delivery" component={AsyncDelivery} />
+        <Route path="/MyOrders" component={AsyncMyOrders} />
         <Route render={() => (
           <div style={{ margin: 'auto', width: '30%' }}>
           <Image style={{ width: 500, height: 150 }} src='/img/404.png' />
