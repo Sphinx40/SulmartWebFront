@@ -14,22 +14,10 @@ import {
   setYmaps,
   setAnyObjectZmapReducer
 } from '../../actions/zmapActions';
+
+import { splitByCommaAndReturnStreetName } from '../../utils/zmapMethods';
 import { connect } from 'react-redux';
-//43.26975618015196, 76.93950828938578 Almaty coords
-//37.611347,55.760241
 const Zmap = props => {
-  // const [city, setCity] = useState({
-  //   coords: [43.24946867986241, 76.91736506700802],
-  //   name: 'Алматы'
-  // });
-
-  // const [mapWidth, setMapWidth] = useState(458);
-  // const [mapHeight, setMapHeight] = useState(405);
-  // const [longitude, setLongitude] = useState(76.91736506700802);
-  // const [latitude, setLatitude] = useState(43.24946867986241);
-  // const [street, setStreet] = useState('');
-  // const [house, setHouse] = useState('');
-
   //from DeliveryOrder
   const {
     // setMapWidth,
@@ -62,28 +50,12 @@ const Zmap = props => {
     zoom
   } = props;
   useEffect(() => {
-    // setPlaceMarkCoords(city.coords);
-    // setMapCenter(city.coords);
     setAnyObjectZmapReducer({
       placeMarkCoords: city.coords,
       mapCenter: city.coords
     });
     //eslint-disable-next-line
   }, []);
-  // useEffect(() => {
-  //   if (userLocation && userLocation.coords) {
-  //     setMapCenter([
-  //       userLocation.coords.latitude,
-  //       userLocation.coords.longitude
-  //     ]);
-  //   }
-  //   //eslint-disable-next-line
-  // }, [userLocation]);
-
-  // const [placeMarkCoords, setPlaceMarkCoords] = useState(city.coords);
-  // const [placeMarkProperties, setPlaceMarkProperties] = useState({});
-  // const [mapCenter, setMapCenter] = useState(city.coords);
-  // const [ymaps, setYmaps] = useState({});
 
   const loadYmaps = ymaps => {
     setYmaps(ymaps);
@@ -99,36 +71,11 @@ const Zmap = props => {
       let streetName = splitByCommaAndReturnStreetName(
         e.get('item').displayName
       );
-      let streetArray = e.get('item').displayName.split(',');
-      streetArray.forEach(item => {
-        if (
-          item.includes('улица') ||
-          item.includes('проспект') ||
-          item.includes('даңғылы') ||
-          item.includes('көшесі')
-        ) {
-          streetName = item;
-        }
-      });
-
-      if (streetName === '') {
-        streetArray.forEach(item => {
-          if (item.includes('микрорайон')) {
-            streetName = item;
-          }
-        });
-      }
 
       setStreet(streetName);
       if (streetName && streetName.length > 0) {
         ymaps.geocode(city.name + ', ' + streetName).then(result => {
           let coords = result.geoObjects.get(0).geometry.getCoordinates();
-          // console.log(coords,'coords')
-          // setMapCenter(coords);
-          // setPlaceMarkCoords(coords);
-          // setPlaceMarkProperties({
-          //   iconCaption: streetName
-          // });
           setAnyObjectZmapReducer({
             placeMarkProperties: {
               iconCaption: streetName
@@ -137,8 +84,6 @@ const Zmap = props => {
             mapCenter: coords
             // zoom: 16
           });
-          // setLatitude(coords[0]);
-          // setLongitude(coords[1]);
         });
       }
     });
@@ -146,20 +91,15 @@ const Zmap = props => {
 
   const getStreetNameByCoords = coords => {
     if (!ymaps.geocode) return;
-    let returnObj = { found: false };
-    // console.log(coords, 'coords');
-
     setStreet('');
     setHouse('');
-
     setAnyObjectZmapReducer({
       placeMarkProperties: {
         iconCaption: '...searching'
       },
       placeMarkCoords: coords
     });
-    // setPlaceMarkCoords(coords);
-    // setPlaceMarkProperties({ iconCaption: '...searching' });
+
     ymaps
       .geocode(coords)
       .then(res => {
@@ -169,36 +109,13 @@ const Zmap = props => {
         let houseTemp = '';
         let streetTemp = '';
 
-        let streetArray = firstGeoObject.getAddressLine().split(',');
-        streetArray.forEach(item => {
-          if (
-            item.includes('улица') ||
-            item.includes('проспект') ||
-            item.includes('даңғылы') ||
-            item.includes('көшесі')
-          ) {
-            streetTemp = item;
-          }
-        });
-        if (streetTemp === '') {
-          streetArray.forEach(item => {
-            if (item.includes('микрорайон')) {
-              streetTemp = item;
-            }
-          });
-        }
-
-        // if (firstGeoObject.getThoroughfare()) {
-        //   streetTemp = firstGeoObject.getThoroughfare();
-        // } else if (firstGeoObject.getPremise()) {
-        //   streetTemp = firstGeoObject.getPremise();
-        // }
+        streetTemp = splitByCommaAndReturnStreetName(
+          firstGeoObject.getAddressLine()
+        );
 
         if (firstGeoObject.getPremiseNumber()) {
           houseTemp = firstGeoObject.getPremiseNumber();
         }
-
-        // streetTemp = removeStreetWord(streetTemp);
 
         iconCaptionText = streetTemp + ' ' + houseTemp;
         setAnyObjectZmapReducer({
@@ -207,66 +124,22 @@ const Zmap = props => {
           }
           // zoom: 16
         });
-        // setPlaceMarkProperties({
-        //   iconCaption: iconCaptionText
-        // });
-
-        // console.log(streetTemp, 'streetTemp');
         if (
           streetTemp === null ||
           streetTemp === '' ||
           streetTemp.length === 0
         ) {
-          returnObj = { found: false };
-          return returnObj;
+          return;
         } else {
           // returnObj = { found: true, streetTemp, houseTemp };
           setStreet(streetTemp);
           setHouse(houseTemp);
-          return returnObj;
+          return;
         }
       })
       .catch(err => {
-        returnObj = { found: false };
-        return returnObj;
+        return;
       });
-  };
-
-  const splitByCommaAndReturnStreetName = text => {
-    let streetArray = text.split(',');
-    streetArray.forEach(item => {
-      if (
-        item.includes('улица') ||
-        item.includes('проспект') ||
-        item.includes('даңғылы') ||
-        item.includes('көшесі')
-      ) {
-        // console.log(item, 'item');
-        return item;
-      }
-    });
-    return '';
-  };
-
-  const removeStreetWord = text => {
-    let tempText = text;
-
-    tempText = tempText.replace('улица ', '');
-    tempText = tempText.replace(' улица', '');
-    tempText = tempText.replace('улица', '');
-
-    tempText = tempText.replace('проспект ', '');
-    tempText = tempText.replace(' проспект', '');
-    tempText = tempText.replace('проспект', '');
-
-    tempText = tempText.replace('даңғылы ', '');
-    tempText = tempText.replace(' даңғылы', '');
-    tempText = tempText.replace('даңғылы', '');
-
-    tempText = tempText.replace('көшесі ', '');
-    tempText = tempText.replace(' көшесі', '');
-    tempText = tempText.replace('көшесі', '');
-    return tempText;
   };
 
   return (
@@ -274,20 +147,6 @@ const Zmap = props => {
       query={{ lang: 'ru_RU', apikey: '2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6' }}
     >
       <div id='map-basics'>
-        {/* <input
-          type='text'
-          className='form-control'
-          id='suggest'
-          style={{ width: '100%' }}
-          value={street}
-          onBlur={event => {
-            getCoordByStreetNameAndHouse(event.target.value);
-          }}
-          onChange={event => {
-            setHouse('');
-            setStreet(event.target.value);
-          }}
-        /> */}
         <Map
           state={{ center: mapCenter, zoom, controls: [] }}
           width={mapWidth}
@@ -306,13 +165,6 @@ const Zmap = props => {
           <Placemark
             geometry={placeMarkCoords}
             properties={placeMarkProperties}
-            // geometry: [43.26975618015196, 76.93950828938578],
-            // properties: {
-            //   iconCaption: 'searching...'
-            //   // hintContent: 'Это хинт',
-            //   // balloonContent: 'Это балун'
-            // },
-            // modules: ['geoObject.addon.balloon', 'geoObject.addon.hint'],
             options={{ draggable: true }}
             // geometry={[...coords]}
             onClick={e => {
