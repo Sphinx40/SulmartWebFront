@@ -6,6 +6,7 @@
     "antd": "^4.1.4",
     "axios": "^0.19.2",
     "formik": "^2.1.4",
+    "moment": "^2.24.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-google-invisible-recaptcha": "^0.2.11",

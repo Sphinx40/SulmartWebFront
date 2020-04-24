@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { changeMenu, changeOrder, changeAddresses } from '../../actions';
+import { changeMenu, changeOrder, changeAddresses, changeMyOrders, getOrderStatuses } from '../../actions';
 import RenderRoutes from "../routes/routes";
 
 const App = (props) => {
-  const { changeMenu, changeAddresses } = props;
+  const { changeMenu, changeAddresses, changeMyOrders, getOrderStatuses } = props;
   const url = window.location.pathname.replace("/","");
   const addresses = JSON.parse(localStorage.getItem("addresses")) || [];
   const myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
@@ -12,6 +12,8 @@ const App = (props) => {
   useEffect(() => {
     changeMenu(url);
     changeAddresses(addresses)
+    changeMyOrders(myOrders)
+    getOrderStatuses()
   },[])
   
   return RenderRoutes();
@@ -21,4 +23,4 @@ const mapStateToProps = (state) => {
   return {};
 }
 
-export default connect(mapStateToProps, { changeOrder, changeMenu, changeAddresses })(App);
+export default connect(mapStateToProps, { changeOrder, changeMenu, changeAddresses, changeMyOrders, getOrderStatuses })(App);

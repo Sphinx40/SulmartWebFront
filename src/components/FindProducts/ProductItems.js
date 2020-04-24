@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Segment,
   Image,
@@ -9,10 +9,13 @@ import {
 } from "semantic-ui-react";
 import { connect } from "react-redux";
 import { incrementToOrder, decrementFromOrder } from "../../actions";
+import ProductImages from '../ProductImages/ProductImages';
 
 const ListOfFoundProducts = (props) => {
   const { state, incrementToOrder, decrementFromOrder, foundProducts, ru } = props;
   const { order } = state;
+  const [images, setImages] = useState([]);
+  const [activeImages, setActiveImages] = useState(false);
 
   const onChangeCount = (text, product, quantity) => {
     if (text === "Plus") {
@@ -35,11 +38,20 @@ const ListOfFoundProducts = (props) => {
               }
             });
           return <List.Item key={id}>
-            <Image src={item.imageUrl} style={{ width: 80, height: 50 }} />
+            <Image 
+              src={item.imageUrl}
+              style={{ width: 70, height: 40, cursor: "pointer" }}
+              onClick={() => {
+                setImages(item.images)
+                setActiveImages(prev => !prev)
+              }}  />
             <List.Content>
-              <List.Header>{item.ru}</List.Header>
+              <List.Header style={{  cursor: 'pointer' }} onClick={() => {
+                setImages(item.images)
+                setActiveImages(prev => !prev)
+              }}>{item.ru}</List.Header>
               KZT {item.price}{" "}
-              В наличие {item.onSale ? "Есть" : "Нет"}
+              В наличии {item.onSale ? "Есть" : "Нет"}
             </List.Content>
             <List.Content floated="right">
                 <div style={{ display: "flex", flexDirection: 'row', alignItems:'center', justifyContent: 'center' }}>
@@ -51,6 +63,7 @@ const ListOfFoundProducts = (props) => {
           </List.Item>
 })}
       </List>
+      {activeImages ? <ProductImages images={images} /> : null}
     </Segment>
   );
 };

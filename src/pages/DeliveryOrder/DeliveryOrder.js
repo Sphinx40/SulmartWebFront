@@ -39,7 +39,7 @@ const DeliveryOrder = props => {
     createOrder,
     history
   } = props;
-  const { order, addresses } = state;
+  const { order, addresses, myOrders } = state;
   const [user, setUser] = useState({
     name: '',
     phone: '',
@@ -142,8 +142,8 @@ const DeliveryOrder = props => {
             longitude: user.longitude,
             latitude: user.latitude
           });
-          createOrder({ ...user, products: order });
-          history.push('/SuccessBasket');
+          createOrder({ ...user, products: order }, myOrders);
+          history.push('/SuccessBasket')
         }
       });
     }
@@ -323,15 +323,15 @@ const DeliveryOrder = props => {
                 </Table.Row>
               </Table.Body>
             </Table>
-            <OrderPrice notShowButton={true} />
+            <OrderPrice order={order} notShowButton={true} deliveryPrice={user.deliveryPrice} totalPrice />
             <Divider />
             <OutputErrors errors={errors} />
             <Recaptcha
               ref={ref => (recaptcha = ref)}
               sitekey='6LfKV-0UAAAAACSPnzDikZx_bEnI0qL_IMdqAF2e'
             />
-            <Button color='violet' type='submit' onClick={toOrder}>
-              Оформить
+            <Button color="violet" type="submit" onClick={toOrder}>
+              Заказать
             </Button>
           </Grid.Column>
           <Grid.Column>

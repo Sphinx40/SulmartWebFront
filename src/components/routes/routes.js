@@ -22,7 +22,7 @@ const AsyncDelivery = Loadable({
 });
 
 const AsyncMyOrders = Loadable({
-  loader: () => import('../../pages/MyOrders/MyOrders'   /* webpackChunkName: "AsyncDelivery" */),
+  loader: () => import('../../pages/MyOrders/MyOrders'   /* webpackChunkName: "AsyncMyOrders" */),
   loading: Loading
 });
 

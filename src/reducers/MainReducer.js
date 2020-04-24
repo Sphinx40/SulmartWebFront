@@ -12,7 +12,8 @@ import {
     DELETE_FROM_ORDER,
     CHANGE_ADDRESSES,
     ADD_ADDRESS,
-    CHANGE_ORDERS
+    CHANGE_MY_ORDERS,
+    GET_ORDER_STATUSES
   } from "../actions/types";
   
   let initial = {
@@ -25,7 +26,8 @@ import {
     productsForSearch: [],
     addresses: [],
     myOrders: [],
-    deliveryDate: ""
+    deliveryDate: "",
+    orderStatuses: []
   };
   
   const decrementFromOrder = (state, product, quantity) => {
@@ -143,9 +145,16 @@ import {
       case ADD_ADDRESS:
         return addNewAddress(state,action.payload);
 
-      case CHANGE_ORDERS:
+      case CHANGE_MY_ORDERS:
         return {
+          ...state,
           myOrders: [...action.payload]
+        };
+
+      case GET_ORDER_STATUSES:
+        return {
+          ...state,
+          orderStatuses: [...action.payload]
         };
 
       default:

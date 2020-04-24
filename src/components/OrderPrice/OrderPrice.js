@@ -4,15 +4,23 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { changeMenu } from "../../actions";
 
-const OrderPrice = ({ state, notShowButton, changeMenu }) => {
-  const { order } = state;
+const OrderPrice = ({
+  order,
+  notShowButton,
+  changeMenu,
+  totalPrice,
+  deliveryPrice,
+}) => {
   let orderTotal = 0;
-  for (var t = 0; t<order.length; t++) {
+  let total = deliveryPrice;
+
+  for (var t = 0; t < order.length; t++) {
     orderTotal = orderTotal + order[t].totalPrice;
-  };
+    total = total + order[t].totalPrice;
+  }
 
   return (
-    <Segment attached='top'>
+    <Segment attached="top">
       <List divided relaxed>
         <List.Item>
           <List.Content>
@@ -20,19 +28,42 @@ const OrderPrice = ({ state, notShowButton, changeMenu }) => {
             <List.Description>{orderTotal}</List.Description>
           </List.Content>
         </List.Item>
+
+        {deliveryPrice ? (
+          <List.Item>
+            <List.Content>
+              <List.Header>Доставка</List.Header>
+              <List.Description>{deliveryPrice}</List.Description>
+            </List.Content>
+          </List.Item>
+        ) : null}
+
+        {totalPrice ? (
+          <List.Item>
+            <List.Content>
+              <List.Header>Итого</List.Header>
+              <List.Description>{total}</List.Description>
+            </List.Content>
+          </List.Item>
+        ) : null}
       </List>
-      {orderTotal === 0 || notShowButton === true ? null :
-        <Button color="violet" as={Link} onClick={() => changeMenu('Delivery')} to="/Delivery">
+      {orderTotal === 0 || notShowButton === true ? null : (
+        <Button
+          color="violet"
+          as={Link}
+          onClick={() => changeMenu("Delivery")}
+          to="/Delivery"
+        >
           Оформить заказ
         </Button>
-      }
+      )}
     </Segment>
   );
 };
 
 const mapStateToProps = (state) => {
-  return { 
-    state: state.Main
+  return {
+    state: state.Main,
   };
 };
 

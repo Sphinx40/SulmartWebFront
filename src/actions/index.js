@@ -12,11 +12,12 @@ import {
   DELETE_FROM_ORDER,
   CHANGE_ADDRESSES,
   ADD_ADDRESS,
-  CHANGE_ORDERS
+  CHANGE_MY_ORDERS,
+  GET_ORDER_STATUSES
 } from './types';
 
 import { doGet, doPost } from '../utils/axiosActions';
-const HEROKU_URI = 'https://helix40.herokuapp.com/';
+export const HEROKU_URI = 'https://helix40.herokuapp.com/';
 
 export const modifyLoader = boolean => {
   return {
@@ -143,9 +144,14 @@ export const createOrder = (userLocation,myOrders) => {
     doPost(HEROKU_URI + `order`, userLocation)
       .then(({data}) => {
         dispatch(modifyLoader(false));
-        console.log(data)
-        const newState = [...myOrders, {...data}];
-        localStorage.setItem('myOrders',newState)
+        const order = data.data;
+        const newState = [...myOrders, {...order}];
+        localStorage.setItem('myOrders',JSON.stringify(newState))
+
+        dispatch({
+          type: CHANGE_MY_ORDERS,
+          payload: newState
+        })
       })
       .catch(err => {
         dispatch(modifyLoader(false));
@@ -154,9 +160,27 @@ export const createOrder = (userLocation,myOrders) => {
   };
 };
 
-export const changeOrders = (orders) => {
+export const changeMyOrders = (orders) => {
   return {
-    type: CHANGE_ORDERS,
+    type: CHANGE_MY_ORDERS,
     payload: orders
   };
 };
+
+export const getOrderStatuses = () => {
+  return (dispatch) => {
+    dispatch(modifyLoader(true));
+    doGet(HEROKU_URI + `orderStatuses`)
+      .then(({ data }) => {
+        dispatch(modifyLoader(false));
+        dispatch({
+          type: GET_ORDER_STATUSES,
+          payload: data.data
+        });
+      })
+      .catch(err => {
+        dispatch(modifyLoader(false));
+        dispatch(errorhandler(err));
+      });
+  }
+}

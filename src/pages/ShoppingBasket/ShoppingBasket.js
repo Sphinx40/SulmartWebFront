@@ -39,7 +39,7 @@ const ShoppingBasket = (props) => {
           </Header>
           <Divider />
           <QuantityProduct />
-          <OrderPrice />
+          <OrderPrice order={order} />
         </Fragment>
       ) : (
         <Grid columns={2}>
