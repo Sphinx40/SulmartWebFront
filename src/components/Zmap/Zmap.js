@@ -62,10 +62,24 @@ const Zmap = props => {
     let suggestView = new ymaps.SuggestView('suggest', {
       provider: {
         suggest: (request, options) => {
-          return ymaps.suggest(city.name + ', ' + request);
+          return (suggestView.state.get('open')
+            ? ymaps.suggest(city.name + ', ' + request)
+            : ymaps.vow.resolve([])
+          ).then(function(res) {
+            suggestView.events.fire('requestsuccess', {
+              target: suggestView
+            });
+
+            return res;
+          });
+
+          // return ymaps.suggest(city.name + ', ' + request);
         }
       }
     });
+
+    // Изначально разрешаем саджесту открываться
+    suggestView.state.set('open', true);
 
     suggestView.events.add('select', e => {
       let streetName = splitByCommaAndReturnStreetName(
@@ -73,6 +87,7 @@ const Zmap = props => {
       );
 
       setStreet(streetName);
+      setHouse('');
       if (streetName && streetName.length > 0) {
         ymaps.geocode(city.name + ', ' + streetName).then(result => {
           let coords = result.geoObjects.get(0).geometry.getCoordinates();
@@ -82,10 +97,19 @@ const Zmap = props => {
             },
             placeMarkCoords: coords,
             mapCenter: coords
-            // zoom: 16
+            // zoom: 12
           });
         });
       }
+
+      suggestView.state.set({ open: false });
+      suggestView.events.once('requestsuccess', function() {
+        suggestView.state.set('open', true);
+      });
+
+      // suggestView.events.once('requestsuccess', function() {
+      //   suggestView.state.set('open', true);
+      // });
     });
   };
 
@@ -122,13 +146,15 @@ const Zmap = props => {
           placeMarkProperties: {
             iconCaption: iconCaptionText
           }
-          // zoom: 16
+          // zoom: 12
         });
         if (
           streetTemp === null ||
           streetTemp === '' ||
           streetTemp.length === 0
         ) {
+          setStreet('');
+          setHouse('');
           return;
         } else {
           // returnObj = { found: true, streetTemp, houseTemp };
@@ -138,6 +164,8 @@ const Zmap = props => {
         }
       })
       .catch(err => {
+        setStreet('');
+        setHouse('');
         return;
       });
   };

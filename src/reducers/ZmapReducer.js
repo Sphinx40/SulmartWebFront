@@ -54,6 +54,8 @@ const ZmapReducer = (state = initial, action) => {
       };
 
     case FIND_COORDS_BY_STREET_AND_HOUSE:
+      // console.log(action.payload, '...action.payload');
+
       return { ...state, ...action.payload };
     default:
       return state;

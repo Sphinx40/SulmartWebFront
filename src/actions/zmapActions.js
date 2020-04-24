@@ -44,6 +44,7 @@ export const setAnyObjectZmapReducer = payload => {
 };
 
 export const findCoordsByStreetAndHouse = (street, house, cityName, ymaps) => {
+  // console.log('findCoordsByStreetAndHouse', street, house);
   if (!ymaps.geocode) return;
   return dispatch => {
     if (house && street && house.length > 0 && street.length > 0) {
@@ -51,6 +52,7 @@ export const findCoordsByStreetAndHouse = (street, house, cityName, ymaps) => {
         let coords = result.geoObjects.get(0).geometry.getCoordinates();
 
         if (!(coords[0] === 43.238293 && coords[1] === 76.945465)) {
+          // console.log('ddd');
           dispatch({
             type: FIND_COORDS_BY_STREET_AND_HOUSE,
             payload: {
@@ -68,8 +70,7 @@ export const findCoordsByStreetAndHouse = (street, house, cityName, ymaps) => {
             payload: {
               placeMarkProperties: {
                 iconCaption: ''
-              },
-              zoom: 12
+              }
             }
           });
         }
@@ -80,8 +81,7 @@ export const findCoordsByStreetAndHouse = (street, house, cityName, ymaps) => {
         payload: {
           placeMarkProperties: {
             iconCaption: ''
-          },
-          zoom: 12
+          }
         }
       });
     }

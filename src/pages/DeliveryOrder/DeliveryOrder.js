@@ -248,12 +248,19 @@ const DeliveryOrder = props => {
                           longitude: 0
                         })
                       }
+                      
+                      onFocus={event => {
+                        setUser({
+                          ...user,
+                          house: '',
+                          latitude: 0,
+                          longitude: 0
+                        })
+                      }}
                       onBlur={event => {
-                        //
-
                         findCoordsByStreetAndHouse(
                           user.street,
-                          user.house,
+                          '',
                           cityName,
                           ymaps
                         );
