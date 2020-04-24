@@ -11,6 +11,10 @@ let initial = {
     coords: [43.24946867986241, 76.91736506700802],
     name: 'Алматы'
   },
+  market: {
+    coords: [43.231612405843514, 76.76930712938592],
+    name: 'Altyn Orda'
+  },
   placeMarkCoords: [],
   placeMarkProperties: {},
   mapCenter: [],

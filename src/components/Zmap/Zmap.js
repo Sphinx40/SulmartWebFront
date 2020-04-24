@@ -123,7 +123,7 @@ const Zmap = props => {
       },
       placeMarkCoords: coords
     });
-
+// console.log(coords,'coords')
     ymaps
       .geocode(coords)
       .then(res => {

@@ -22,6 +22,7 @@ import {
 import { addToAddresses, createOrder } from '../../actions';
 import { withRouter } from 'react-router-dom';
 import { Steps } from 'antd';
+import { calculateDeliveryCost } from '../../utils/zmapMethods';
 
 const { Step } = Steps;
 
@@ -29,8 +30,9 @@ const DeliveryOrder = props => {
   const {
     state,
     addToAddresses,
-    cityName,
+    city,
     ymaps,
+    market,
     placeMarkCoords,
     findCoordsByStreetAndHouse,
     setAnyObjectZmapReducer,
@@ -48,7 +50,8 @@ const DeliveryOrder = props => {
     longitude: 0,
     latitude: 0,
     mapWidth: 458,
-    mapHeight: 405
+    mapHeight: 405,
+    deliveryPrice: 0
   });
 
   let recaptcha;
@@ -57,11 +60,23 @@ const DeliveryOrder = props => {
 
   useEffect(() => {
     if (placeMarkCoords && placeMarkCoords.length === 2) {
+      let result = calculateDeliveryCost(
+        city.coords,
+        market.coords,
+        placeMarkCoords
+      );
+      //
+      let deliveryPrice = 0;
+      if (result.boolean) {
+        deliveryPrice = result.deliveryPrice;
+      }
+
       setUser(prev => {
         return {
           ...prev,
           latitude: placeMarkCoords[0],
-          longitude: placeMarkCoords[1]
+          longitude: placeMarkCoords[1],
+          deliveryPrice
         };
       });
     }
@@ -248,20 +263,19 @@ const DeliveryOrder = props => {
                           longitude: 0
                         })
                       }
-                      
                       onFocus={event => {
                         setUser({
                           ...user,
                           house: '',
                           latitude: 0,
                           longitude: 0
-                        })
+                        });
                       }}
                       onBlur={event => {
                         findCoordsByStreetAndHouse(
                           user.street,
                           '',
-                          cityName,
+                          city.name,
                           ymaps
                         );
                       }}
@@ -287,7 +301,7 @@ const DeliveryOrder = props => {
                         findCoordsByStreetAndHouse(
                           user.street,
                           user.house,
-                          cityName,
+                          city.name,
                           ymaps
                         );
                       }}
@@ -345,9 +359,10 @@ const DeliveryOrder = props => {
 const mapStateToProps = state => {
   return {
     state: state.Main,
-    cityName: state.Zmap.city.name,
+    city: state.Zmap.city,
     ymaps: state.Zmap.ymaps,
-    placeMarkCoords: state.Zmap.placeMarkCoords
+    placeMarkCoords: state.Zmap.placeMarkCoords,
+    market: state.Zmap.market
   };
 };
 
