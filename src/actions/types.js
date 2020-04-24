@@ -11,4 +11,5 @@ export const CLEAR_ORDER = "CLEAR_ORDER";
 export const CHANGE_ORDER = "CHANGE_ORDER";
 export const DELETE_FROM_ORDER = "DELETE_FROM_ORDER";
 
-export const GET_ACTION = "GET_ACTION";
+export const CHANGE_ADDRESSES = "CHANGE_ADDRESSES";
+export const ADD_ADDRESS = "ADD_ADDRESS";

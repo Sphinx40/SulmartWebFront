@@ -12,7 +12,6 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-google-invisible-recaptcha": "^0.2.11",
-    "react-google-recaptcha": "^2.0.1",
     "react-loadable": "^5.5.0",
     "react-number-format": "^4.4.1",
     "react-redux": "^7.2.0",

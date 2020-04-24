@@ -9,10 +9,12 @@ import {
   GET_PRODUCTS,
   CLEAR_ORDER,
   CHANGE_ORDER,
-  DELETE_FROM_ORDER
+  DELETE_FROM_ORDER,
+  CHANGE_ADDRESSES,
+  ADD_ADDRESS
 } from './types';
 
-import { doGet } from '../utils/axiosActions';
+import { doGet, doPost } from '../utils/axiosActions';
 const HEROKU_URI = 'https://helix40.herokuapp.com/';
 
 export const modifyLoader = boolean => {
@@ -117,5 +119,34 @@ export const deleteFromOrder = idx => {
   return {
     type: DELETE_FROM_ORDER,
     payload: idx
+  };
+};
+
+export const changeAddresses = (addresses) => {
+  return {
+    type: CHANGE_ADDRESSES,
+    payload: addresses
+  };
+};
+
+export const addToAddresses = (address) => {
+  return {
+    type: ADD_ADDRESS,
+    payload: address
+  };
+};
+
+export const createOrder = (userLocation) => {
+  return dispatch => {
+    dispatch(modifyLoader(true));
+    doPost(HEROKU_URI + `order`, userLocation)
+      .then(({data}) => {
+        dispatch(modifyLoader(false));
+        console.log(data)
+      })
+      .catch(err => {
+        dispatch(modifyLoader(false));
+        dispatch(errorhandler(err));
+      });
   };
 };

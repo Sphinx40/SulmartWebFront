@@ -9,7 +9,9 @@ import {
     GET_PRODUCTS,
     CLEAR_ORDER,
     CHANGE_ORDER,
-    DELETE_FROM_ORDER
+    DELETE_FROM_ORDER,
+    CHANGE_ADDRESSES,
+    ADD_ADDRESS
   } from "../actions/types";
   
   let initial = {
@@ -19,7 +21,8 @@ import {
     categories: [],
     order: [],
     deliveryCost: 0,
-    productsForSearch: []
+    productsForSearch: [],
+    addresses: []
   };
   
   const decrementFromOrder = (state, product, quantity) => {
@@ -56,6 +59,16 @@ import {
   const deleteFromOrder = (state, idx) => {
     let newState = JSON.parse(JSON.stringify(state));
     newState.order = [...newState.order.slice(0,idx),...newState.order.slice(idx+1)];
+    return newState;
+  };
+
+  const addNewAddress = (state,address) => {
+    let newState = JSON.parse(JSON.stringify(state));
+    const idx = newState.addresses.findIndex((item) => item.longitude === address.longitude && item.latitude === address.latitude); 
+    if (idx < 0) {
+      newState.addresses = [...newState.addresses,address];
+      localStorage.setItem('addresses', JSON.stringify(newState.addresses));
+    };
     return newState;
   };
   
@@ -118,6 +131,15 @@ import {
       case DELETE_FROM_ORDER:
         return deleteFromOrder(state,action.payload);
   
+      case CHANGE_ADDRESSES:
+        return {
+          ...state,
+          addresses: [...action.payload]
+        };
+
+      case ADD_ADDRESS:
+        return addNewAddress(state,action.payload);
+
       default:
         return state;
     }

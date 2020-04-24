@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from "react";
 import {
   Segment,
   Header,
@@ -6,7 +6,8 @@ import {
   Grid,
   Divider,
   Button,
-  Table
+  Table,
+  Dropdown
 } from 'semantic-ui-react';
 import QuantityProduct from '../../components/QuantityProduct/QuantityProduct';
 import OrderPrice from '../../components/OrderPrice/OrderPrice';
@@ -16,34 +17,37 @@ import NumberFormat from 'react-number-format';
 import OutputErrors from '../../utils/OutputErrors';
 import Recaptcha from 'react-google-invisible-recaptcha';
 import { findCoordsByStreetAndHouse } from '../../actions/zmapActions';
+import { addToAddresses, createOrder } from '../../actions';
 
-const DeliveryOrder = props => {
-  const {
-    state,
+const DeliveryOrder = (props) => {
+  const { 
+    state, 
+    addToAddresses, 
     cityName,
     ymaps,
     placeMarkCoords,
-    findCoordsByStreetAndHouse
-  } = props;
-  const { order } = state;
-
+    findCoordsByStreetAndHouse, 
+    createOrder } = props;
+  const { order, addresses } = state;
   const [user, setUser] = useState({
-    name: '',
-    phone: '',
-    extraPhone: '',
-    street: '',
-    house: '',
-    appartment: '',
+    name: "",
+    phone: "",
+    extraPhone: "",
+    street: "",
+    house: "",
+    appartment: "",
     longitude: 0,
     latitude: 0,
     mapWidth: 458,
-    mapHeight: 405
+    mapHeight: 405,
   });
 
+  let recaptcha;
   const [errors, setErrors] = useState([]);
+  const [addressesOptions, setAddressesOptions] = useState([]);
 
   useEffect(() => {
-    if (placeMarkCoords && placeMarkCoords.size === 2) {
+    if (placeMarkCoords && placeMarkCoords.length === 2) {
       setUser(prev => {
         return {
           ...prev,
@@ -55,28 +59,50 @@ const DeliveryOrder = props => {
     //eslint-disable-next-line
   }, [placeMarkCoords]);
 
-  let recaptcha;
+  
+
+  useEffect(() => {
+    if (addresses.length !== 0) {
+      const addAnotherAddress = [...addresses, { title: "Добавить другое" }];
+      const lastAdresses = addAnotherAddress.map((item, id) => {
+        if (item.title === "Добавить другое") {
+          return {
+            key: id,
+            text: item.title,
+            value: id,
+          };
+        } else {
+          return {
+            key: id,
+            text: item.street,
+            value: id,
+          };
+        }
+      });
+      setAddressesOptions(lastAdresses);
+    }
+  }, [addresses]);
 
   const validation = () => {
     let errors = [];
 
     if (order.length === 0) {
-      errors.push('Выберите продукты');
+      errors.push("Выберите продукты");
     }
-    if (user.name === '') {
-      errors.push('Заполните имя');
+    if (user.name === "") {
+      errors.push("Заполните имя");
     }
-    if (user.phone === '') {
-      errors.push('Заполните телефон');
+    if (user.phone === "") {
+      errors.push("Заполните телефон");
     }
-    if (user.street === '') {
-      errors.push('Выберите улицу');
+    if (user.street === "") {
+      errors.push("Выберите улицу");
     }
-    if (user.house === '') {
-      errors.push('Выберите дом');
+    if (user.house === "") {
+      errors.push("Выберите дом");
     }
     if (user.longitude === 0 || user.latitude === 0) {
-      errors.push('Адрес неправильно');
+      errors.push("Адрес неправильно");
     }
 
     return errors;
@@ -86,15 +112,44 @@ const DeliveryOrder = props => {
     if (validation().length !== 0) {
       setErrors(validation());
     } else {
-      recaptcha.execute();
+      recaptcha.execute().then((data) => {
+        if (data) {
+          addToAddresses({
+            house: user.house,
+            street: user.street,
+            longitude: user.longitude,
+            latitude: user.latitude,
+          });
+          createOrder({...user,products: order});
+        }
+      });
     }
   };
 
-  const onResolved = () => {};
+  const onChangeDeliveryAddress = (idx) => {
+    if (addressesOptions.length-1 !== idx) {
+      const address = addresses.find(({}, id) => id === idx);
+      setUser({
+        ...user,
+        house: address.house,
+        street: address.street,
+        longitude: address.longitude,
+        latitude: address.latitude,
+      });
+    } else {
+      setUser({
+        ...user,
+        house: "",
+        street: "",
+        longitude: "",
+        latitude: "",
+      });
+    }
+  };
 
   return (
-    <Segment padded='very' color='violet' style={{ margin: 20 }}>
-      <Header content='Доставка' textAlign='center' />
+    <Segment padded="very" color="violet" style={{ margin: 20 }}>
+      <Header content="Доставка" textAlign="center" />
       <Divider />
 
       <QuantityProduct />
@@ -103,24 +158,43 @@ const DeliveryOrder = props => {
           <Grid.Column>
             <Table>
               <Table.Body>
+                {addresses.length === 0 ? null :
+                  <Table.Row>
+                    <Table.Cell>
+                      <Dropdown
+                        options={addressesOptions}
+                        selection
+                        placeholder="Сохраненные адреса"
+                        onChange={(e, { value }) =>
+                          onChangeDeliveryAddress(value)
+                        }
+                      />
+                    </Table.Cell>
+                  </Table.Row>
+                }
+
                 <Table.Row>
                   <Table.Cell>
                     <Input
-                      placeholder='Имя'
+                      placeholder="Имя"
                       fluid
-                      onChange={e => setUser({ ...user, name: e.target.value })}
+                      onChange={(e) =>
+                        setUser({ ...user, name: e.target.value })
+                      }
                     />
                   </Table.Cell>
                 </Table.Row>
                 <Table.Row>
                   <Table.Cell>
                     <NumberFormat
-                      format='+7 (###) ###-##-##'
+                      format="+7 (###) ###-##-##"
                       customInput={Input}
-                      onValueChange={e => setUser({ ...user, phone: e.value })}
+                      onValueChange={(e) =>
+                        setUser({ ...user, phone: e.value })
+                      }
                       fluid
-                      mask='_'
-                      placeholder='Телефон номер'
+                      mask="_"
+                      placeholder="Телефон номер"
                     />
                   </Table.Cell>
                 </Table.Row>
@@ -128,14 +202,14 @@ const DeliveryOrder = props => {
                 <Table.Row>
                   <Table.Cell>
                     <NumberFormat
-                      format='+7 (###) ###-##-##'
+                      format="+7 (###) ###-##-##"
                       customInput={Input}
-                      onValueChange={e =>
+                      onValueChange={(e) =>
                         setUser({ ...user, extraPhone: e.value })
                       }
                       fluid
-                      mask='_'
-                      placeholder='Дополнительный телефон номер'
+                      mask="_"
+                      placeholder="Дополнительный телефон номер"
                     />
                   </Table.Cell>
                 </Table.Row>
@@ -143,8 +217,8 @@ const DeliveryOrder = props => {
                 <Table.Row>
                   <Table.Cell>
                     <Input
-                      id={'suggest'}
-                      placeholder='Улица'
+                      id={"suggest"}
+                      placeholder="Улица"
                       fluid
                       value={user.street}
                       onChange={e =>
@@ -173,7 +247,7 @@ const DeliveryOrder = props => {
                 <Table.Row>
                   <Table.Cell>
                     <Input
-                      placeholder='Дом'
+                      placeholder="Дом"
                       fluid
                       value={user.house}
                       onChange={e =>
@@ -199,10 +273,10 @@ const DeliveryOrder = props => {
                 <Table.Row>
                   <Table.Cell>
                     <Input
-                      placeholder='Квартира'
+                      placeholder="Квартира"
                       fluid
                       value={user.appartment}
-                      onChange={e =>
+                      onChange={(e) =>
                         setUser({ ...user, appartment: e.target.value })
                       }
                     />
@@ -214,46 +288,45 @@ const DeliveryOrder = props => {
             <Divider />
             <OutputErrors errors={errors} />
             <Recaptcha
-              ref={ref => (recaptcha = ref)}
-              sitekey='6LfUIO0UAAAAAPI8zy0I7xqS6KpVhQ6mbsdMD-7z'
-              onResolved={onResolved}
+              ref={(ref) => (recaptcha = ref)}
+              sitekey="6LfKV-0UAAAAACSPnzDikZx_bEnI0qL_IMdqAF2e"
             />
-            <Button color='violet' type='submit' onClick={toOrder}>
+            <Button color="violet" type="submit" onClick={toOrder}>
               Оформить
             </Button>
           </Grid.Column>
           <Grid.Column>
             <Zmap
-              setMapWidth={mapWidth =>
-                setUser(prev => {
+              setMapWidth={(mapWidth) =>
+                setUser((prev) => {
                   return { ...prev, mapWidth };
                 })
               }
-              setMapHeight={mapHeight =>
-                setUser(prev => {
+              setMapHeight={(mapHeight) =>
+                setUser((prev) => {
                   return { ...prev, mapHeight };
                 })
               }
-              setLongitude={longitude =>
-                setUser(prev => {
+              setLongitude={(longitude) =>
+                setUser((prev) => {
                   return { ...prev, longitude };
                 })
               }
-              setLatitude={latitude =>
-                setUser(prev => {
+              setLatitude={(latitude) =>
+                setUser((prev) => {
                   return { ...prev, latitude };
                 })
               }
-              setStreet={street =>
-                setUser(prev => {
+              setStreet={(street) =>
+                setUser((prev) => {
                   return { ...prev, street };
                 })
               }
-              setHouse={house =>
-                setUser(prev => {
+              setHouse={(house) => {
+                setUser((prev) => {
                   return { ...prev, house };
-                })
-              }
+                });
+              }}
               mapWidth={user.mapWidth}
               mapHeight={user.mapHeight}
               longitude={user.longitude}
@@ -277,6 +350,6 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { findCoordsByStreetAndHouse })(
+export default connect(mapStateToProps, { findCoordsByStreetAndHouse, addToAddresses, createOrder })(
   DeliveryOrder
 );
