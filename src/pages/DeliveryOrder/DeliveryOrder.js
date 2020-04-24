@@ -7,27 +7,32 @@ import {
   Divider,
   Button,
   Table,
-  Dropdown
-} from 'semantic-ui-react';
-import QuantityProduct from '../../components/QuantityProduct/QuantityProduct';
-import OrderPrice from '../../components/OrderPrice/OrderPrice';
-import Zmap from '../../components/Zmap/Zmap';
-import { connect } from 'react-redux';
-import NumberFormat from 'react-number-format';
-import OutputErrors from '../../utils/OutputErrors';
-import Recaptcha from 'react-google-invisible-recaptcha';
-import { findCoordsByStreetAndHouse } from '../../actions/zmapActions';
-import { addToAddresses, createOrder } from '../../actions';
+  Dropdown,
+} from "semantic-ui-react";
+import OrderPrice from "../../components/OrderPrice/OrderPrice";
+import Zmap from "../../components/Zmap/Zmap";
+import { connect } from "react-redux";
+import NumberFormat from "react-number-format";
+import OutputErrors from "../../utils/OutputErrors";
+import Recaptcha from "react-google-invisible-recaptcha";
+import { findCoordsByStreetAndHouse } from "../../actions/zmapActions";
+import { addToAddresses, createOrder } from "../../actions";
+import { withRouter } from 'react-router-dom';
+import { Steps } from "antd";
+
+const { Step } = Steps;
 
 const DeliveryOrder = (props) => {
-  const { 
-    state, 
-    addToAddresses, 
+  const {
+    state,
+    addToAddresses,
     cityName,
     ymaps,
     placeMarkCoords,
-    findCoordsByStreetAndHouse, 
-    createOrder } = props;
+    findCoordsByStreetAndHouse,
+    createOrder,
+    history
+  } = props;
   const { order, addresses } = state;
   const [user, setUser] = useState({
     name: "",
@@ -48,18 +53,16 @@ const DeliveryOrder = (props) => {
 
   useEffect(() => {
     if (placeMarkCoords && placeMarkCoords.length === 2) {
-      setUser(prev => {
+      setUser((prev) => {
         return {
           ...prev,
           latitude: placeMarkCoords[0],
-          longitude: placeMarkCoords[1]
+          longitude: placeMarkCoords[1],
         };
       });
     }
     //eslint-disable-next-line
   }, [placeMarkCoords]);
-
-  
 
   useEffect(() => {
     if (addresses.length !== 0) {
@@ -120,14 +123,15 @@ const DeliveryOrder = (props) => {
             longitude: user.longitude,
             latitude: user.latitude,
           });
-          createOrder({...user,products: order});
+          createOrder({ ...user, products: order });
+          history.push('/SuccessBasket')
         }
       });
     }
   };
 
   const onChangeDeliveryAddress = (idx) => {
-    if (addressesOptions.length-1 !== idx) {
+    if (addressesOptions.length - 1 !== idx) {
       const address = addresses.find(({}, id) => id === idx);
       setUser({
         ...user,
@@ -149,16 +153,19 @@ const DeliveryOrder = (props) => {
 
   return (
     <Segment padded="very" color="violet" style={{ margin: 20 }}>
+      <Steps style={{ width: 500, margin: "auto" }} size="small" current={1}>
+        <Step status="finish" />
+        <Step status="process" />
+        <Step status="wait" />
+      </Steps>
       <Header content="Доставка" textAlign="center" />
       <Divider />
-
-      <QuantityProduct />
       <Grid columns={2} divided>
         <Grid.Row>
           <Grid.Column>
             <Table>
               <Table.Body>
-                {addresses.length === 0 ? null :
+                {addresses.length === 0 ? null : (
                   <Table.Row>
                     <Table.Cell>
                       <Dropdown
@@ -171,7 +178,7 @@ const DeliveryOrder = (props) => {
                       />
                     </Table.Cell>
                   </Table.Row>
-                }
+                )}
 
                 <Table.Row>
                   <Table.Cell>
@@ -221,16 +228,16 @@ const DeliveryOrder = (props) => {
                       placeholder="Улица"
                       fluid
                       value={user.street}
-                      onChange={e =>
+                      onChange={(e) =>
                         setUser({
                           ...user,
                           street: e.target.value,
-                          house: '',
+                          house: "",
                           latitude: 0,
-                          longitude: 0
+                          longitude: 0,
                         })
                       }
-                      onBlur={event => {
+                      onBlur={(event) => {
                         //
 
                         findCoordsByStreetAndHouse(
@@ -250,15 +257,15 @@ const DeliveryOrder = (props) => {
                       placeholder="Дом"
                       fluid
                       value={user.house}
-                      onChange={e =>
+                      onChange={(e) =>
                         setUser({
                           ...user,
                           house: e.target.value,
                           latitude: 0,
-                          longitude: 0
+                          longitude: 0,
                         })
                       }
-                      onBlur={event => {
+                      onBlur={(event) => {
                         findCoordsByStreetAndHouse(
                           user.street,
                           user.house,
@@ -341,15 +348,17 @@ const DeliveryOrder = (props) => {
   );
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     state: state.Main,
     cityName: state.Zmap.city.name,
     ymaps: state.Zmap.ymaps,
-    placeMarkCoords: state.Zmap.placeMarkCoords
+    placeMarkCoords: state.Zmap.placeMarkCoords,
   };
 };
 
-export default connect(mapStateToProps, { findCoordsByStreetAndHouse, addToAddresses, createOrder })(
-  DeliveryOrder
-);
+export default connect(mapStateToProps, {
+  findCoordsByStreetAndHouse,
+  addToAddresses,
+  createOrder,
+})(withRouter(DeliveryOrder));

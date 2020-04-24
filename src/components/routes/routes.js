@@ -26,6 +26,11 @@ const AsyncMyOrders = Loadable({
   loading: Loading
 });
 
+const SuccessBasket = Loadable({
+  loader: () => import('../../pages/SuccessBasket/SuccessBasket'   /* webpackChunkName: "SuccessBasket" */),
+  loading: Loading
+});
+
 const RenderRoutes = () => {
     return <Router>
       <Nav />
@@ -33,9 +38,12 @@ const RenderRoutes = () => {
       <ErrorNotification />
       <Switch >
         <Route path="/" component={AsyncHome} exact />
+
         <Route path="/ShoppingBasket" component={ShoppingBasket} />
         <Route path="/Delivery" component={AsyncDelivery} />
         <Route path="/MyOrders" component={AsyncMyOrders} />
+        <Route path="/SuccessBasket" component={SuccessBasket} />
+
         <Route render={() => (
           <div style={{ margin: 'auto', width: '30%' }}>
           <Image style={{ width: 500, height: 150 }} src='/img/404.png' />

@@ -11,7 +11,8 @@ import {
   CHANGE_ORDER,
   DELETE_FROM_ORDER,
   CHANGE_ADDRESSES,
-  ADD_ADDRESS
+  ADD_ADDRESS,
+  CHANGE_ORDERS
 } from './types';
 
 import { doGet, doPost } from '../utils/axiosActions';
@@ -136,17 +137,26 @@ export const addToAddresses = (address) => {
   };
 };
 
-export const createOrder = (userLocation) => {
+export const createOrder = (userLocation,myOrders) => {
   return dispatch => {
     dispatch(modifyLoader(true));
     doPost(HEROKU_URI + `order`, userLocation)
       .then(({data}) => {
         dispatch(modifyLoader(false));
         console.log(data)
+        const newState = [...myOrders, {...data}];
+        localStorage.setItem('myOrders',newState)
       })
       .catch(err => {
         dispatch(modifyLoader(false));
         dispatch(errorhandler(err));
       });
+  };
+};
+
+export const changeOrders = (orders) => {
+  return {
+    type: CHANGE_ORDERS,
+    payload: orders
   };
 };

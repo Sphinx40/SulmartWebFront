@@ -7,6 +7,7 @@ const App = (props) => {
   const { changeMenu, changeAddresses } = props;
   const url = window.location.pathname.replace("/","");
   const addresses = JSON.parse(localStorage.getItem("addresses")) || [];
+  const myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
 
   useEffect(() => {
     changeMenu(url);
