@@ -4,6 +4,7 @@ export const SET_MAPCENTER = 'SET_MAPCENTER';
 export const SET_YMAPS = 'SET_YMAPS';
 export const FIND_COORDS_BY_STREET_AND_HOUSE =
   'FIND_COORDS_BY_STREET_AND_HOUSE';
+export const SET_ANY_OBJECT = 'SET_ANY_OBJECT';
 
 let initial = {
   city: {
@@ -13,11 +14,20 @@ let initial = {
   placeMarkCoords: [],
   placeMarkProperties: {},
   mapCenter: [],
-  ymaps: {}
+  ymaps: {},
+  zoom: 12,
+  deliveryPrice: 0
 };
 
 const ZmapReducer = (state = initial, action) => {
   switch (action.type) {
+    case SET_ANY_OBJECT:
+      // console.log(action.payload, 'action.payload');
+      return {
+        ...state,
+        ...action.payload
+      };
+
     case SET_PLACEMARKCOORDS:
       return {
         ...state,

@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from 'react';
 import {
   Segment,
   Header,
@@ -7,22 +7,25 @@ import {
   Divider,
   Button,
   Table,
-  Dropdown,
-} from "semantic-ui-react";
-import OrderPrice from "../../components/OrderPrice/OrderPrice";
-import Zmap from "../../components/Zmap/Zmap";
-import { connect } from "react-redux";
-import NumberFormat from "react-number-format";
-import OutputErrors from "../../utils/OutputErrors";
-import Recaptcha from "react-google-invisible-recaptcha";
-import { findCoordsByStreetAndHouse } from "../../actions/zmapActions";
-import { addToAddresses, createOrder } from "../../actions";
+  Dropdown
+} from 'semantic-ui-react';
+import OrderPrice from '../../components/OrderPrice/OrderPrice';
+import Zmap from '../../components/Zmap/Zmap';
+import { connect } from 'react-redux';
+import NumberFormat from 'react-number-format';
+import OutputErrors from '../../utils/OutputErrors';
+import Recaptcha from 'react-google-invisible-recaptcha';
+import {
+  findCoordsByStreetAndHouse,
+  setAnyObjectZmapReducer
+} from '../../actions/zmapActions';
+import { addToAddresses, createOrder } from '../../actions';
 import { withRouter } from 'react-router-dom';
-import { Steps } from "antd";
+import { Steps } from 'antd';
 
 const { Step } = Steps;
 
-const DeliveryOrder = (props) => {
+const DeliveryOrder = props => {
   const {
     state,
     addToAddresses,
@@ -30,21 +33,22 @@ const DeliveryOrder = (props) => {
     ymaps,
     placeMarkCoords,
     findCoordsByStreetAndHouse,
+    setAnyObjectZmapReducer,
     createOrder,
     history
   } = props;
   const { order, addresses } = state;
   const [user, setUser] = useState({
-    name: "",
-    phone: "",
-    extraPhone: "",
-    street: "",
-    house: "",
-    appartment: "",
+    name: '',
+    phone: '',
+    extraPhone: '',
+    street: '',
+    house: '',
+    appartment: '',
     longitude: 0,
     latitude: 0,
     mapWidth: 458,
-    mapHeight: 405,
+    mapHeight: 405
   });
 
   let recaptcha;
@@ -53,11 +57,11 @@ const DeliveryOrder = (props) => {
 
   useEffect(() => {
     if (placeMarkCoords && placeMarkCoords.length === 2) {
-      setUser((prev) => {
+      setUser(prev => {
         return {
           ...prev,
           latitude: placeMarkCoords[0],
-          longitude: placeMarkCoords[1],
+          longitude: placeMarkCoords[1]
         };
       });
     }
@@ -66,19 +70,19 @@ const DeliveryOrder = (props) => {
 
   useEffect(() => {
     if (addresses.length !== 0) {
-      const addAnotherAddress = [...addresses, { title: "Добавить другое" }];
+      const addAnotherAddress = [...addresses, { title: 'Добавить другое' }];
       const lastAdresses = addAnotherAddress.map((item, id) => {
-        if (item.title === "Добавить другое") {
+        if (item.title === 'Добавить другое') {
           return {
             key: id,
             text: item.title,
-            value: id,
+            value: id
           };
         } else {
           return {
             key: id,
-            text: item.street,
-            value: id,
+            text: item.street + ' ' + item.house,
+            value: id
           };
         }
       });
@@ -90,22 +94,22 @@ const DeliveryOrder = (props) => {
     let errors = [];
 
     if (order.length === 0) {
-      errors.push("Выберите продукты");
+      errors.push('Выберите продукты');
     }
-    if (user.name === "") {
-      errors.push("Заполните имя");
+    if (user.name === '') {
+      errors.push('Заполните имя');
     }
-    if (user.phone === "") {
-      errors.push("Заполните телефон");
+    if (user.phone === '') {
+      errors.push('Заполните телефон');
     }
-    if (user.street === "") {
-      errors.push("Выберите улицу");
+    if (user.street === '') {
+      errors.push('Выберите улицу');
     }
-    if (user.house === "") {
-      errors.push("Выберите дом");
+    if (user.house === '') {
+      errors.push('Выберите дом');
     }
     if (user.longitude === 0 || user.latitude === 0) {
-      errors.push("Адрес неправильно");
+      errors.push('Адрес неправильно');
     }
 
     return errors;
@@ -115,22 +119,22 @@ const DeliveryOrder = (props) => {
     if (validation().length !== 0) {
       setErrors(validation());
     } else {
-      recaptcha.execute().then((data) => {
+      recaptcha.execute().then(data => {
         if (data) {
           addToAddresses({
             house: user.house,
             street: user.street,
             longitude: user.longitude,
-            latitude: user.latitude,
+            latitude: user.latitude
           });
           createOrder({ ...user, products: order });
-          history.push('/SuccessBasket')
+          history.push('/SuccessBasket');
         }
       });
     }
   };
 
-  const onChangeDeliveryAddress = (idx) => {
+  const onChangeDeliveryAddress = idx => {
     if (addressesOptions.length - 1 !== idx) {
       const address = addresses.find(({}, id) => id === idx);
       setUser({
@@ -138,27 +142,38 @@ const DeliveryOrder = (props) => {
         house: address.house,
         street: address.street,
         longitude: address.longitude,
-        latitude: address.latitude,
+        latitude: address.latitude
+      });
+      let coords = [];
+      coords.push(address.latitude);
+      coords.push(address.longitude);
+      setAnyObjectZmapReducer({
+        placeMarkProperties: {
+          iconCaption: address.street + ' ' + address.house
+        },
+        placeMarkCoords: coords,
+        mapCenter: coords,
+        zoom: 16
       });
     } else {
       setUser({
         ...user,
-        house: "",
-        street: "",
-        longitude: "",
-        latitude: "",
+        house: '',
+        street: '',
+        longitude: '',
+        latitude: ''
       });
     }
   };
 
   return (
-    <Segment padded="very" color="violet" style={{ margin: 20 }}>
-      <Steps style={{ width: 500, margin: "auto" }} size="small" current={1}>
-        <Step status="finish" />
-        <Step status="process" />
-        <Step status="wait" />
+    <Segment padded='very' color='violet' style={{ margin: 20 }}>
+      <Steps style={{ width: 500, margin: 'auto' }} size='small' current={1}>
+        <Step status='finish' />
+        <Step status='process' />
+        <Step status='wait' />
       </Steps>
-      <Header content="Доставка" textAlign="center" />
+      <Header content='Доставка' textAlign='center' />
       <Divider />
       <Grid columns={2} divided>
         <Grid.Row>
@@ -171,7 +186,7 @@ const DeliveryOrder = (props) => {
                       <Dropdown
                         options={addressesOptions}
                         selection
-                        placeholder="Сохраненные адреса"
+                        placeholder='Сохраненные адреса'
                         onChange={(e, { value }) =>
                           onChangeDeliveryAddress(value)
                         }
@@ -183,25 +198,21 @@ const DeliveryOrder = (props) => {
                 <Table.Row>
                   <Table.Cell>
                     <Input
-                      placeholder="Имя"
+                      placeholder='Имя'
                       fluid
-                      onChange={(e) =>
-                        setUser({ ...user, name: e.target.value })
-                      }
+                      onChange={e => setUser({ ...user, name: e.target.value })}
                     />
                   </Table.Cell>
                 </Table.Row>
                 <Table.Row>
                   <Table.Cell>
                     <NumberFormat
-                      format="+7 (###) ###-##-##"
+                      format='+7 (###) ###-##-##'
                       customInput={Input}
-                      onValueChange={(e) =>
-                        setUser({ ...user, phone: e.value })
-                      }
+                      onValueChange={e => setUser({ ...user, phone: e.value })}
                       fluid
-                      mask="_"
-                      placeholder="Телефон номер"
+                      mask='_'
+                      placeholder='Телефон номер'
                     />
                   </Table.Cell>
                 </Table.Row>
@@ -209,14 +220,14 @@ const DeliveryOrder = (props) => {
                 <Table.Row>
                   <Table.Cell>
                     <NumberFormat
-                      format="+7 (###) ###-##-##"
+                      format='+7 (###) ###-##-##'
                       customInput={Input}
-                      onValueChange={(e) =>
+                      onValueChange={e =>
                         setUser({ ...user, extraPhone: e.value })
                       }
                       fluid
-                      mask="_"
-                      placeholder="Дополнительный телефон номер"
+                      mask='_'
+                      placeholder='Дополнительный телефон номер'
                     />
                   </Table.Cell>
                 </Table.Row>
@@ -224,20 +235,20 @@ const DeliveryOrder = (props) => {
                 <Table.Row>
                   <Table.Cell>
                     <Input
-                      id={"suggest"}
-                      placeholder="Улица"
+                      id={'suggest'}
+                      placeholder='Улица'
                       fluid
                       value={user.street}
-                      onChange={(e) =>
+                      onChange={e =>
                         setUser({
                           ...user,
                           street: e.target.value,
-                          house: "",
+                          house: '',
                           latitude: 0,
-                          longitude: 0,
+                          longitude: 0
                         })
                       }
-                      onBlur={(event) => {
+                      onBlur={event => {
                         //
 
                         findCoordsByStreetAndHouse(
@@ -254,18 +265,18 @@ const DeliveryOrder = (props) => {
                 <Table.Row>
                   <Table.Cell>
                     <Input
-                      placeholder="Дом"
+                      placeholder='Дом'
                       fluid
                       value={user.house}
-                      onChange={(e) =>
+                      onChange={e =>
                         setUser({
                           ...user,
                           house: e.target.value,
                           latitude: 0,
-                          longitude: 0,
+                          longitude: 0
                         })
                       }
-                      onBlur={(event) => {
+                      onBlur={event => {
                         findCoordsByStreetAndHouse(
                           user.street,
                           user.house,
@@ -280,10 +291,10 @@ const DeliveryOrder = (props) => {
                 <Table.Row>
                   <Table.Cell>
                     <Input
-                      placeholder="Квартира"
+                      placeholder='Квартира'
                       fluid
                       value={user.appartment}
-                      onChange={(e) =>
+                      onChange={e =>
                         setUser({ ...user, appartment: e.target.value })
                       }
                     />
@@ -295,51 +306,27 @@ const DeliveryOrder = (props) => {
             <Divider />
             <OutputErrors errors={errors} />
             <Recaptcha
-              ref={(ref) => (recaptcha = ref)}
-              sitekey="6LfKV-0UAAAAACSPnzDikZx_bEnI0qL_IMdqAF2e"
+              ref={ref => (recaptcha = ref)}
+              sitekey='6LfKV-0UAAAAACSPnzDikZx_bEnI0qL_IMdqAF2e'
             />
-            <Button color="violet" type="submit" onClick={toOrder}>
+            <Button color='violet' type='submit' onClick={toOrder}>
               Оформить
             </Button>
           </Grid.Column>
           <Grid.Column>
             <Zmap
-              setMapWidth={(mapWidth) =>
-                setUser((prev) => {
-                  return { ...prev, mapWidth };
-                })
-              }
-              setMapHeight={(mapHeight) =>
-                setUser((prev) => {
-                  return { ...prev, mapHeight };
-                })
-              }
-              setLongitude={(longitude) =>
-                setUser((prev) => {
-                  return { ...prev, longitude };
-                })
-              }
-              setLatitude={(latitude) =>
-                setUser((prev) => {
-                  return { ...prev, latitude };
-                })
-              }
-              setStreet={(street) =>
-                setUser((prev) => {
+              setStreet={street =>
+                setUser(prev => {
                   return { ...prev, street };
                 })
               }
-              setHouse={(house) => {
-                setUser((prev) => {
+              setHouse={house => {
+                setUser(prev => {
                   return { ...prev, house };
                 });
               }}
               mapWidth={user.mapWidth}
               mapHeight={user.mapHeight}
-              longitude={user.longitude}
-              latitude={user.latitude}
-              street={user.street}
-              house={user.house}
             />
           </Grid.Column>
         </Grid.Row>
@@ -348,17 +335,18 @@ const DeliveryOrder = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     state: state.Main,
     cityName: state.Zmap.city.name,
     ymaps: state.Zmap.ymaps,
-    placeMarkCoords: state.Zmap.placeMarkCoords,
+    placeMarkCoords: state.Zmap.placeMarkCoords
   };
 };
 
 export default connect(mapStateToProps, {
   findCoordsByStreetAndHouse,
+  setAnyObjectZmapReducer,
   addToAddresses,
-  createOrder,
+  createOrder
 })(withRouter(DeliveryOrder));

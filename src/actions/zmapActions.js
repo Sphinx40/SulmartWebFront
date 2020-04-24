@@ -3,7 +3,8 @@ import {
   SET_PLACEMARKPROPERTIES,
   SET_MAPCENTER,
   SET_YMAPS,
-  FIND_COORDS_BY_STREET_AND_HOUSE
+  FIND_COORDS_BY_STREET_AND_HOUSE,
+  SET_ANY_OBJECT
 } from '../reducers/ZmapReducer';
 
 export const setPlaceMarkCoords = payload => {
@@ -34,6 +35,14 @@ export const setYmaps = payload => {
   };
 };
 
+export const setAnyObjectZmapReducer = payload => {
+  // console.log(payload, 'payload');
+  return {
+    type: SET_ANY_OBJECT,
+    payload
+  };
+};
+
 export const findCoordsByStreetAndHouse = (street, house, cityName, ymaps) => {
   if (!ymaps.geocode) return;
   return dispatch => {
@@ -49,7 +58,8 @@ export const findCoordsByStreetAndHouse = (street, house, cityName, ymaps) => {
                 iconCaption: street + ' ' + house
               },
               placeMarkCoords: coords,
-              mapCenter: coords
+              mapCenter: coords,
+              zoom: 16
             }
           });
         } else {
@@ -58,7 +68,8 @@ export const findCoordsByStreetAndHouse = (street, house, cityName, ymaps) => {
             payload: {
               placeMarkProperties: {
                 iconCaption: ''
-              }
+              },
+              zoom: 12
             }
           });
         }
@@ -69,7 +80,8 @@ export const findCoordsByStreetAndHouse = (street, house, cityName, ymaps) => {
         payload: {
           placeMarkProperties: {
             iconCaption: ''
-          }
+          },
+          zoom: 12
         }
       });
     }

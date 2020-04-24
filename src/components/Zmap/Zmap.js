@@ -11,7 +11,8 @@ import {
   setPlaceMarkCoords,
   setPlaceMarkProperties,
   setMapCenter,
-  setYmaps
+  setYmaps,
+  setAnyObjectZmapReducer
 } from '../../actions/zmapActions';
 import { connect } from 'react-redux';
 //43.26975618015196, 76.93950828938578 Almaty coords
@@ -49,18 +50,24 @@ const Zmap = props => {
     setPlaceMarkCoords,
     setPlaceMarkProperties,
     setMapCenter,
-    setYmaps
+    setYmaps,
+    setAnyObjectZmapReducer
   } = props;
   const {
     city,
     placeMarkCoords,
     placeMarkProperties,
     mapCenter,
-    ymaps
+    ymaps,
+    zoom
   } = props;
   useEffect(() => {
-    setPlaceMarkCoords(city.coords);
-    setMapCenter(city.coords);
+    // setPlaceMarkCoords(city.coords);
+    // setMapCenter(city.coords);
+    setAnyObjectZmapReducer({
+      placeMarkCoords: city.coords,
+      mapCenter: city.coords
+    });
     //eslint-disable-next-line
   }, []);
   // useEffect(() => {
@@ -103,20 +110,32 @@ const Zmap = props => {
           streetName = item;
         }
       });
-      streetArray.forEach(item => {
-        if (item.includes('микрорайон')) {
-          streetName = item;
-        }
-      });
+
+      if (streetName === '') {
+        streetArray.forEach(item => {
+          if (item.includes('микрорайон')) {
+            streetName = item;
+          }
+        });
+      }
+
       setStreet(streetName);
       if (streetName && streetName.length > 0) {
         ymaps.geocode(city.name + ', ' + streetName).then(result => {
           let coords = result.geoObjects.get(0).geometry.getCoordinates();
           // console.log(coords,'coords')
-          setMapCenter(coords);
-          setPlaceMarkCoords(coords);
-          setPlaceMarkProperties({
-            iconCaption: streetName
+          // setMapCenter(coords);
+          // setPlaceMarkCoords(coords);
+          // setPlaceMarkProperties({
+          //   iconCaption: streetName
+          // });
+          setAnyObjectZmapReducer({
+            placeMarkProperties: {
+              iconCaption: streetName
+            },
+            placeMarkCoords: coords,
+            mapCenter: coords
+            // zoom: 16
           });
           // setLatitude(coords[0]);
           // setLongitude(coords[1]);
@@ -132,12 +151,15 @@ const Zmap = props => {
 
     setStreet('');
     setHouse('');
-    setPlaceMarkCoords(coords);
-    // setMapCenter(coords);
-    setPlaceMarkProperties({ iconCaption: '...searching' });
-    // setLatitude(coords[0]);
-    // setLongitude(coords[1]);
-    // console.log(coords,'coords')
+
+    setAnyObjectZmapReducer({
+      placeMarkProperties: {
+        iconCaption: '...searching'
+      },
+      placeMarkCoords: coords
+    });
+    // setPlaceMarkCoords(coords);
+    // setPlaceMarkProperties({ iconCaption: '...searching' });
     ymaps
       .geocode(coords)
       .then(res => {
@@ -158,11 +180,13 @@ const Zmap = props => {
             streetTemp = item;
           }
         });
-        streetArray.forEach(item => {
-          if (item.includes('микрорайон')) {
-            streetTemp = item;
-          }
-        });
+        if (streetTemp === '') {
+          streetArray.forEach(item => {
+            if (item.includes('микрорайон')) {
+              streetTemp = item;
+            }
+          });
+        }
 
         // if (firstGeoObject.getThoroughfare()) {
         //   streetTemp = firstGeoObject.getThoroughfare();
@@ -177,9 +201,15 @@ const Zmap = props => {
         // streetTemp = removeStreetWord(streetTemp);
 
         iconCaptionText = streetTemp + ' ' + houseTemp;
-        setPlaceMarkProperties({
-          iconCaption: iconCaptionText
+        setAnyObjectZmapReducer({
+          placeMarkProperties: {
+            iconCaption: iconCaptionText
+          }
+          // zoom: 16
         });
+        // setPlaceMarkProperties({
+        //   iconCaption: iconCaptionText
+        // });
 
         // console.log(streetTemp, 'streetTemp');
         if (
@@ -259,7 +289,7 @@ const Zmap = props => {
           }}
         /> */}
         <Map
-          state={{ center: mapCenter, zoom: 12, controls: [] }}
+          state={{ center: mapCenter, zoom, controls: [] }}
           width={mapWidth}
           height={mapHeight}
           draggable={true}
@@ -316,7 +346,8 @@ const mapStateToProps = state => {
     placeMarkCoords: state.Zmap.placeMarkCoords,
     placeMarkProperties: state.Zmap.placeMarkProperties,
     mapCenter: state.Zmap.mapCenter,
-    ymaps: state.Zmap.ymaps
+    ymaps: state.Zmap.ymaps,
+    zoom: state.Zmap.zoom
   };
 };
 
@@ -324,7 +355,8 @@ export default connect(mapStateToProps, {
   setPlaceMarkCoords,
   setPlaceMarkProperties,
   setMapCenter,
-  setYmaps
+  setYmaps,
+  setAnyObjectZmapReducer
 })(Zmap);
 
 // const geocode = ymaps => {
