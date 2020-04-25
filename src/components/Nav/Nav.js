@@ -22,11 +22,11 @@ const Nav = (props) => {
         >Меню</Menu.Item>
 
         <Menu.Item
-          name='ShoppingBasket'
-          active={menu === 'ShoppingBasket'}
+          name='shoppingBasket'
+          active={menu === 'shoppingBasket'}
           onClick={handleItemClick}
           as={Link}
-          to={`/ShoppingBasket`}
+          to={`/shoppingBasket`}
         >
           Корзина
           <Label color='violet'>
@@ -34,11 +34,11 @@ const Nav = (props) => {
           </Label>
         </Menu.Item>
         <Menu.Item
-          name='MyOrders'
-          active={menu === 'MyOrders'}
+          name='myOrders'
+          active={menu === 'myOrders'}
           onClick={handleItemClick}
           as={Link}
-          to={`/MyOrders`}
+          to={`/myOrders`}
         >
           Мои заказы
         </Menu.Item>
