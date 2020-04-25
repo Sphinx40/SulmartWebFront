@@ -106,7 +106,7 @@ export const calculateDeliveryCost = (
   } else {
     result.boolean = true;
   }
-  console.log(distanceFromShop, 'distanceFromShop');
+  // console.log(distanceFromShop, 'distanceFromShop');
 
   if (
     distanceFromShop > shortDistanceMeterMin &&

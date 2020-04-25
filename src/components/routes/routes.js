@@ -10,13 +10,17 @@ import { createBrowserHistory } from 'history';
 const history = createBrowserHistory();
 
 const AsyncHome = Loadable({
-    loader: () => import('../../pages/Home/Home' /* webpackChunkName: "AsyncHome" */),
-    loading: Loading
+  loader: () =>
+    import('../../pages/Home/Home' /* webpackChunkName: "AsyncHome" */),
+  loading: Loading
 });
 
 const AsyncShoppingBasket = Loadable({
-    loader: () => import('../../pages/ShoppingBasket/ShoppingBasket'  /* webpackChunkName: "AsyncShoppingBasket" */),
-    loading: Loading
+  loader: () =>
+    import(
+      '../../pages/ShoppingBasket/ShoppingBasket' /* webpackChunkName: "AsyncShoppingBasket" */
+    ),
+  loading: Loading
 });
 
 const AsyncDelivery = Loadable({
@@ -36,30 +40,37 @@ const AsyncMyOrders = Loadable({
 });
 
 const AsyncSuccessBasket = Loadable({
-  loader: () => import('../../pages/SuccessBasket/SuccessBasket'   /* webpackChunkName: "AsyncSuccessBasket" */),
+  loader: () =>
+    import(
+      '../../pages/SuccessBasket/SuccessBasket' /* webpackChunkName: "AsyncSuccessBasket" */
+    ),
   loading: Loading
 });
 
 const RenderRoutes = () => {
-    return <Router history={history}>
+  return (
+    <Router basename='/customer' history={history}>
       <Nav />
       <Loading />
       <ErrorNotification />
-      <Switch >
-        <Route path="/" component={AsyncHome} exact />
+      <Switch>
+        <Route path='/' component={AsyncHome} exact />
 
-        <Route path="/shoppingBasket" component={AsyncShoppingBasket} />
-        <Route path="/delivery" component={AsyncDelivery} />
-        <Route path="/myOrders" component={AsyncMyOrders} />
-        <Route path="/successBasket" component={AsyncSuccessBasket} />
+        <Route path='/shoppingBasket' component={AsyncShoppingBasket} />
+        <Route path='/delivery' component={AsyncDelivery} />
+        <Route path='/myOrders' component={AsyncMyOrders} />
+        <Route path='/successBasket' component={AsyncSuccessBasket} />
 
-        <Route render={() => (
-          <div style={{ margin: 'auto', width: '30%' }}>
-          <Image style={{ width: 500, height: 150 }} src='/img/404.png' />
-          </div> 
-        )} />
+        <Route
+          render={() => (
+            <div style={{ margin: 'auto', width: '30%' }}>
+              <Image style={{ width: 500, height: 150 }} src='/img/404.png' />
+            </div>
+          )}
+        />
       </Switch>
     </Router>
-}; 
+  );
+};
 
 export default RenderRoutes;
