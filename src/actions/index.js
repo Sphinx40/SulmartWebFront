@@ -138,7 +138,7 @@ export const addToAddresses = (address) => {
   };
 };
 
-export const createOrder = (userLocation,myOrders) => {
+export const createOrder = (userLocation,myOrders,callback) => {
   return dispatch => {
     dispatch(modifyLoader(true));
     doPost(HEROKU_URI + `order`, userLocation)
@@ -152,6 +152,7 @@ export const createOrder = (userLocation,myOrders) => {
           type: CHANGE_MY_ORDERS,
           payload: newState
         })
+        callback()
       })
       .catch(err => {
         dispatch(modifyLoader(false));

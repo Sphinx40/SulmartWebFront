@@ -19,7 +19,7 @@ import {
   findCoordsByStreetAndHouse,
   setAnyObjectZmapReducer
 } from '../../actions/zmapActions';
-import { addToAddresses, createOrder } from '../../actions';
+import { addToAddresses, createOrder, clearOrder } from '../../actions';
 import { withRouter } from 'react-router-dom';
 import { Steps } from 'antd';
 import { calculateDeliveryCost } from '../../utils/zmapMethods';
@@ -37,7 +37,8 @@ const DeliveryOrder = props => {
     findCoordsByStreetAndHouse,
     setAnyObjectZmapReducer,
     createOrder,
-    history
+    history,
+    clearOrder
   } = props;
   const { order, addresses, myOrders } = state;
   const [user, setUser] = useState({
@@ -142,8 +143,10 @@ const DeliveryOrder = props => {
             longitude: user.longitude,
             latitude: user.latitude
           });
-          createOrder({ ...user, products: order }, myOrders);
-          history.push('/successBasket')
+          createOrder({ ...user, products: order }, myOrders, () => {
+            history.push('/successBasket')
+            clearOrder()
+          });
         }
       });
     }
@@ -370,5 +373,6 @@ export default connect(mapStateToProps, {
   findCoordsByStreetAndHouse,
   setAnyObjectZmapReducer,
   addToAddresses,
-  createOrder
+  createOrder,
+  clearOrder
 })(withRouter(DeliveryOrder));
