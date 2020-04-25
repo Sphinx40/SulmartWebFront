@@ -17,7 +17,7 @@ const OrderPrice = ({
   for (var t = 0; t < order.length; t++) {
     orderTotal = orderTotal + order[t].totalPrice;
     total = total + order[t].totalPrice;
-  }
+  };
 
   return (
     <Segment attached="top">
@@ -25,7 +25,7 @@ const OrderPrice = ({
         <List.Item>
           <List.Content>
             <List.Header>Сумма заказа</List.Header>
-            <List.Description>{orderTotal}</List.Description>
+            <List.Description>KZT {orderTotal}</List.Description>
           </List.Content>
         </List.Item>
 
@@ -33,7 +33,7 @@ const OrderPrice = ({
           <List.Item>
             <List.Content>
               <List.Header>Доставка</List.Header>
-              <List.Description>{deliveryPrice}</List.Description>
+              <List.Description>KZT {deliveryPrice}</List.Description>
             </List.Content>
           </List.Item>
         ) : null}
@@ -42,7 +42,7 @@ const OrderPrice = ({
           <List.Item>
             <List.Content>
               <List.Header>Итого</List.Header>
-              <List.Description>{total}</List.Description>
+              <List.Description>KZT {total}</List.Description>
             </List.Content>
           </List.Item>
         ) : null}

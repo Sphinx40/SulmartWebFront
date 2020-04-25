@@ -50,7 +50,7 @@ const ListOfFoundProducts = (props) => {
                 setImages(item.images)
                 setActiveImages(prev => !prev)
               }}>{item.ru}</List.Header>
-              KZT {item.price}{" "}
+              {item.currency} {item.price}{" "}
               В наличии {item.onSale ? "Есть" : "Нет"}
             </List.Content>
             <List.Content floated="right">

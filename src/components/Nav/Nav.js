@@ -14,19 +14,19 @@ const Nav = (props) => {
       <Segment attached='top'>
       <Menu secondary>
         <Menu.Item
-          name='Menu'
-          active={menu === 'Menu' || menu === ''}
+          name='Main'
+          active={menu === 'Main' || menu === ''}
           onClick={handleItemClick}
           as={Link}
           to={`/`}
-        >Меню</Menu.Item>
+        >Главная</Menu.Item>
 
         <Menu.Item
-          name='shoppingBasket'
-          active={menu === 'shoppingBasket'}
+          name='basket'
+          active={menu === 'basket'}
           onClick={handleItemClick}
           as={Link}
-          to={`/shoppingBasket`}
+          to={`/basket`}
         >
           Корзина
           <Label color='violet'>
@@ -34,11 +34,11 @@ const Nav = (props) => {
           </Label>
         </Menu.Item>
         <Menu.Item
-          name='myOrders'
-          active={menu === 'myOrders'}
+          name='orders'
+          active={menu === 'orders'}
           onClick={handleItemClick}
           as={Link}
-          to={`/myOrders`}
+          to={`/orders`}
         >
           Мои заказы
         </Menu.Item>

@@ -18,7 +18,7 @@ const AsyncHome = Loadable({
 const AsyncShoppingBasket = Loadable({
   loader: () =>
     import(
-      '../../pages/ShoppingBasket/ShoppingBasket' /* webpackChunkName: "AsyncShoppingBasket" */
+      '../../pages/Basket/Basket' /* webpackChunkName: "AsyncShoppingBasket" */
     ),
   loading: Loading
 });
@@ -34,7 +34,7 @@ const AsyncDelivery = Loadable({
 const AsyncMyOrders = Loadable({
   loader: () =>
     import(
-      '../../pages/MyOrders/MyOrders' /* webpackChunkName: "AsyncMyOrders" */
+      '../../pages/Orders/Orders' /* webpackChunkName: "AsyncMyOrders" */
     ),
   loading: Loading
 });
@@ -56,9 +56,9 @@ const RenderRoutes = () => {
       <Switch>
         <Route path='/' component={AsyncHome} exact />
 
-        <Route path='/shoppingBasket' component={AsyncShoppingBasket} />
+        <Route path='/basket' component={AsyncShoppingBasket} />
         <Route path='/delivery' component={AsyncDelivery} />
-        <Route path='/myOrders' component={AsyncMyOrders} />
+        <Route path='/orders' component={AsyncMyOrders} />
         <Route path='/successBasket' component={AsyncSuccessBasket} />
 
         <Route

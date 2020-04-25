@@ -33,7 +33,7 @@ const QuantityProduct = (props) => {
               <Image src={item.imageUrl} style={{ width: 80, height: 50 }} />
               <List.Content>
                 <List.Header>{item.ru}</List.Header>
-                KZT {item.price}
+                {item.currency} {item.price}
               </List.Content>
               <List.Content floated="right">
                 <div

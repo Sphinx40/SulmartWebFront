@@ -44,7 +44,7 @@ const MyOrders = (props) => {
                   name={item.orderNumber.toString()}
                   active={activeOrder === item.orderNumber}
                   onClick={() => getOrderDetails(item)}
-              >{date}</Menu.Item>
+              >{date}{item.currency} KZT {item.totalPrice}</Menu.Item>
 })}
             </Menu>
           </Grid.Column>
@@ -88,19 +88,10 @@ const MyOrders = (props) => {
                       />
                       <List.Content>
                         <List.Header>{item.ru}</List.Header>
-                        KZT {item.price}
+                        {item.currency} {item.price}
                       </List.Content>
-                      <List.Content floated="right">
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Header as="h5">{item.quantity}</Header>
-                        </div>
+                      <List.Content floated="right" style={{ marginRight: 460 }}>
+                          <Header as="h5">Количество: {item.quantity}</Header>
                       </List.Content>
                     </List.Item>
                   ))}
@@ -121,7 +112,7 @@ const MyOrders = (props) => {
                         <Header as="h5">Сумма заказа:</Header>
                       </Table.Cell>
                       <Table.Cell>
-                        <Header as="h5">{order.totalProductPrice}</Header>
+                        <Header as="h5">KZT {order.totalProductPrice}</Header>
                       </Table.Cell>
                     </Table.Row>
 
@@ -130,7 +121,7 @@ const MyOrders = (props) => {
                         <Header as="h5">Доставка:</Header>
                       </Table.Cell>
                       <Table.Cell>
-                        <Header as="h5">{order.deliveryPrice}</Header>
+                        <Header as="h5">KZT {order.deliveryPrice}</Header>
                       </Table.Cell>
                     </Table.Row>
 
@@ -139,7 +130,7 @@ const MyOrders = (props) => {
                         <Header as="h5">Итого:</Header>
                       </Table.Cell>
                       <Table.Cell>
-                        <Header as="h5">{order.totalPrice}</Header>
+                        <Header as="h5">KZT {order.totalPrice}</Header>
                       </Table.Cell>
                     </Table.Row>
 

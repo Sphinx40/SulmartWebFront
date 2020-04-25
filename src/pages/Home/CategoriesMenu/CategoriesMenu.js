@@ -33,7 +33,7 @@ const CategoriesMenu = (props) => {
   } = props;
 
   const { categories, order, productsForSearch } = state;
-  const [activeSubCategory, setActiveSubCategory] = useState("");
+  const [activeSubCategory, setActiveSubCategory] = useState();
   const [products, setProducts] = useState([]);
   const [searchProduct, setSearchProduct] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -50,12 +50,18 @@ const CategoriesMenu = (props) => {
     getCategories();
     getProducts();
   }, []);
+  
+  useEffect(() => {
+    if (categories.length !== 0) {
+      setProducts(categories[0].subCategories[0].products)
+    }
+  },[categories])
 
   const handleItemClick = (e, titleProps) => {};
 
   // we'll have products of subCategory
-  const onClickSubCategory = (subCategory, name) => {
-    setActiveSubCategory(name);
+  const onClickSubCategory = (subCategory, idx) => {
+    setActiveSubCategory(idx);
     setProducts(subCategory.products);
     setOnActive("Products");
     setActiveImages(false);
@@ -70,8 +76,8 @@ const CategoriesMenu = (props) => {
           <Menu.Item
             key={id}
             name={item.ru}
-            active={item.ru === activeSubCategory}
-            onClick={(e, { name }) => onClickSubCategory(item, name)}
+            active={id === activeSubCategory}
+            onClick={(e, { name }) => onClickSubCategory(item, id)}
           />
         ))}
       </Menu>
@@ -136,10 +142,11 @@ const CategoriesMenu = (props) => {
               fluid
             />
 
-            <Segment>
-              {order.length === 0 ? null : <QuantityProduct />}
-              <OrderPrice order={order} />
-            </Segment>
+            {order.length === 0 ? null : 
+            <Segment>  
+                <QuantityProduct />
+                <OrderPrice order={order} />              
+            </Segment>}
 
           </Grid.Column>
           <Grid.Column width={10}>
@@ -207,7 +214,7 @@ const renderProductsWithOrderQuantity = (
                   >
                     {item.ru}
                   </List.Header>
-                  KZT {item.price} В наличии {item.onSale ? "Есть" : "Нет"}
+                  {item.currency} {item.price} В наличии {item.onSale ? "Есть" : "Нет"}
                 </List.Content>
                 <List.Content floated="right">
                   <div

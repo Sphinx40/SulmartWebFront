@@ -18,5 +18,5 @@ export function momentToStringYYYYMMDD(momentVal) {
 }
 
 export function formatDMYMS(timeStr) {
-    return formatDate(timeStr, 'DD.MM.YYYY HH:mm');
+    return formatDate(timeStr, 'HH:mm DD.MM.YYYY');
   }
