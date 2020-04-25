@@ -60,7 +60,6 @@ const RenderRoutes = () => {
         )} />
       </Switch>
     </Router>
-  );
 };
 
 export default RenderRoutes;
