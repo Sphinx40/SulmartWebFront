@@ -31,6 +31,7 @@ const CategoriesMenu = (props) => {
     decrementFromOrder,
     getProducts,
   } = props;
+
   const { categories, order, productsForSearch } = state;
   const [activeSubCategory, setActiveSubCategory] = useState("");
   const [products, setProducts] = useState([]);
@@ -38,6 +39,8 @@ const CategoriesMenu = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState([]);
   const [activeImages, setActiveImages] = useState(false);
+  const [activeImageId, setActiveImageId] = useState();
+
   // we figure out last time which component is actived
   // we must have in onActive FindProducts or Products
   // we are showing up FindProducts or Products using onActive
@@ -145,12 +148,14 @@ const CategoriesMenu = (props) => {
                 products,
                 order,
                 onClickAction,
-                (images) => {
+                (images,id) => {
                   setImages(images)
                   setActiveImages(prev => !prev)
+                  setActiveImageId(id)
                 },
                 images,
-                activeImages
+                activeImages,
+                activeImageId
               )
             ) : (
               <FindProducts
@@ -173,7 +178,8 @@ const renderProductsWithOrderQuantity = (
   onClickAction,
   onClickProduct,
   images,
-  activeImages
+  activeImages,
+  activeImageId
 ) => {
   return (
     <Segment>
@@ -192,12 +198,12 @@ const renderProductsWithOrderQuantity = (
                 <Image
                   src={item.imageUrl}
                   style={{ width: 70, height: 40, cursor: "pointer" }}
-                  onClick={() => onClickProduct(item.images)}
+                  onClick={() => onClickProduct(item.images,id)}
                 />
                 <List.Content>
                   <List.Header
                     style={{ cursor: "pointer" }}
-                    onClick={() => onClickProduct(item.images)}
+                    onClick={() => onClickProduct(item.images,id)}
                   >
                     {item.ru}
                   </List.Header>
@@ -235,7 +241,7 @@ const renderProductsWithOrderQuantity = (
                   </div>
                 </List.Content>
               </List.Item>
-                {activeImages ? <ProductImages images={images} /> : null}
+                {activeImages && activeImageId === id ? <ProductImages images={images} /> : null}
               </Fragment>
             );
           }
