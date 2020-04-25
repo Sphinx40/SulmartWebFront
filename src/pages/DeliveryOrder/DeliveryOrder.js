@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Segment,
   Header,
@@ -143,7 +143,7 @@ const DeliveryOrder = props => {
             latitude: user.latitude
           });
           createOrder({ ...user, products: order }, myOrders);
-          history.push('/SuccessBasket')
+          history.push('/successBasket')
         }
       });
     }

@@ -5,9 +5,7 @@ import {
   Header,
   Divider,
   Button,
-  Icon,
-  Image,
-  Grid,
+  Icon
 } from "semantic-ui-react";
 import { connect } from "react-redux";
 import OrderPrice from "../../components/OrderPrice/OrderPrice";
@@ -42,18 +40,7 @@ const ShoppingBasket = (props) => {
           <OrderPrice order={order} />
         </Fragment>
       ) : (
-        <Grid columns={2}>
-          <Grid.Row>
-            <Grid.Column>
-              <Image src="/img/EmptyShoppingBasket.png" size="medium" />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column>
-              <Header as="h4">Ваша корзина пуста</Header>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+        <Header as="h4">Ваша корзина пуста</Header>
       )}
     </Segment>
   );

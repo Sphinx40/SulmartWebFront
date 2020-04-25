@@ -51,8 +51,8 @@ const OrderPrice = ({
         <Button
           color="violet"
           as={Link}
-          onClick={() => changeMenu("Delivery")}
-          to="/Delivery"
+          onClick={() => changeMenu("delivery")}
+          to="/delivery"
         >
           Оформить заказ
         </Button>
