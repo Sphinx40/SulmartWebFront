@@ -92,7 +92,7 @@ export const calculateDeliveryCost = (
   const averageDistanceMeterMin = 3000;
   const longDistanceMeterMin = 10000;
 
-  const deliveryDistanceFromCityCenterMeterMax = 7000;
+  const deliveryDistanceFromCityCenterMeterMax = 10000;
 
   const distanceFromCityCenter = getDistance(
     cityCenterCoords,
@@ -106,6 +106,7 @@ export const calculateDeliveryCost = (
   } else {
     result.boolean = true;
   }
+  console.log(distanceFromShop, 'distanceFromShop');
 
   if (
     distanceFromShop > shortDistanceMeterMin &&

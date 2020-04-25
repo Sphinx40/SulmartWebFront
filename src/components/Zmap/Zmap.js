@@ -43,7 +43,7 @@ const Zmap = props => {
   } = props;
   const {
     city,
-    placeMarkCoords,
+    placeMarkCoords = city.coords,
     placeMarkProperties,
     mapCenter,
     ymaps,
@@ -51,11 +51,13 @@ const Zmap = props => {
   } = props;
   useEffect(() => {
     setAnyObjectZmapReducer({
-      placeMarkCoords: city.coords,
+      // placeMarkCoords: city.coords,
       mapCenter: city.coords
     });
     //eslint-disable-next-line
   }, []);
+
+  // console.log(placeMarkCoords);
 
   const loadYmaps = ymaps => {
     setYmaps(ymaps);
@@ -123,7 +125,7 @@ const Zmap = props => {
       },
       placeMarkCoords: coords
     });
-// console.log(coords,'coords')
+    // console.log(coords,'coords')
     ymaps
       .geocode(coords)
       .then(res => {

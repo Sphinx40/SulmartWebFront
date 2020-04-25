@@ -7,50 +7,66 @@ import Nav from '../Nav/Nav';
 import ErrorNotification from '../../utils/ErrorNotification';
 
 const AsyncHome = Loadable({
-    loader: () => import('../../pages/Home/Home' /* webpackChunkName: "Home" */),
-    loading: Loading
+  loader: () => import('../../pages/Home/Home' /* webpackChunkName: "Home" */),
+  loading: Loading
 });
 
 const ShoppingBasket = Loadable({
-    loader: () => import('../../pages/ShoppingBasket/ShoppingBasket'  /* webpackChunkName: "ShoppingBasket" */),
-    loading: Loading
+  loader: () =>
+    import(
+      '../../pages/ShoppingBasket/ShoppingBasket' /* webpackChunkName: "ShoppingBasket" */
+    ),
+  loading: Loading
 });
 
 const AsyncDelivery = Loadable({
-    loader: () => import('../../pages/DeliveryOrder/DeliveryOrder'   /* webpackChunkName: "AsyncDelivery" */),
-    loading: Loading
+  loader: () =>
+    import(
+      '../../pages/DeliveryOrder/DeliveryOrder' /* webpackChunkName: "AsyncDelivery" */
+    ),
+  loading: Loading
 });
 
 const AsyncMyOrders = Loadable({
-  loader: () => import('../../pages/MyOrders/MyOrders'   /* webpackChunkName: "AsyncMyOrders" */),
+  loader: () =>
+    import(
+      '../../pages/MyOrders/MyOrders' /* webpackChunkName: "AsyncMyOrders" */
+    ),
   loading: Loading
 });
 
 const SuccessBasket = Loadable({
-  loader: () => import('../../pages/SuccessBasket/SuccessBasket'   /* webpackChunkName: "SuccessBasket" */),
+  loader: () =>
+    import(
+      '../../pages/SuccessBasket/SuccessBasket' /* webpackChunkName: "SuccessBasket" */
+    ),
   loading: Loading
 });
 
 const RenderRoutes = () => {
-    return <Router>
+  return (
+    <Router>
       <Nav />
       <Loading />
       <ErrorNotification />
-      <Switch >
-        <Route path="/" component={AsyncHome} exact />
+      <Switch>
+        <Route path='/' component={AsyncHome} exact />
 
-        <Route path="/ShoppingBasket" component={ShoppingBasket} />
-        <Route path="/Delivery" component={AsyncDelivery} />
-        <Route path="/MyOrders" component={AsyncMyOrders} />
-        <Route path="/SuccessBasket" component={SuccessBasket} />
+        <Route path='/ShoppingBasket' component={ShoppingBasket} />
+        <Route path='/Delivery' component={AsyncDelivery} />
+        <Route path='/MyOrders' component={AsyncMyOrders} />
+        <Route path='/SuccessBasket' component={SuccessBasket} />
 
-        <Route render={() => (
-          <div style={{ margin: 'auto', width: '30%' }}>
-          <Image style={{ width: 500, height: 150 }} src='/img/404.png' />
-          </div> 
-        )} />
+        <Route
+          render={() => (
+            <div style={{ margin: 'auto', width: '30%' }}>
+              <Image style={{ width: 500, height: 150 }} src='/img/404.png' />
+            </div>
+          )}
+        />
       </Switch>
     </Router>
+  );
 };
 
 export default RenderRoutes;

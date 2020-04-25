@@ -15,7 +15,7 @@ let initial = {
     coords: [43.231612405843514, 76.76930712938592],
     name: 'Altyn Orda'
   },
-  placeMarkCoords: [],
+  placeMarkCoords: undefined,
   placeMarkProperties: {},
   mapCenter: [],
   ymaps: {},
