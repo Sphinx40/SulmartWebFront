@@ -6,6 +6,7 @@ import { Image } from 'semantic-ui-react';
 import Nav from '../Nav/Nav';
 import ErrorNotification from '../../utils/ErrorNotification';
 import { createBrowserHistory } from 'history';
+import Footer from '../Footer/Footer';
 
 const history = createBrowserHistory();
 
@@ -15,10 +16,18 @@ const AsyncHome = Loadable({
   loading: Loading
 });
 
-const AsyncShoppingBasket = Loadable({
+const AsyncBasket = Loadable({
   loader: () =>
     import(
-      '../../pages/Basket/Basket' /* webpackChunkName: "AsyncShoppingBasket" */
+      '../../pages/Basket/Basket' /* webpackChunkName: "AsyncBasket" */
+    ),
+  loading: Loading
+});
+
+const AsyncСategoriesMenu = Loadable({
+  loader: () =>
+    import(
+      '../CategoriesMenu/CategoriesMenu' /* webpackChunkName: "AsyncСategoriesMenu" */
     ),
   loading: Loading
 });
@@ -31,10 +40,10 @@ const AsyncDelivery = Loadable({
   loading: Loading
 });
 
-const AsyncMyOrders = Loadable({
+const AsyncOrders = Loadable({
   loader: () =>
     import(
-      '../../pages/Orders/Orders' /* webpackChunkName: "AsyncMyOrders" */
+      '../../pages/Orders/Orders' /* webpackChunkName: "AsyncOrders" */
     ),
   loading: Loading
 });
@@ -56,10 +65,11 @@ const RenderRoutes = () => {
       <Switch>
         <Route path='/' component={AsyncHome} exact />
 
-        <Route path='/basket' component={AsyncShoppingBasket} />
+        <Route path='/basket' component={AsyncBasket} />
         <Route path='/delivery' component={AsyncDelivery} />
-        <Route path='/orders' component={AsyncMyOrders} />
+        <Route path='/orders' component={AsyncOrders} />
         <Route path='/successBasket' component={AsyncSuccessBasket} />
+        <Route path='/categories' component={AsyncСategoriesMenu} />
 
         <Route
           render={() => (
@@ -69,6 +79,7 @@ const RenderRoutes = () => {
           )}
         />
       </Switch>
+      <Footer />
     </Router>
   );
 };

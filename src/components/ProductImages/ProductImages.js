@@ -36,7 +36,7 @@ const ProductImages = ({ images }) => {
                                     key={id}
                                     src={item.miniImageUrl}
                                     onClick={() => setLargeImage(item.largeImageUrl)}
-                                    style={{ width: 70, height: 40, cursor: "pointer" }} />
+                                    style={{ marginLeft: 20, width: 70, height: 40, cursor: "pointer" }} />
                         ))
                     }
                     

@@ -13,7 +13,9 @@ import {
   CHANGE_ADDRESSES,
   ADD_ADDRESS,
   CHANGE_MY_ORDERS,
-  GET_ORDER_STATUSES
+  GET_ORDER_STATUSES,
+  GET_POPULAR,
+  CHANGE_CLICKED_POPULAR_PRODUCT
 } from './types';
 
 import { doGet, doPost } from '../utils/axiosActions';
@@ -168,14 +170,14 @@ export const changeMyOrders = (orders) => {
   };
 };
 
-export const getOrderStatuses = () => {
+export const getPopular = () => {
   return (dispatch) => {
     dispatch(modifyLoader(true));
-    doGet(HEROKU_URI + `orderStatuses`)
+    doGet(HEROKU_URI + `order`)
       .then(({ data }) => {
         dispatch(modifyLoader(false));
         dispatch({
-          type: GET_ORDER_STATUSES,
+          type: GET_POPULAR,
           payload: data.data
         });
       })
@@ -183,5 +185,12 @@ export const getOrderStatuses = () => {
         dispatch(modifyLoader(false));
         dispatch(errorhandler(err));
       });
+  }
+};
+
+export const changeClickedPopularProduct = (product) => {
+  return {
+    type: CHANGE_CLICKED_POPULAR_PRODUCT,
+    payload: product
   }
 }

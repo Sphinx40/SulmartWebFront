@@ -1,0 +1,16 @@
+@media only screen and (min-width: 1200px) {
+    .cnn {
+        width: 1200px;
+        margin-left: auto!important;
+        margin-right: auto!important;
+    }
+}
+.cnn {
+    display: block;
+    max-width: 100%!important;
+}
+
+.d-block {
+    border: 1px solid black;
+    border-radius: 15px;
+}

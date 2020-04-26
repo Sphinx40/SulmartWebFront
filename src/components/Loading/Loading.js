@@ -5,7 +5,7 @@ import { Dimmer, Loader } from "semantic-ui-react";
 
 const Loading = ({ state }) => {
   const { loading } = state;
-
+  
   return (
     <Fragment>
       {loading ? (
