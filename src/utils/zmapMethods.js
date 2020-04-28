@@ -1,7 +1,7 @@
-export const splitByCommaAndReturnStreetName = text => {
+export const splitByCommaAndReturnStreetName = (text) => {
   let streetArray = text.split(',');
   let result = '';
-  streetArray.forEach(item => {
+  streetArray.forEach((item) => {
     if (
       item.includes('улица') ||
       item.includes('проспект') ||
@@ -12,7 +12,7 @@ export const splitByCommaAndReturnStreetName = text => {
     }
   });
   if (result === '') {
-    streetArray.forEach(item => {
+    streetArray.forEach((item) => {
       if (item.includes('микрорайон')) {
         result = item;
       }
@@ -22,7 +22,7 @@ export const splitByCommaAndReturnStreetName = text => {
   return result;
 };
 
-export const removeStreetWord = text => {
+export const removeStreetWord = (text) => {
   let tempText = text;
 
   tempText = tempText.replace('улица ', '');
@@ -43,7 +43,7 @@ export const removeStreetWord = text => {
   return tempText;
 };
 
-export const rad = x => {
+export const rad = (x) => {
   return (x * Math.PI) / 180;
 };
 
@@ -89,10 +89,10 @@ export const calculateDeliveryCost = (
   const longDistancePrice = 2000;
 
   const shortDistanceMeterMin = 0;
-  const averageDistanceMeterMin = 3000;
-  const longDistanceMeterMin = 10000;
+  const averageDistanceMeterMin = 7000;
+  const longDistanceMeterMin = 12000;
 
-  const deliveryDistanceFromCityCenterMeterMax = 10000;
+  const deliveryDistanceFromCityCenterMeterMax = 20000;
 
   const distanceFromCityCenter = getDistance(
     cityCenterCoords,
