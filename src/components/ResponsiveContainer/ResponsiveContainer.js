@@ -32,7 +32,7 @@ const MobileContainer = ({ children }) => {
   );
 };
 
-MobileContainer.propTypes = {
+MobileContainer.propTypes = { 
   children: PropTypes.node,
 };
 
