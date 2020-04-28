@@ -5,6 +5,7 @@ export const SET_YMAPS = 'SET_YMAPS';
 export const FIND_COORDS_BY_STREET_AND_HOUSE =
   'FIND_COORDS_BY_STREET_AND_HOUSE';
 export const SET_ANY_OBJECT = 'SET_ANY_OBJECT';
+export const SET_MAP_IS_LOADING = 'SET_MAP_IS_LOADING';
 
 let initial = {
   city: {
@@ -20,7 +21,8 @@ let initial = {
   mapCenter: [],
   ymaps: {},
   zoom: 12,
-  deliveryPrice: 0
+  deliveryPrice: 0,
+  mapIsLoading: true
 };
 
 const ZmapReducer = (state = initial, action) => {
@@ -55,6 +57,12 @@ const ZmapReducer = (state = initial, action) => {
       return {
         ...state,
         ymaps: action.payload
+      };
+
+    case SET_MAP_IS_LOADING:
+      return {
+        ...state,
+        mapIsLoading: action.payload
       };
 
     case FIND_COORDS_BY_STREET_AND_HOUSE:

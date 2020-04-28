@@ -4,7 +4,8 @@ import {
   SET_MAPCENTER,
   SET_YMAPS,
   FIND_COORDS_BY_STREET_AND_HOUSE,
-  SET_ANY_OBJECT
+  SET_ANY_OBJECT,
+  SET_MAP_IS_LOADING
 } from '../reducers/ZmapReducer';
 
 export const setPlaceMarkCoords = payload => {
@@ -39,6 +40,14 @@ export const setAnyObjectZmapReducer = payload => {
   // console.log(payload, 'payload');
   return {
     type: SET_ANY_OBJECT,
+    payload
+  };
+};
+
+export const setMapIsLoading = payload => {
+  // console.log(payload, 'payload');
+  return {
+    type: SET_MAP_IS_LOADING,
     payload
   };
 };

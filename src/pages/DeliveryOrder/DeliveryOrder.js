@@ -17,7 +17,8 @@ import OutputErrors from '../../utils/OutputErrors';
 import Recaptcha from 'react-google-invisible-recaptcha';
 import {
   findCoordsByStreetAndHouse,
-  setAnyObjectZmapReducer
+  setAnyObjectZmapReducer,
+  setMapIsLoading
 } from '../../actions/zmapActions';
 import { addToAddresses, createOrder, clearOrder } from '../../actions';
 import { withRouter } from 'react-router-dom';
@@ -38,7 +39,9 @@ const DeliveryOrder = props => {
     setAnyObjectZmapReducer,
     createOrder,
     history,
-    clearOrder
+    clearOrder,
+    mapIsLoading,
+    setMapIsLoading
   } = props;
   const { order, addresses, myOrders } = state;
   const [user, setUser] = useState({
@@ -58,6 +61,14 @@ const DeliveryOrder = props => {
   let recaptcha;
   const [errors, setErrors] = useState([]);
   const [addressesOptions, setAddressesOptions] = useState([]);
+
+  useEffect(() => {
+    
+    //eslint-disable-next-line
+    return () => {
+      setMapIsLoading(true);
+    };
+  }, []);
 
   useEffect(() => {
     if (placeMarkCoords && placeMarkCoords.length === 2) {
@@ -144,8 +155,8 @@ const DeliveryOrder = props => {
             latitude: user.latitude
           });
           createOrder({ ...user, products: order }, myOrders, () => {
-            history.push('/successBasket')
-            clearOrder()
+            history.push('/successBasket');
+            clearOrder();
           });
         }
       });
@@ -193,168 +204,179 @@ const DeliveryOrder = props => {
       </Steps>
       <Header content='Доставка' textAlign='center' />
       <Divider />
-      <Grid columns={2} divided>
-        <Grid.Row>
-          <Grid.Column>
-            <Table>
-              <Table.Body>
-                {addresses.length === 0 ? null : (
+      <Segment loading={mapIsLoading}>
+        <Grid columns={2} divided>
+          <Grid.Row>
+            <Grid.Column>
+              <Table loading>
+                <Table.Body>
+                  {addresses.length === 0 ? null : (
+                    <Table.Row>
+                      <Table.Cell>
+                        <Dropdown
+                          options={addressesOptions}
+                          selection
+                          placeholder='Сохраненные адреса'
+                          onChange={(e, { value }) =>
+                            onChangeDeliveryAddress(value)
+                          }
+                        />
+                      </Table.Cell>
+                    </Table.Row>
+                  )}
+
                   <Table.Row>
                     <Table.Cell>
-                      <Dropdown
-                        options={addressesOptions}
-                        selection
-                        placeholder='Сохраненные адреса'
-                        onChange={(e, { value }) =>
-                          onChangeDeliveryAddress(value)
+                      <Input
+                        placeholder='Имя'
+                        fluid
+                        onChange={e =>
+                          setUser({ ...user, name: e.target.value })
                         }
                       />
                     </Table.Cell>
                   </Table.Row>
-                )}
+                  <Table.Row>
+                    <Table.Cell>
+                      <NumberFormat
+                        format='+7 (###) ###-##-##'
+                        customInput={Input}
+                        onValueChange={e =>
+                          setUser({ ...user, phone: e.value })
+                        }
+                        fluid
+                        mask='_'
+                        placeholder='Телефон номер'
+                      />
+                    </Table.Cell>
+                  </Table.Row>
 
-                <Table.Row>
-                  <Table.Cell>
-                    <Input
-                      placeholder='Имя'
-                      fluid
-                      onChange={e => setUser({ ...user, name: e.target.value })}
-                    />
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell>
-                    <NumberFormat
-                      format='+7 (###) ###-##-##'
-                      customInput={Input}
-                      onValueChange={e => setUser({ ...user, phone: e.value })}
-                      fluid
-                      mask='_'
-                      placeholder='Телефон номер'
-                    />
-                  </Table.Cell>
-                </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>
+                      <NumberFormat
+                        format='+7 (###) ###-##-##'
+                        customInput={Input}
+                        onValueChange={e =>
+                          setUser({ ...user, extraPhone: e.value })
+                        }
+                        fluid
+                        mask='_'
+                        placeholder='Дополнительный телефон номер'
+                      />
+                    </Table.Cell>
+                  </Table.Row>
 
-                <Table.Row>
-                  <Table.Cell>
-                    <NumberFormat
-                      format='+7 (###) ###-##-##'
-                      customInput={Input}
-                      onValueChange={e =>
-                        setUser({ ...user, extraPhone: e.value })
-                      }
-                      fluid
-                      mask='_'
-                      placeholder='Дополнительный телефон номер'
-                    />
-                  </Table.Cell>
-                </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>
+                      <Input
+                        id={'suggest'}
+                        placeholder='Улица'
+                        fluid
+                        value={user.street}
+                        onChange={e =>
+                          setUser({
+                            ...user,
+                            street: e.target.value,
+                            house: '',
+                            latitude: 0,
+                            longitude: 0
+                          })
+                        }
+                        onFocus={event => {
+                          setUser({
+                            ...user,
+                            house: '',
+                            latitude: 0,
+                            longitude: 0
+                          });
+                        }}
+                        onBlur={event => {
+                          findCoordsByStreetAndHouse(
+                            user.street,
+                            '',
+                            city.name,
+                            ymaps
+                          );
+                        }}
+                      />
+                    </Table.Cell>
+                  </Table.Row>
 
-                <Table.Row>
-                  <Table.Cell>
-                    <Input
-                      id={'suggest'}
-                      placeholder='Улица'
-                      fluid
-                      value={user.street}
-                      onChange={e =>
-                        setUser({
-                          ...user,
-                          street: e.target.value,
-                          house: '',
-                          latitude: 0,
-                          longitude: 0
-                        })
-                      }
-                      onFocus={event => {
-                        setUser({
-                          ...user,
-                          house: '',
-                          latitude: 0,
-                          longitude: 0
-                        });
-                      }}
-                      onBlur={event => {
-                        findCoordsByStreetAndHouse(
-                          user.street,
-                          '',
-                          city.name,
-                          ymaps
-                        );
-                      }}
-                    />
-                  </Table.Cell>
-                </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>
+                      <Input
+                        placeholder='Дом'
+                        fluid
+                        value={user.house}
+                        onChange={e =>
+                          setUser({
+                            ...user,
+                            house: e.target.value,
+                            latitude: 0,
+                            longitude: 0
+                          })
+                        }
+                        onBlur={event => {
+                          findCoordsByStreetAndHouse(
+                            user.street,
+                            user.house,
+                            city.name,
+                            ymaps
+                          );
+                        }}
+                      />
+                    </Table.Cell>
+                  </Table.Row>
 
-                <Table.Row>
-                  <Table.Cell>
-                    <Input
-                      placeholder='Дом'
-                      fluid
-                      value={user.house}
-                      onChange={e =>
-                        setUser({
-                          ...user,
-                          house: e.target.value,
-                          latitude: 0,
-                          longitude: 0
-                        })
-                      }
-                      onBlur={event => {
-                        findCoordsByStreetAndHouse(
-                          user.street,
-                          user.house,
-                          city.name,
-                          ymaps
-                        );
-                      }}
-                    />
-                  </Table.Cell>
-                </Table.Row>
-
-                <Table.Row>
-                  <Table.Cell>
-                    <Input
-                      placeholder='Квартира'
-                      fluid
-                      value={user.appartment}
-                      onChange={e =>
-                        setUser({ ...user, appartment: e.target.value })
-                      }
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              </Table.Body>
-            </Table>
-            <OrderPrice order={order} notShowButton={true} deliveryPrice={user.deliveryPrice} totalPrice />
-            <Divider />
-            <OutputErrors errors={errors} />
-            <Recaptcha
-              ref={ref => (recaptcha = ref)}
-              sitekey='6LfKV-0UAAAAACSPnzDikZx_bEnI0qL_IMdqAF2e'
-            />
-            <Button color="violet" type="submit" onClick={toOrder}>
-              Заказать
-            </Button>
-          </Grid.Column>
-          <Grid.Column>
-            <Zmap
-              setStreet={street =>
-                setUser(prev => {
-                  return { ...prev, street };
-                })
-              }
-              setHouse={house => {
-                setUser(prev => {
-                  return { ...prev, house };
-                });
-              }}
-              mapWidth={user.mapWidth}
-              mapHeight={user.mapHeight}
-            />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+                  <Table.Row>
+                    <Table.Cell>
+                      <Input
+                        placeholder='Квартира'
+                        fluid
+                        value={user.appartment}
+                        onChange={e =>
+                          setUser({ ...user, appartment: e.target.value })
+                        }
+                      />
+                    </Table.Cell>
+                  </Table.Row>
+                </Table.Body>
+              </Table>
+              <OrderPrice
+                order={order}
+                notShowButton={true}
+                deliveryPrice={user.deliveryPrice}
+                totalPrice
+              />
+              <Divider />
+              <OutputErrors errors={errors} />
+              <Recaptcha
+                ref={ref => (recaptcha = ref)}
+                sitekey='6LfKV-0UAAAAACSPnzDikZx_bEnI0qL_IMdqAF2e'
+              />
+              <Button color='violet' type='submit' onClick={toOrder}>
+                Заказать
+              </Button>
+            </Grid.Column>
+            <Grid.Column>
+              <Zmap
+                setStreet={street =>
+                  setUser(prev => {
+                    return { ...prev, street };
+                  })
+                }
+                setHouse={house => {
+                  setUser(prev => {
+                    return { ...prev, house };
+                  });
+                }}
+                mapWidth={user.mapWidth}
+                mapHeight={user.mapHeight}
+              />
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Segment>
     </Segment>
   );
 };
@@ -365,7 +387,8 @@ const mapStateToProps = state => {
     city: state.Zmap.city,
     ymaps: state.Zmap.ymaps,
     placeMarkCoords: state.Zmap.placeMarkCoords,
-    market: state.Zmap.market
+    market: state.Zmap.market,
+    mapIsLoading:state.Zmap.mapIsLoading
   };
 };
 
@@ -374,5 +397,6 @@ export default connect(mapStateToProps, {
   setAnyObjectZmapReducer,
   addToAddresses,
   createOrder,
-  clearOrder
+  clearOrder,
+  setMapIsLoading
 })(withRouter(DeliveryOrder));

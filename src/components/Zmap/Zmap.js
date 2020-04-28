@@ -15,6 +15,7 @@ import {
   setMapCenter,
   setYmaps,
   setAnyObjectZmapReducer,
+  setMapIsLoading
 } from '../../actions/zmapActions';
 
 import { splitByCommaAndReturnStreetName } from '../../utils/zmapMethods';
@@ -42,6 +43,7 @@ const Zmap = (props) => {
     setMapCenter,
     setYmaps,
     setAnyObjectZmapReducer,
+    setMapIsLoading
   } = props;
   const {
     city,
@@ -50,6 +52,7 @@ const Zmap = (props) => {
     mapCenter,
     ymaps,
     zoom,
+    mapIsLoading
   } = props;
   useEffect(() => {
     setAnyObjectZmapReducer({
@@ -59,7 +62,7 @@ const Zmap = (props) => {
     //eslint-disable-next-line
   }, []);
 
-  const [mapIsLoading, setMapIsLoading] = useState(true);
+  // const [mapIsLoading, setMapIsLoading] = useState(true);
   // console.log(placeMarkCoords);
 
   const loadYmaps = (ymaps) => {
@@ -295,6 +298,7 @@ const mapStateToProps = (state) => {
     mapCenter: state.Zmap.mapCenter,
     ymaps: state.Zmap.ymaps,
     zoom: state.Zmap.zoom,
+    mapIsLoading:state.Zmap.mapIsLoading
   };
 };
 
@@ -304,6 +308,7 @@ export default connect(mapStateToProps, {
   setMapCenter,
   setYmaps,
   setAnyObjectZmapReducer,
+  setMapIsLoading  
 })(Zmap);
 
 // const geocode = ymaps => {
