@@ -194,7 +194,7 @@ const DeliveryOrder = props => {
       });
     }
   };
-
+  
   return (
     <Segment padded='very' color='violet' style={{ margin: 20 }}>
       <Steps style={{ width: 500, margin: 'auto' }} size='small' current={1}>
@@ -204,7 +204,8 @@ const DeliveryOrder = props => {
       </Steps>
       <Header content='Доставка' textAlign='center' />
       <Divider />
-      <Segment loading={mapIsLoading}>
+      
+      <Segment loading={mapIsLoading} basic>
         <Grid columns={2} divided>
           <Grid.Row>
             <Grid.Column>
@@ -266,67 +267,85 @@ const DeliveryOrder = props => {
                     </Table.Cell>
                   </Table.Row>
 
-                  <Table.Row>
-                    <Table.Cell>
+                <Table.Row>
+                  <Table.Cell>     
+                    <Input
+                      id={'suggest'}
+                      placeholder='Улица'
+                      fluid
+                      hidden={user.street !== '' ? true : false}
+                      value={user.street}
+                      onChange={e =>
+                        setUser({
+                          ...user,
+                          street: e.target.value,
+                          house: '',
+                          latitude: 0,
+                          longitude: 0
+                        })
+                      }
+                      onFocus={event => {
+                        setUser({
+                          ...user,
+                          house: '',
+                          latitude: 0,
+                          longitude: 0
+                        });
+                      }}
+                      onBlur={event => {
+                        findCoordsByStreetAndHouse(
+                          user.street,
+                          '',
+                          city.name,
+                          ymaps
+                        );
+                      }}
+                    />
+                    {
+                      user.street !== '' ? 
                       <Input
-                        id={'suggest'}
-                        placeholder='Улица'
-                        fluid
                         value={user.street}
-                        onChange={e =>
-                          setUser({
-                            ...user,
-                            street: e.target.value,
-                            house: '',
-                            latitude: 0,
-                            longitude: 0
-                          })
-                        }
-                        onFocus={event => {
-                          setUser({
-                            ...user,
-                            house: '',
-                            latitude: 0,
-                            longitude: 0
-                          });
-                        }}
-                        onBlur={event => {
-                          findCoordsByStreetAndHouse(
-                            user.street,
-                            '',
-                            city.name,
-                            ymaps
-                          );
-                        }}
-                      />
-                    </Table.Cell>
-                  </Table.Row>
-
-                  <Table.Row>
-                    <Table.Cell>
-                      <Input
-                        placeholder='Дом'
+                        readOnly
                         fluid
+                      /> : null
+                    }
+                  </Table.Cell>
+                </Table.Row>
+
+                <Table.Row>
+                  <Table.Cell> 
+                    <Input
+                      placeholder='Дом'
+                      fluid
+                      value={user.house}
+                      hidden={user.house !== '' ? true : false}
+                      onChange={e =>
+                        setUser({
+                          ...user,
+                          house: e.target.value,
+                          latitude: 0,
+                          longitude: 0
+                        })
+                      }
+                      onBlur={event => {
+                        findCoordsByStreetAndHouse(
+                          user.street,
+                          user.house,
+                          city.name,
+                          ymaps
+                        );
+                      }}
+                    />
+                    {
+                      user.house !== '' ? 
+                      <Input
                         value={user.house}
-                        onChange={e =>
-                          setUser({
-                            ...user,
-                            house: e.target.value,
-                            latitude: 0,
-                            longitude: 0
-                          })
-                        }
-                        onBlur={event => {
-                          findCoordsByStreetAndHouse(
-                            user.street,
-                            user.house,
-                            city.name,
-                            ymaps
-                          );
-                        }}
-                      />
-                    </Table.Cell>
-                  </Table.Row>
+                        readOnly
+                        fluid
+                      /> : null
+                    }
+                  </Table.Cell>
+                </Table.Row>
 
                   <Table.Row>
                     <Table.Cell>

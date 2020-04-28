@@ -14,8 +14,7 @@ import {
 import {
   getCategories,
   incrementToOrder,
-  decrementFromOrder,
-  getProducts,
+  decrementFromOrder
 } from "../../actions";
 import { connect } from "react-redux";
 import QuantityProduct from "../QuantityProduct/QuantityProduct";
@@ -29,11 +28,10 @@ const CategoriesMenu = (props) => {
     state,
     getCategories,
     incrementToOrder,
-    decrementFromOrder,
-    getProducts,
+    decrementFromOrder
   } = props;
 
-  const { categories, order, productsForSearch, clickedPopularProduct } = state;
+  const { categories, order, clickedPopularProduct } = state;
   const [products, setProducts] = useState([]);
   const [searchProduct, setSearchProduct] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -48,8 +46,9 @@ const CategoriesMenu = (props) => {
   const [onActive, setOnActive] = useState("Products");
 
   useEffect(() => {
-    getCategories();
-    getProducts();
+    if (categories.length === 0) {
+      getCategories();
+    }
     if (Object.keys(clickedPopularProduct).length !== 0) {
       setProducts([clickedPopularProduct]);
     }
@@ -60,7 +59,9 @@ const CategoriesMenu = (props) => {
       categories.length !== 0 &&
       Object.keys(clickedPopularProduct).length === 0 &&
       products.length === 0
-    ) {
+    ) {/* 
+      let products = [];
+      categories[0] */
       setProducts(categories[0].subCategories[0].products);
     }
   }, [categories]);
@@ -110,11 +111,11 @@ const CategoriesMenu = (props) => {
   return (
     <ResponsiveContainer>
     <div style={{ margin: 40 }}>
-      <Grid columns={3} divided stackable>
+      <Grid columns={3} stackable>
         <Grid.Row>
           <Grid.Column>
             <Header textAlign="center">Меню</Header>
-            <Segment>
+              <div>
               <Menu vertical>
                 {categories.map((item, id) => (
                   <Menu.Item
@@ -125,7 +126,7 @@ const CategoriesMenu = (props) => {
                   />
                 ))}
               </Menu>
-              </Segment>
+              </div>
             {order.length === 0 ? null : (
               <Segment>
                 <QuantityProduct />
@@ -133,7 +134,7 @@ const CategoriesMenu = (props) => {
               </Segment>
             )}
           </Grid.Column>
-          <Grid.Column width={10}>
+          <Grid.Column width={10} >
             <div>
               <Input
                 placeholder="Введите товар"
@@ -163,7 +164,6 @@ const CategoriesMenu = (props) => {
               <FindProducts
                 searchProduct={searchProduct}
                 stopLoading={() => setIsLoading(false)}
-                productsForSearch={productsForSearch}
                 categories={categories}
               />
             )}</div>
@@ -270,6 +270,5 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   getCategories,
   incrementToOrder,
-  decrementFromOrder,
-  getProducts,
+  decrementFromOrder
 })(CategoriesMenu);

@@ -4,29 +4,26 @@ import ProductItems from "./ProductItems";
 
 const FindProducts = ({
   searchProduct,
-  productsForSearch,
   stopLoading,
   categories,
 }) => {
   let foundProducts = [];
-
-  const resultOfSearchProduct = productsForSearch.filter((product) => {
-    if (searchProduct !== "") {
-      return (
-        product.ru
-          .toLowerCase()
-          .toUpperCase()
-          .indexOf(searchProduct.toLowerCase().toUpperCase()) !== -1
-      );
-    }
-  });
-
-  if (resultOfSearchProduct.length !== 0) {
+  
     // categories
     categories.forEach((element) => {
       // subCategories
       element.subCategories.forEach((item) => {
         // products
+        const resultOfSearchProduct = item.products.filter((product) => {
+          if (searchProduct !== "") {
+            return (
+              product.ru
+                .toLowerCase()
+                .toUpperCase()
+                .indexOf(searchProduct.toLowerCase().toUpperCase()) !== -1
+            );
+          }
+        });
         item.products.forEach((elem) => {
           // we're finding element of products in resultOfSearchProduct
           resultOfSearchProduct.forEach((el) => {
@@ -52,7 +49,6 @@ const FindProducts = ({
         });
       });
     });
-  }
 
   setTimeout(() => stopLoading(), 500);
 

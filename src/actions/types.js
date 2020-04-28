@@ -1,5 +1,4 @@
 export const GET_CATEGORIES = "GET_CATEGORIES";
-export const GET_PRODUCTS = "GET_PRODUCTS";
 export const CHANGE_MENU_TITLE = "CHANGE_MENU_TITLE";
 export const PUSH_ERROR = "PUSH_ERROR";
 export const MODIFY_LOADER = "MODIFY_LOADER";

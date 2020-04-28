@@ -9,20 +9,22 @@ import {
   Segment,
   Card,
   ItemMeta,
+  Placeholder,
 } from "semantic-ui-react";
 import "./Home.css";
 import { connect } from "react-redux";
 import { changeClickedPopularProduct, changeMenu } from "../../actions";
 import { Link } from "react-router-dom";
-import ResponsiveContainer from '../../components/ResponsiveContainer/ResponsiveContainer';
+import ResponsiveContainer from "../../components/ResponsiveContainer/ResponsiveContainer";
 
 const Home = (props) => {
   const { state, changeClickedPopularProduct, changeMenu } = props;
   const { popular } = state;
   const [findTenPopular, setFindTenPopular] = useState([]);
+  const [onLoadImage, setOnLoadImage] = useState(false);
 
   useEffect(() => {
-    changeClickedPopularProduct({})
+    changeClickedPopularProduct({});
     let products = [];
     popular.map((item) => {
       return item.products.map((item) => {
@@ -34,11 +36,12 @@ const Home = (props) => {
     setFindTenPopular(products);
   }, [popular]);
 
+  
   return (
     <ResponsiveContainer>
-      <div className='cnn'>
+      <div className="cnn">
         <Segment basic>
-          <Header>Logo</Header>
+          <Header>Logo Удобная онлайн покупка</Header>
           <div
             id="carouselExampleInterval"
             className="carousel slide carousel-fade"
@@ -55,15 +58,21 @@ const Home = (props) => {
             </ol>
             <div className="carousel-inner">
               <div className="carousel-item active" data-interval="2000">
-                <img
-                  src="/img/BLACK.png"
-                  className="d-block w-100"
-                  style={{ height: 500 }}
-                  alt="..."
-                />
-                <div className="carousel-caption d-none d-md-block">
-                  <Button color="red">Заказать</Button>
+                {onLoadImage ? null : (
+                  <Placeholder style={{ height: 500 }} fluid>
+                    <Placeholder.Image square />
+                  </Placeholder>
+                )}
+                <div style={onLoadImage ? {} : { display: "none" }}>
+                  <img
+                    src="https://delo.ua/files/news/images/3543/75/picture2_kakie-produkty-i-_354375_p0.jpg"
+                    className="d-block w-100"
+                    style={{ height: 500 }}
+                    alt="..."
+                    onLoad={() => setOnLoadImage(true)}
+                  />
                 </div>
+                <div className="carousel-caption d-none d-md-block"></div>
               </div>
               <div className="carousel-item" data-interval="2000">
                 <img
@@ -108,52 +117,58 @@ const Home = (props) => {
             </a>
           </div>
         </Segment>
-        </div>
+      </div>
 
-        <Segment style={{ padding: "8em 0em" }} vertical>
-          <div className='cnn'>
+      <Segment style={{ padding: "8em 0em" }} vertical>
+        <div className="cnn">
           <Divider
-            as='h4'
-            className='header'
+            as="h4"
+            className="header"
             horizontal
-            style={{ margin: '3em 0em', textTransform: 'uppercase' }}>
-          <Header>Популярные</Header>
+            style={{ margin: "3em 0em", textTransform: "uppercase" }}
+          >
+            <Header>Популярные</Header>
           </Divider>
-          </div>
-          <Grid stackable container verticalAlign="middle" columns={5}>
-            <Grid.Row>
-            {findTenPopular.map((item,id) => (
-              <Grid.Column key={id}>
+        </div>
+        <Grid stackable container verticalAlign="middle" columns={5}>
+          <Grid.Row>
+            {findTenPopular.map((item, id) => (
+              <Grid.Column key={id} style={{ marginBottom: 10 }}>
                 <Card>
                   <Image
                     src={item.imageUrl}
                     wrapped
                     ui={false}
+                    style={{ height: 150, backgroundColor: "white" }}
                   />
                   <Card.Content>
-                  <Card.Header>{item.ru}</Card.Header>
-                    <Card.Description>
-                      {ItemMeta.description}
-                    </Card.Description>
+                    <Card.Header>{item.ru}</Card.Header>
+                    <Card.Description>{ItemMeta.description}</Card.Description>
                   </Card.Content>
                   <Card.Content extra>
-                  <Button animated='vertical' color='violet' as={Link} to='/categories' onClick={() => {
-                    changeClickedPopularProduct(item)
-                    changeMenu("categories")
-                    window.scrollTo(0,0)
-                  }}>
-                    <Button.Content visible>Заказать</Button.Content>
-                    <Button.Content hidden><Icon name='shopping cart' /></Button.Content>
-                  </Button>
+                    <Button
+                      animated="vertical"
+                      color="violet"
+                      as={Link}
+                      to="/categories"
+                      onClick={() => {
+                        changeClickedPopularProduct(item);
+                        changeMenu("categories");
+                        window.scrollTo(0, 0);
+                      }}
+                    >
+                      <Button.Content visible>Заказать</Button.Content>
+                      <Button.Content hidden>
+                        <Icon name="shopping cart" />
+                      </Button.Content>
+                    </Button>
                   </Card.Content>
                 </Card>
-                { id !== 5 ? <Divider />  : null }
-                </Grid.Column>
-              ))}
-            </Grid.Row>
-            
-          </Grid>
-        </Segment>
+              </Grid.Column>
+            ))}
+          </Grid.Row>
+        </Grid>
+      </Segment>
     </ResponsiveContainer>
   );
 };
@@ -164,4 +179,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { changeClickedPopularProduct, changeMenu })(Home);
+export default connect(mapStateToProps, {
+  changeClickedPopularProduct,
+  changeMenu,
+})(Home);

@@ -6,7 +6,6 @@ import {
     CHANGE_DELIVERY,
     DECREMENT_FROM_ORDER,
     INCREMENT_TO_ORDER,
-    GET_PRODUCTS,
     CLEAR_ORDER,
     CHANGE_ORDER,
     DELETE_FROM_ORDER,
@@ -24,7 +23,6 @@ import {
     categories: [],
     order: [],
     deliveryCost: 0,
-    productsForSearch: [],
     addresses: [],
     myOrders: [],
     deliveryDate: "",
@@ -85,12 +83,6 @@ import {
         return {
           ...state,
           categories: [...action.payload],
-        };
-  
-      case GET_PRODUCTS:
-        return {
-          ...state,
-          productsForSearch: [...action.payload]
         };
   
       case CHANGE_MENU_TITLE:

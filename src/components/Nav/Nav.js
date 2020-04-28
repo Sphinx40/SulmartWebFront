@@ -21,6 +21,7 @@ const Nav = (props) => {
             onClick={handleItemClick}
             as={Link}
             to={`/`}
+            className='bangers'
           >
             Главная
           </Menu.Item>
@@ -30,8 +31,9 @@ const Nav = (props) => {
             onClick={handleItemClick}
             as={Link}
             to={`/categories`}
+            className='bangers'
           >
-            Категории
+            Продукты
           </Menu.Item>
           <Menu.Item
             name="basket"
@@ -39,6 +41,7 @@ const Nav = (props) => {
             onClick={handleItemClick}
             as={Link}
             to={`/basket`}
+            className='bangers'
           >
             Корзина
             <Label color="violet">{order.length}</Label>
@@ -50,10 +53,11 @@ const Nav = (props) => {
             onClick={handleItemClick}
             as={Link}
             to={`/orders`}
+            className='bangers'
           >
             Мои заказы
           </Menu.Item>
-          <Menu.Item position="right">Алматы</Menu.Item>
+          <Menu.Item position="right">Алматы. Рынок "Алтын Орда"</Menu.Item>
         </Menu>
       </div>
     </Segment>

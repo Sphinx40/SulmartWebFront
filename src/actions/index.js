@@ -6,7 +6,6 @@ import {
   CHANGE_DELIVERY,
   DECREMENT_FROM_ORDER,
   INCREMENT_TO_ORDER,
-  GET_PRODUCTS,
   CLEAR_ORDER,
   CHANGE_ORDER,
   DELETE_FROM_ORDER,
@@ -57,24 +56,6 @@ export const getCategories = () => {
         dispatch(modifyLoader(false));
         dispatch({
           type: GET_CATEGORIES,
-          payload: data.data
-        });
-      })
-      .catch(err => {
-        dispatch(modifyLoader(false));
-        dispatch(errorhandler(err));
-      });
-  };
-};
-
-export const getProducts = () => {
-  return dispatch => {
-    dispatch(modifyLoader(true));
-    doGet(HEROKU_URI + `products`)
-      .then(({ data }) => {
-        dispatch(modifyLoader(false));
-        dispatch({
-          type: GET_PRODUCTS,
           payload: data.data
         });
       })
