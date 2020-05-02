@@ -151,11 +151,13 @@ export const changeMyOrders = (orders) => {
   };
 };
 
-export const getPopular = () => {
+export const getPopularDishes = () => {
+  console.log('object')
   return (dispatch) => {
     dispatch(modifyLoader(true));
-    doGet(HEROKU_URI + `order`)
+    doGet(HEROKU_URI + `dishes`)
       .then(({ data }) => {
+        console.log(data)
         dispatch(modifyLoader(false));
         dispatch({
           type: GET_POPULAR,

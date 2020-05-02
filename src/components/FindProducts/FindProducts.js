@@ -1,6 +1,5 @@
-import React, { Fragment } from "react";
-import { List } from "semantic-ui-react";
-import ProductItems from "./ProductItems";
+import React from "react";
+import Products from "../Products/Products";
 
 const FindProducts = ({
   searchProduct,
@@ -8,7 +7,6 @@ const FindProducts = ({
   categories,
 }) => {
   let foundProducts = [];
-  
     // categories
     categories.forEach((element) => {
       // subCategories
@@ -31,7 +29,7 @@ const FindProducts = ({
             if (elem._id === el._id && elem.show) {
               // if we're finding product, we're finding this product in foundProducts
               // Because if 2-3 products have same category, we're putting products together with category
-              const idx = foundProducts.findIndex(
+              /* const idx = foundProducts.findIndex(
                 ({ _id }) => _id === element._id
               );
               const newProductsForFoundProducts = {
@@ -43,7 +41,8 @@ const FindProducts = ({
                 foundProducts[idx].products.push(elem);
               } else {
                 foundProducts.push(newProductsForFoundProducts);
-              }
+              } */
+              foundProducts.push(elem);
             }
           });
         });
@@ -52,15 +51,7 @@ const FindProducts = ({
 
   setTimeout(() => stopLoading(), 500);
 
-  return (
-    <Fragment>
-      <List>
-        {foundProducts.map((item, id) => {
-          return <ProductItems key={id} foundProducts={item.products} ru={item.ru} />;
-        })}
-      </List>
-    </Fragment>
-  );
+  return <Products products={foundProducts} />
 };
 
 export default FindProducts;

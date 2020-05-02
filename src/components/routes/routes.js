@@ -27,7 +27,7 @@ const AsyncBasket = Loadable({
 const AsyncСategoriesMenu = Loadable({
   loader: () =>
     import(
-      '../CategoriesMenu/CategoriesMenu' /* webpackChunkName: "AsyncСategoriesMenu" */
+      '../../pages/CategoriesMenu/CategoriesMenu' /* webpackChunkName: "AsyncСategoriesMenu" */
     ),
   loading: Loading
 });
@@ -69,7 +69,7 @@ const RenderRoutes = () => {
         <Route path='/delivery' component={AsyncDelivery} />
         <Route path='/orders' component={AsyncOrders} />
         <Route path='/successBasket' component={AsyncSuccessBasket} />
-        <Route path='/categories' component={AsyncСategoriesMenu} />
+        <Route path='/products' component={AsyncСategoriesMenu} />
 
         <Route
           render={() => (

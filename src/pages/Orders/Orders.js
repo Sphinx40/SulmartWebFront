@@ -1,20 +1,21 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
 import {
   Segment,
-  Menu,
   Grid,
   Header,
   List,
   Image,
   Table,
+  Divider
 } from "semantic-ui-react";
 import { doGet } from "../../utils/axiosActions";
 import { HEROKU_URI } from "../../actions/index";
 import defineOrderStatus from "../../utils/defineOrderStatus";
 import { Steps } from "antd";
-import OrderPrice from "../../components/OrderPrice/OrderPrice";
+import { connect } from 'react-redux';
 import { formatDMYMS } from '../../utils/helpers';
+import Menu from './Menu';
+import ResponsiveContainer from '../../components/ResponsiveContainer/ResponsiveContainer';
 
 const { Step } = Steps;
 
@@ -32,21 +33,12 @@ const MyOrders = (props) => {
   };
 
   return (
-    <Segment>
-      <Grid columns={2}>
+    <ResponsiveContainer>
+      <Segment>
+      <Grid columns="equal" stackable>
         <Grid.Row>
-          <Grid.Column width={3}>
-            <Menu pointing vertical>
-              {myOrders.map((item, id) => {
-                  const date = formatDMYMS(item.orderDate)
-                  return <Menu.Item
-                  key={id}
-                  name={item.orderNumber.toString()}
-                  active={activeOrder === item.orderNumber}
-                  onClick={() => getOrderDetails(item)}
-              >{date}{item.currency} KZT {item.totalPrice}</Menu.Item>
-})}
-            </Menu>
+          <Grid.Column width={5}>
+            <Menu myOrders={myOrders} activeOrder={activeOrder} getOrderDetails={(param) => getOrderDetails(param)} />
           </Grid.Column>
 
           {order === null ? null : (
@@ -78,24 +70,30 @@ const MyOrders = (props) => {
                     title="Доставлен"
                   />
                 </Steps>
+                <Divider />
                 <Header as="h5">Заказанные продукты: </Header>
-                <List divided relaxed>
+                <Table>
+                  <Table.Body>
+
                   {order.products.map((item, id) => (
-                    <List.Item key={id}>
-                      <Image
-                        src={item.imageUrl}
-                        style={{ width: 80, height: 50 }}
-                      />
-                      <List.Content>
-                        <List.Header>{item.ru}</List.Header>
-                        {item.currency} {item.price}
-                      </List.Content>
-                      <List.Content floated="right" style={{ marginRight: 460 }}>
-                          <Header as="h5">Количество: {item.quantity}</Header>
-                      </List.Content>
-                    </List.Item>
+                    <Table.Row key={id}>
+                    <Table.Cell>
+                      <Header as='h4' image>
+            <Image src={item.imageUrl} style={{ width: 80, height: 50 }} rounded size='mini' />
+            <Header.Content>
+            {item.ru}
+              <Header.Subheader>Количество: {item.quantity}</Header.Subheader>
+            </Header.Content>
+          </Header>
+                    </Table.Cell>
+                  </Table.Row>
                   ))}
-                </List>
+                    
+                    
+
+                  </Table.Body>
+                </Table>
+
                 <Table>
                   <Table.Body>
                     <Table.Row>
@@ -140,8 +138,8 @@ const MyOrders = (props) => {
             </Grid.Column>
           )}
         </Grid.Row>
-      </Grid>
-    </Segment>
+      </Grid></Segment>
+    </ResponsiveContainer>
   );
 };
 

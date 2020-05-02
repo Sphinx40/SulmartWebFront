@@ -26,7 +26,7 @@ import {
     addresses: [],
     myOrders: [],
     deliveryDate: "",
-    popular: [],
+    popularDishes: [],
     clickedPopularProduct: {}
   };
   
@@ -148,7 +148,7 @@ import {
       case GET_POPULAR:
         return {
           ...state,
-          popular: [...action.payload]
+          popularDishes: [...action.payload]
         };
 
       case CHANGE_CLICKED_POPULAR_PRODUCT:

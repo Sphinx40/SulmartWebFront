@@ -12,31 +12,12 @@ import {
   Placeholder,
 } from "semantic-ui-react";
 import "./Home.css";
-import { connect } from "react-redux";
-import { changeClickedPopularProduct, changeMenu } from "../../actions";
-import { Link } from "react-router-dom";
 import ResponsiveContainer from "../../components/ResponsiveContainer/ResponsiveContainer";
+import PopularDishes from './PopularDishes';
 
-const Home = (props) => {
-  const { state, changeClickedPopularProduct, changeMenu } = props;
-  const { popular } = state;
-  const [findTenPopular, setFindTenPopular] = useState([]);
+const Home = () => {
   const [onLoadImage, setOnLoadImage] = useState(false);
 
-  useEffect(() => {
-    changeClickedPopularProduct({});
-    let products = [];
-    popular.map((item) => {
-      return item.products.map((item) => {
-        if (products.length !== 10) {
-          products.push(item);
-        }
-      });
-    });
-    setFindTenPopular(products);
-  }, [popular]);
-
-  
   return (
     <ResponsiveContainer>
       <div className="cnn">
@@ -130,56 +111,9 @@ const Home = (props) => {
             <Header>Популярные</Header>
           </Divider>
         </div>
-        <Grid stackable container verticalAlign="middle" columns={5}>
-          <Grid.Row>
-            {findTenPopular.map((item, id) => (
-              <Grid.Column key={id} style={{ marginBottom: 10 }}>
-                <Card>
-                  <Image
-                    src={item.imageUrl}
-                    wrapped
-                    ui={false}
-                    style={{ height: 150, backgroundColor: "white" }}
-                  />
-                  <Card.Content>
-                    <Card.Header>{item.ru}</Card.Header>
-                    <Card.Description>{ItemMeta.description}</Card.Description>
-                  </Card.Content>
-                  <Card.Content extra>
-                    <Button
-                      animated="vertical"
-                      color="violet"
-                      as={Link}
-                      to="/categories"
-                      onClick={() => {
-                        changeClickedPopularProduct(item);
-                        changeMenu("categories");
-                        window.scrollTo(0, 0);
-                      }}
-                    >
-                      <Button.Content visible>Заказать</Button.Content>
-                      <Button.Content hidden>
-                        <Icon name="shopping cart" />
-                      </Button.Content>
-                    </Button>
-                  </Card.Content>
-                </Card>
-              </Grid.Column>
-            ))}
-          </Grid.Row>
-        </Grid>
+        <PopularDishes />
       </Segment>
     </ResponsiveContainer>
   );
 };
-
-const mapStateToProps = (state) => {
-  return {
-    state: state.Main,
-  };
-};
-
-export default connect(mapStateToProps, {
-  changeClickedPopularProduct,
-  changeMenu,
-})(Home);
+export default Home;

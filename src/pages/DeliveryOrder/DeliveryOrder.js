@@ -61,6 +61,7 @@ const DeliveryOrder = props => {
   let recaptcha;
   const [errors, setErrors] = useState([]);
   const [addressesOptions, setAddressesOptions] = useState([]);
+  const [activeAddressDropdown, setActiveAddressDropdown] = useState(false);
 
   useEffect(() => {
     
@@ -165,6 +166,7 @@ const DeliveryOrder = props => {
 
   const onChangeDeliveryAddress = idx => {
     if (addressesOptions.length - 1 !== idx) {
+      setActiveAddressDropdown(true)
       const address = addresses.find(({}, id) => id === idx);
       setUser({
         ...user,
@@ -192,6 +194,7 @@ const DeliveryOrder = props => {
         longitude: '',
         latitude: ''
       });
+      setActiveAddressDropdown(false)
     }
   };
   
@@ -273,7 +276,7 @@ const DeliveryOrder = props => {
                       id={'suggest'}
                       placeholder='Улица'
                       fluid
-                      hidden={user.street !== '' ? true : false}
+                      hidden={activeAddressDropdown}
                       value={user.street}
                       onChange={e =>
                         setUser({
@@ -302,7 +305,7 @@ const DeliveryOrder = props => {
                       }}
                     />
                     {
-                      user.street !== '' ? 
+                      activeAddressDropdown === true ? 
                       <Input
                         value={user.street}
                         readOnly
@@ -318,7 +321,7 @@ const DeliveryOrder = props => {
                       placeholder='Дом'
                       fluid
                       value={user.house}
-                      hidden={user.house !== '' ? true : false}
+                      hidden={activeAddressDropdown}
                       onChange={e =>
                         setUser({
                           ...user,
@@ -337,7 +340,7 @@ const DeliveryOrder = props => {
                       }}
                     />
                     {
-                      user.house !== '' ? 
+                      activeAddressDropdown === true ? 
                       <Input
                         value={user.house}
                         readOnly

@@ -26,11 +26,11 @@ const Nav = (props) => {
             Главная
           </Menu.Item>
           <Menu.Item
-            name="categories"
-            active={menu === "categories"}
+            name="products"
+            active={menu === "products"}
             onClick={handleItemClick}
             as={Link}
-            to={`/categories`}
+            to={`/products`}
             className='bangers'
           >
             Продукты
