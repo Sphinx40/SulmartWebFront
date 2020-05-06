@@ -22,7 +22,20 @@ const Home = () => {
     <ResponsiveContainer>
       <div className="cnn">
         <Segment basic>
-          <Header>Logo Удобная онлайн покупка</Header>
+         <Grid stackable columns='equal'>
+           <Grid.Row>
+             <Grid.Column>
+              <Image src='/img/sulmart.png' />
+             </Grid.Column>
+             <Grid.Column>
+               <div style={{ marginRight: 200 }}>
+              <Header>Удобная онлайн покупка</Header>
+              </div>
+             </Grid.Column>
+           </Grid.Row>
+          </Grid> 
+            
+        
           <div
             id="carouselExampleInterval"
             className="carousel slide carousel-fade"
@@ -46,7 +59,7 @@ const Home = () => {
                 )}
                 <div style={onLoadImage ? {} : { display: "none" }}>
                   <img
-                    src="https://delo.ua/files/news/images/3543/75/picture2_kakie-produkty-i-_354375_p0.jpg"
+                    src='/img/sulmart1.jpg'
                     className="d-block w-100"
                     style={{ height: 500 }}
                     alt="..."
@@ -57,7 +70,7 @@ const Home = () => {
               </div>
               <div className="carousel-item" data-interval="2000">
                 <img
-                  src="/img/BLUE.png"
+                  src='/img/sulmart2.jpg'
                   className="d-block w-100"
                   style={{ height: 500 }}
                   alt="..."
@@ -65,7 +78,7 @@ const Home = () => {
               </div>
               <div className="carousel-item">
                 <img
-                  src="/img/Green.png"
+                  src='/img/sulmart3.jpg'
                   className="d-block w-100"
                   style={{ height: 500 }}
                   alt="..."
@@ -116,4 +129,5 @@ const Home = () => {
     </ResponsiveContainer>
   );
 };
+
 export default Home;

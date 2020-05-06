@@ -35,7 +35,8 @@ const MyOrders = (props) => {
   return (
     <ResponsiveContainer>
       <Segment>
-      <Grid columns="equal" stackable>
+      {myOrders.length !== 0 ?
+        <Grid columns="equal" stackable>
         <Grid.Row>
           <Grid.Column width={5}>
             <Menu myOrders={myOrders} activeOrder={activeOrder} getOrderDetails={(param) => getOrderDetails(param)} />
@@ -138,7 +139,8 @@ const MyOrders = (props) => {
             </Grid.Column>
           )}
         </Grid.Row>
-      </Grid></Segment>
+      </Grid> : null}
+      </Segment>
     </ResponsiveContainer>
   );
 };

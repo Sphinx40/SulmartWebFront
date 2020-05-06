@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { formatDMYMS } from "../../utils/helpers";
 import { connect } from "react-redux";
-import { Label, Menu, Input } from "semantic-ui-react";
+import { Label, Menu } from "semantic-ui-react";
 
 const OrderMenu = ({ myOrders, getOrderDetails, activeOrder }) => {
   return (
     <Menu vertical stackable>
-      <Menu.Item>
-        <Input icon="search" placeholder="Дата" />
-      </Menu.Item>
-
       {myOrders.map((item, id) => {
         const date = formatDMYMS(item.orderDate);
         return (

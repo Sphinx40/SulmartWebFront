@@ -6,6 +6,7 @@ import {
   Grid,
   Divider,
   Input,
+  Image
 } from "semantic-ui-react";
 import {
   getCategories
@@ -93,16 +94,20 @@ const CategoriesMenu = (props) => {
     <div style={{ margin: 40 }}>
       <Grid columns='equal' stretched stackable>
         <Grid.Row>
-          <Grid.Column width={4}>
+          <Grid.Column mobile={16} tablet={6} computer={3}>
               <Menu vertical stackable fluid>
               <Menu.Item><Header textAlign='center'>Меню</Header></Menu.Item>
                 {categories.map((item, id) => (
                   <Menu.Item
                     key={id}
-                    name={item.ru}
                     active={activeCategory === item.ru}
                     onClick={() => onClickCategory(item)}
-                  />
+                >
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <div><Image src={item.image.dataUrl} style={{ width: 60, height: 40, borderRadius: 7 }} /></div>
+                    <div style={{ marginLeft: 5 }}><Header as='h5'>{item.ru}</Header></div>
+                  </div>
+                </Menu.Item>
                 ))}
               </Menu>
             {order.length === 0 ? null : (
