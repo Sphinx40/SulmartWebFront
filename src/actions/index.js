@@ -12,7 +12,6 @@ import {
   CHANGE_ADDRESSES,
   ADD_ADDRESS,
   CHANGE_MY_ORDERS,
-  GET_ORDER_STATUSES,
   GET_POPULAR,
   CHANGE_CLICKED_POPULAR_PRODUCT
 } from './types';
@@ -152,12 +151,10 @@ export const changeMyOrders = (orders) => {
 };
 
 export const getPopularDishes = () => {
-  console.log('object')
   return (dispatch) => {
     dispatch(modifyLoader(true));
     doGet(HEROKU_URI + `dishes`)
       .then(({ data }) => {
-        console.log(data)
         dispatch(modifyLoader(false));
         dispatch({
           type: GET_POPULAR,
@@ -175,5 +172,11 @@ export const changeClickedPopularProduct = (product) => {
   return {
     type: CHANGE_CLICKED_POPULAR_PRODUCT,
     payload: product
+  }
+}
+
+export const sendMessage = (text) => {
+  return () => {
+    doPost(HEROKU_URI + `comment`, { text })
   }
 }

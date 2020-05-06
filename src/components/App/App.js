@@ -5,7 +5,7 @@ import RenderRoutes from "../routes/routes";
 
 const App = (props) => {
   const { changeMenu, changeAddresses, changeMyOrders } = props;
-  const url = window.location.pathname.replace("/","");
+  const url = window.location.pathname.replace("/customer/","");
   const addresses = JSON.parse(localStorage.getItem("addresses")) || [];
   const myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
 

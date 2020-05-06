@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, List, Grid, Segment, Container, Divider, Image } from 'semantic-ui-react';
+import { Header, List, Grid, Segment, Container, Divider, Image, Icon } from 'semantic-ui-react';
 
 const Footer = () => (
   <Segment inverted style={{ margin: '5em 0em 0em', padding: '5em 0em' }} vertical>
@@ -30,8 +30,9 @@ const Footer = () => (
       </Grid.Row>
     </Grid>
     <Divider inverted section />
-    <Image src='/logo.png' centered size='mini' />
-    <Header as='h4' inverted>Все права защищены</Header>
+    <Image src='/img/sulmart.png' centered size='small' />
+    <Header as='h4' inverted><Icon name='copyright outline' size='small' />Sulmart</Header>
+    <Header as='h6' inverted>Все права защищены</Header>
   </Container>
 </Segment>
 );

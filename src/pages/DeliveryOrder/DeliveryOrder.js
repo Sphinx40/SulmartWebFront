@@ -212,7 +212,7 @@ const DeliveryOrder = props => {
         <Grid columns={2} divided>
           <Grid.Row>
             <Grid.Column>
-              <Table loading>
+              <Table loading="true">
                 <Table.Body>
                   {addresses.length === 0 ? null : (
                     <Table.Row>

@@ -8,12 +8,13 @@ import {
   Image,
   Segment,
   Card,
-  ItemMeta,
+  Container,
   Placeholder,
 } from "semantic-ui-react";
 import "./Home.css";
 import ResponsiveContainer from "../../components/ResponsiveContainer/ResponsiveContainer";
 import PopularDishes from './PopularDishes';
+import Comments from './Comments';
 
 const Home = () => {
   const [onLoadImage, setOnLoadImage] = useState(false);
@@ -22,19 +23,10 @@ const Home = () => {
     <ResponsiveContainer>
       <div className="cnn">
         <Segment basic>
-         <Grid stackable columns='equal'>
-           <Grid.Row>
-             <Grid.Column>
-              <Image src='/img/sulmart.png' />
-             </Grid.Column>
-             <Grid.Column>
-               <div style={{ marginRight: 200 }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+              <Image src='/img/sulmart.png' size='medium' />
               <Header>Удобная онлайн покупка</Header>
-              </div>
-             </Grid.Column>
-           </Grid.Row>
-          </Grid> 
-            
+            </div>
         
           <div
             id="carouselExampleInterval"
@@ -113,7 +105,7 @@ const Home = () => {
         </Segment>
       </div>
 
-      <Segment style={{ padding: "8em 0em" }} vertical>
+      <Segment style={{ padding: "8em 0em" }} basic vertical>
         <div className="cnn">
           <Divider
             as="h4"
@@ -124,8 +116,13 @@ const Home = () => {
             <Header>Популярные</Header>
           </Divider>
         </div>
+
         <PopularDishes />
       </Segment>
+
+      <Container>
+        <Comments />
+      </Container>
     </ResponsiveContainer>
   );
 };
