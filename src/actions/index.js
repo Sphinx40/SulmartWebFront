@@ -175,8 +175,11 @@ export const changeClickedPopularProduct = (product) => {
   }
 }
 
-export const sendMessage = (text) => {
+export const sendMessage = (text,callback) => {
   return () => {
     doPost(HEROKU_URI + `comment`, { text })
+    .then(() => {
+      callback()
+    })
   }
 }
