@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@eva-design/eva": "^2.0.0-alpha.1",
+    "@ui-kitten/components": "^5.0.0",
     "antd": "^4.1.4",
     "axios": "^0.19.2",
     "formik": "^2.1.4",
@@ -13,6 +15,7 @@
     "react-dom": "^16.13.1",
     "react-google-invisible-recaptcha": "^0.2.11",
     "react-loadable": "^5.5.0",
+    "react-native-svg": "^12.1.0",
     "react-number-format": "^4.4.1",
     "react-recaptcha": "^2.3.10",
     "react-recaptcha-google": "^1.1.1",

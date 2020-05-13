@@ -24,6 +24,7 @@ import { addToAddresses, createOrder, clearOrder } from '../../actions';
 import { withRouter } from 'react-router-dom';
 import { Steps } from 'antd';
 import { calculateDeliveryCost } from '../../utils/zmapMethods';
+import ResponsiveContainer from '../../components/ResponsiveContainer/ResponsiveContainer';
 
 const { Step } = Steps;
 
@@ -199,6 +200,7 @@ const DeliveryOrder = props => {
   };
   
   return (
+    <ResponsiveContainer>
     <Segment padded='very' color='violet' style={{ margin: 20 }}>
       <Steps style={{ width: 500, margin: 'auto' }} size='small' current={1}>
         <Step status='finish' />
@@ -209,7 +211,7 @@ const DeliveryOrder = props => {
       <Divider />
       
       <Segment loading={mapIsLoading} basic>
-        <Grid columns={2} divided>
+        <Grid stackable columns={2} divided>
           <Grid.Row>
             <Grid.Column>
               <Table loading="true">
@@ -399,7 +401,7 @@ const DeliveryOrder = props => {
           </Grid.Row>
         </Grid>
       </Segment>
-    </Segment>
+    </Segment></ResponsiveContainer>
   );
 };
 
