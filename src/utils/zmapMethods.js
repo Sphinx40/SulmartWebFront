@@ -127,3 +127,66 @@ export const calculateDeliveryCost = (
 
   return result;
 };
+
+export const splitByCommaAndReturnFirstName = (text) => {
+  let streetArray = text.split(',');
+  let result = '';
+  if (streetArray.length > 0) {
+    return streetArray[0];
+  }
+
+  return result;
+};
+
+export const parseGeoObjectsHttp = (geoObjects) => {
+  let address = { house: '', street: '', fullAddress: '' };
+  if (geoObjects === null || geoObjects.length === 0) return address;
+
+  let firstGeoObject = geoObjects[0];
+  if (firstGeoObject.GeoObject !== null) {
+    address.street = parseGeoObjectsHttpGetStreet(
+      firstGeoObject.GeoObject.name
+    );
+    address.house = parseGeoObjectsHttpGetHouse(firstGeoObject.GeoObject.name);
+  }
+
+  if (geoObjects.length > 1) {
+    let restGeoObjects = [...geoObjects.slice(1)];
+
+    //getting names and removing duplicates
+    let arrayAddressNames = Array.from(
+      new Set(restGeoObjects.map((item) => item.GeoObject.name))
+    );
+
+    //concatenating into one string
+    address.fullAddress = arrayAddressNames.join(', ');
+  }
+
+  return address;
+};
+
+const parseGeoObjectsHttpGetStreet = (text) => {
+  if (text === null || text.length === 0) return '';
+  let streetArray = text.split(',');
+  let result = '';
+  if (streetArray.length > 0) {
+    result = streetArray[0];
+  }
+
+  return result;
+};
+
+const parseGeoObjectsHttpGetHouse = (text) => {
+  if (text === null || text.length === 0) return '';
+  let streetArray = text.split(',');
+  let result = '';
+  if (streetArray.length > 1) {
+    result = streetArray[1];
+  }
+
+  return result.trim();
+};
+
+export const uniqByKeepLast = (data, key) => {
+  return [...new Map(data.map((x) => [key(x), x])).values()];
+};

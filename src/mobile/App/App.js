@@ -8,17 +8,36 @@ const history = createBrowserHistory();
 
 const AsyncHome = Loadable({
   loader: () =>
-    import('../Screens/HomeScreen/HomeScreen' /* webpackChunkName: "AsyncHome" */),
-  loading: Loading
+    import(
+      '../Screens/HomeScreen/HomeScreen' /* webpackChunkName: "AsyncHome" */
+    ),
+  loading: Loading,
 });
 
+const AsyncAddressListScreen = Loadable({
+  loader: () =>
+    import(
+      '../Screens/Address/AddressListScreen' /* webpackChunkName: "AsyncAddressListScreen" */
+    ),
+  loading: Loading,
+});
+
+const AsyncSearchStreetScreen = Loadable({
+  loader: () =>
+    import(
+      '../Screens/Address/SearchStreetScreen' /* webpackChunkName: "AsyncSearchStreetScreen" */
+    ),
+  loading: Loading,
+});
 
 const App = () => {
   return (
     <Router basename='/customer' history={history}>
-        <Route path='/' component={AsyncHome} exact />
+      <Route path='/' component={AsyncHome} exact />
+      <Route path='/addressList' component={AsyncAddressListScreen} exact />
+      <Route path='/searchStreet' component={AsyncSearchStreetScreen} exact />
 
-        {/* <Route path='/basket' component={AsyncBasket} /> */}
+      {/* <Route path='/basket' component={AsyncBasket} /> */}
     </Router>
   );
 };
