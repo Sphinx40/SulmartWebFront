@@ -55,7 +55,7 @@ const SearchStreetScreen = (props) => {
         name='arrow left'
         link
         onClick={() => {
-          history.push('/addressList');
+          history.push('/newAddress');
         }}
       />
     );
@@ -78,7 +78,10 @@ const SearchStreetScreen = (props) => {
             <List.Item
               key={key}
               onClick={() => {
-                history.push('/addressList');
+                history.push({
+                  pathname: '/newAddress',
+                  state: { street: item.text },
+                });
               }}
             >
               <List.Content>
