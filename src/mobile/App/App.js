@@ -38,6 +38,14 @@ const AsyncNewAddressScreen = Loadable({
   loading: Loading,
 });
 
+const AsyncNewAddressScreenWithMap = Loadable({
+  loader: () =>
+    import(
+      '../Screens/Address/NewAddressScreenWithMap' /* webpackChunkName: "AsyncNewAddressScreenWithMap" */
+    ),
+  loading: Loading,
+});
+
 const App = () => {
   return (
     <Router basename='/customer' history={history}>
@@ -45,6 +53,11 @@ const App = () => {
       <Route path='/addressList' component={AsyncAddressListScreen} exact />
       <Route path='/searchStreet' component={AsyncSearchStreetScreen} exact />
       <Route path='/newAddress' component={AsyncNewAddressScreen} exact />
+      <Route
+        path='/newAddressWithMap'
+        component={AsyncNewAddressScreenWithMap}
+        exact
+      />
 
       {/* <Route path='/basket' component={AsyncBasket} /> */}
     </Router>
