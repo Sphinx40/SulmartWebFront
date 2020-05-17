@@ -6,7 +6,7 @@ import {
   Map,
   Placemark,
   GeolocationControl,
-  ZoomControl,
+  ZoomControl
 } from 'react-yandex-maps';
 
 import {
@@ -16,11 +16,11 @@ import {
   setYmaps,
   setAnyObjectZmapReducer,
   setMapIsLoading
-} from '../../actions/zmapActions';
+} from '../../actions/addressActions';
 
-import { splitByCommaAndReturnStreetName } from '../../utils/zmapMethods';
+import { splitByCommaAndReturnStreetName } from '../../utils/addressMethodsods';
 import { connect } from 'react-redux';
-const Zmap = (props) => {
+const Zmap = props => {
   //from DeliveryOrder
   const {
     // setMapWidth,
@@ -28,11 +28,11 @@ const Zmap = (props) => {
     // setLongitude,
     // setLatitude,
     setStreet,
-    setHouse,
+    setHouse
   } = props;
   const {
     mapWidth,
-    mapHeight,
+    mapHeight
     // , longitude, latitude, street, house
   } = props;
 
@@ -57,7 +57,7 @@ const Zmap = (props) => {
   useEffect(() => {
     setAnyObjectZmapReducer({
       // placeMarkCoords: city.coords,
-      mapCenter: city.coords,
+      mapCenter: city.coords
     });
     //eslint-disable-next-line
   }, []);
@@ -65,7 +65,7 @@ const Zmap = (props) => {
   // const [mapIsLoading, setMapIsLoading] = useState(true);
   // console.log(placeMarkCoords);
 
-  const loadYmaps = (ymaps) => {
+  const loadYmaps = ymaps => {
     setYmaps(ymaps);
     setMapIsLoading(false);
     let suggestView = new ymaps.SuggestView('suggest', {
@@ -74,23 +74,23 @@ const Zmap = (props) => {
           return (suggestView.state.get('open')
             ? ymaps.suggest(city.name + ', ' + request)
             : ymaps.vow.resolve([])
-          ).then(function (res) {
+          ).then(function(res) {
             suggestView.events.fire('requestsuccess', {
-              target: suggestView,
+              target: suggestView
             });
 
             return res;
           });
 
           // return ymaps.suggest(city.name + ', ' + request);
-        },
-      },
+        }
+      }
     });
 
     // Изначально разрешаем саджесту открываться
     suggestView.state.set('open', true);
 
-    suggestView.events.add('select', (e) => {
+    suggestView.events.add('select', e => {
       let streetName = splitByCommaAndReturnStreetName(
         e.get('item').displayName
       );
@@ -98,7 +98,7 @@ const Zmap = (props) => {
       setStreet(streetName);
       setHouse('');
       if (streetName && streetName.length > 0) {
-        ymaps.geocode(city.name + ', ' + streetName).then((result) => {
+        ymaps.geocode(city.name + ', ' + streetName).then(result => {
           let firstGeoObject = result.geoObjects.get(0);
 
           let adminAreas = firstGeoObject.getAdministrativeAreas();
@@ -110,8 +110,8 @@ const Zmap = (props) => {
           ) {
             setAnyObjectZmapReducer({
               placeMarkProperties: {
-                iconCaption: 'Доставка только по городу Алматы!!!',
-              },
+                iconCaption: 'Доставка только по городу Алматы!!!'
+              }
               // zoom: 12
             });
             setStreet('');
@@ -120,10 +120,10 @@ const Zmap = (props) => {
             let coords = firstGeoObject.geometry.getCoordinates();
             setAnyObjectZmapReducer({
               placeMarkProperties: {
-                iconCaption: streetName,
+                iconCaption: streetName
               },
               placeMarkCoords: coords,
-              mapCenter: coords,
+              mapCenter: coords
               // zoom: 12
             });
           }
@@ -131,7 +131,7 @@ const Zmap = (props) => {
       }
 
       suggestView.state.set({ open: false });
-      suggestView.events.once('requestsuccess', function () {
+      suggestView.events.once('requestsuccess', function() {
         suggestView.state.set('open', true);
       });
 
@@ -141,20 +141,20 @@ const Zmap = (props) => {
     });
   };
 
-  const getStreetNameByCoords = (coords) => {
+  const getStreetNameByCoords = coords => {
     if (!ymaps.geocode) return;
     setStreet('');
     setHouse('');
     setAnyObjectZmapReducer({
       placeMarkProperties: {
-        iconCaption: '...searching',
+        iconCaption: '...searching'
       },
-      placeMarkCoords: coords,
+      placeMarkCoords: coords
     });
     // console.log(coords,'coords')
     ymaps
       .geocode(coords)
-      .then((res) => {
+      .then(res => {
         let firstGeoObject = res.geoObjects.get(0);
 
         let iconCaptionText = '';
@@ -169,8 +169,8 @@ const Zmap = (props) => {
         ) {
           setAnyObjectZmapReducer({
             placeMarkProperties: {
-              iconCaption: 'Доставка только по городу Алматы!!!',
-            },
+              iconCaption: 'Доставка только по городу Алматы!!!'
+            }
             // zoom: 12
           });
           setStreet('');
@@ -189,8 +189,8 @@ const Zmap = (props) => {
         iconCaptionText = streetTemp + ' ' + houseTemp;
         setAnyObjectZmapReducer({
           placeMarkProperties: {
-            iconCaption: iconCaptionText,
-          },
+            iconCaption: iconCaptionText
+          }
           // zoom: 12
         });
 
@@ -214,7 +214,7 @@ const Zmap = (props) => {
           return;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         setStreet('');
         setHouse('');
         return;
@@ -240,7 +240,7 @@ const Zmap = (props) => {
       <YMaps
         query={{
           lang: 'ru_RU',
-          apikey: '2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6',
+          apikey: '2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6'
         }}
       >
         <div id='map-basics'>
@@ -250,8 +250,8 @@ const Zmap = (props) => {
             height={mapHeight}
             draggable={true}
             modules={['SuggestView', 'suggest', 'geocode']}
-            onLoad={(ymaps) => loadYmaps(ymaps)}
-            onClick={(e) => {
+            onLoad={ymaps => loadYmaps(ymaps)}
+            onClick={e => {
               getStreetNameByCoords([...e.get('coords')]);
             }}
           >
@@ -264,15 +264,15 @@ const Zmap = (props) => {
               properties={placeMarkProperties}
               options={{ draggable: true }}
               // geometry={[...coords]}
-              onClick={(e) => {
+              onClick={e => {
                 getStreetNameByCoords([
-                  ...e.get('target').geometry.getCoordinates(),
+                  ...e.get('target').geometry.getCoordinates()
                 ]);
               }}
               // onDragStart={e => console.log(e, 'onDragStart')}
-              onDragEnd={(e) => {
+              onDragEnd={e => {
                 getStreetNameByCoords([
-                  ...e.get('target').geometry.getCoordinates(),
+                  ...e.get('target').geometry.getCoordinates()
                 ]);
               }}
             />
@@ -289,7 +289,7 @@ const Zmap = (props) => {
 // latitude:43.223790
 // longitude:76.842540
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   // console.log(state.Zmap.placeMarkCoords,'placeMarkCoords')
   return {
     city: state.Zmap.city,
@@ -298,7 +298,7 @@ const mapStateToProps = (state) => {
     mapCenter: state.Zmap.mapCenter,
     ymaps: state.Zmap.ymaps,
     zoom: state.Zmap.zoom,
-    mapIsLoading:state.Zmap.mapIsLoading
+    mapIsLoading: state.Zmap.mapIsLoading
   };
 };
 
@@ -308,7 +308,7 @@ export default connect(mapStateToProps, {
   setMapCenter,
   setYmaps,
   setAnyObjectZmapReducer,
-  setMapIsLoading  
+  setMapIsLoading
 })(Zmap);
 
 // const geocode = ymaps => {

@@ -1,56 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Input, Header, List, Icon } from 'semantic-ui-react';
+import { Input, List, Icon } from 'semantic-ui-react';
+import { Image, Segment } from 'semantic-ui-react';
 import queryString from 'query-string';
-import {
-  splitByCommaAndReturnStreetName,
-  splitByCommaAndReturnFirstName,
-} from '../../../utils/zmapMethods';
 import './address.css';
 
-import {
-  setPlaceMarkCoords,
-  setPlaceMarkProperties,
-  setMapCenter,
-  setAnyObjectZmapReducer,
-  setMapIsLoading,
-} from '../../../actions/zmapActions';
+import { onGeocodeByCoords } from '../../../actions/addressActions';
 
-const NewAddressScreenWithMap = (props) => {
+const NewAddressScreenWithMap = props => {
   const ymaps = window.ymaps;
   const { history } = props;
-  const [house, setHouse] = useState('');
-  const [street, setStreet] = useState('');
-  // const [coords, setHouse] = useState('');
-
-  const [longitude, setLongitude] = useState('');
-  const [latitude, setLatitude] = useState('');
-
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [mapWidth, setMapWidth] = useState(310);
+  const [mapLoading, setMapLoading] = useState(false);
 
-  const [mapHeight, setMapHeight] = useState(380);
-  const {
-    setPlaceMarkCoords,
-    setPlaceMarkProperties,
-    setMapCenter,
-    setAnyObjectZmapReducer,
-    setMapIsLoading,
-  } = props;
-  const {
-    city,
-    placeMarkCoords = city.coords,
-    placeMarkProperties,
-    mapCenter,
-    zoom,
-    mapIsLoading,
-  } = props;
+  const { onGeocodeByCoords } = props;
+  const { city, map, address } = props;
 
   //   console.log(props.match, 'props.match.params.latitude');
   useEffect(() => {
+    setMapLoading(true);
     let initCoords = city.coords;
-    let initZoom = zoom;
+    let initZoom = map.zoom;
 
     const url = props.location.search;
     const params = queryString.parse(url);
@@ -58,10 +29,18 @@ const NewAddressScreenWithMap = (props) => {
 
     // Waiting for the API to load and DOM to be ready.
     ymaps.ready(() => {
+      setMapLoading(false);
       if (params.latitude && params.longitude) {
         initCoords = [params.latitude, params.longitude];
         initZoom = 16;
-        onGeocodeByCoords(initCoords, (text) => {});
+
+        onGeocodeByCoords(
+          ymaps,
+          initCoords,
+          text => {},
+          bool => setLoading(bool),
+          city.name
+        );
       }
       myMap = new ymaps.Map(
         'mobile-map',
@@ -69,42 +48,50 @@ const NewAddressScreenWithMap = (props) => {
           //   center: [43.24946867986241, 76.91736506700802],
           center: initCoords,
           zoom: initZoom,
-          controls: ['zoomControl', 'searchControl'],
+          controls: ['zoomControl', 'searchControl']
         },
         {
-          searchControlProvider: 'yandex#search',
+          searchControlProvider: 'yandex#search'
         }
       );
 
       let myPlacemark = new ymaps.Placemark(
         initCoords,
         {
-          iconCaption: '',
+          iconCaption: ''
         },
         { draggable: true }
       );
 
-      myPlacemark.events.add('dragend', (e) => {
+      myPlacemark.events.add('dragend', e => {
         let coords = [...e.get('target').geometry.getCoordinates()];
 
-        onGeocodeByCoords(coords, (text) => {
-          myPlacemark.properties.set({
-            // Forming a string with the object's data.
-            iconCaption: text,
-          });
-        });
+        onGeocodeByCoords(
+          ymaps,
+          coords,
+          ({ error, iconCaption }) => {
+            setError(error);
+            myPlacemark.properties.set({ iconCaption });
+          },
+          bool => setLoading(bool),
+          city.name
+        );
       });
 
-      myMap.events.add('click', (e) => {
+      myMap.events.add('click', e => {
         let coords = e.get('coords');
         // console.log(coords);
         myPlacemark.geometry.setCoordinates(coords);
-        onGeocodeByCoords(coords, (text) => {
-          myPlacemark.properties.set({
-            // Forming a string with the object's data.
-            iconCaption: text,
-          });
-        });
+        onGeocodeByCoords(
+          ymaps,
+          coords,
+          ({ error, iconCaption }) => {
+            setError(error);
+            myPlacemark.properties.set({ iconCaption });
+          },
+          bool => setLoading(bool),
+          city.name
+        );
       });
       myMap.geoObjects.add(myPlacemark);
     });
@@ -113,79 +100,6 @@ const NewAddressScreenWithMap = (props) => {
   //   ?latitude=43.21682403443262&&longitude=76.85062120420784
   // latitude:43.223790
   // longitude:76.842540
-  const onGeocodeByCoords = (coords, setIconCaption) => {
-    setLoading(true);
-    setError('');
-    let myGeocoder = ymaps.geocode(coords);
-    myGeocoder.then(
-      (result) => {
-        setLoading(false);
-
-        let found = result.metaData.geocoder.found;
-
-        // console.log(found, 'found');
-        if (found > 0) {
-          let firstGeoObject = result.geoObjects.get(0);
-          let streetTemp = '';
-          let adminAreas = firstGeoObject.getAdministrativeAreas();
-          if (
-            adminAreas === null ||
-            adminAreas.length !== 1 ||
-            adminAreas[0] !== 'Алматы'
-          ) {
-            setStreet('');
-            setHouse('');
-            setError('Доставка только по городу Алматы!!!');
-            setIconCaption('Доставка только по городу Алматы!!!');
-            return;
-          }
-
-          streetTemp = splitByCommaAndReturnStreetName(
-            firstGeoObject.getAddressLine()
-          );
-
-          let premiseNumber = firstGeoObject.getPremiseNumber();
-
-          if (premiseNumber !== undefined) {
-            if (
-              streetTemp === null ||
-              streetTemp === '' ||
-              streetTemp.length === 0
-            ) {
-              setStreet('');
-              setHouse('');
-              setError('Адрес не найден');
-              setIconCaption('Адрес не найден');
-              return;
-            } else {
-              // returnObj = { found: true, streetTemp, houseTemp };
-              setStreet(streetTemp);
-              setHouse(premiseNumber);
-              setIconCaption(streetTemp + ' ' + premiseNumber);
-              return;
-            }
-          } else {
-            setStreet('');
-            setHouse('');
-            setError('Адрес не найден');
-            setIconCaption('Адрес не найден');
-          }
-        } else {
-          setStreet('');
-          setHouse('');
-          setError('Адрес не найден');
-          setIconCaption('Адрес не найден');
-        }
-      },
-      (err) => {
-        setStreet('');
-        setHouse('');
-        setError('Адрес не найден');
-        setIconCaption('Адрес не найден');
-        // error handling
-      }
-    );
-  };
 
   return (
     <React.Fragment>
@@ -204,15 +118,15 @@ const NewAddressScreenWithMap = (props) => {
         </List.Item>
         <List.Item>
           <List.Content>
-            <Input placeholder='Улица' fluid value={street} />
+            <Input readOnly placeholder='Улица' fluid value={address.street} />
           </List.Content>
         </List.Item>
         <List.Item>
           <List.Content>
             <Input
-              focus={false}
+              readOnly
               placeholder='Дом'
-              value={house}
+              value={address.house}
               fluid
               action={{
                 color: 'teal',
@@ -220,11 +134,12 @@ const NewAddressScreenWithMap = (props) => {
                 icon: 'right arrow',
                 content: 'Выбрать',
                 disabled:
-                  street.length > 0 && house.replace(/\s/g, '').length > 0
+                  address.street.length > 0 &&
+                  address.house.replace(/\s/g, '').length > 0
                     ? false
                     : true,
                 size: 'mini',
-                loading: loading,
+                loading: loading
               }}
             />
           </List.Content>
@@ -233,23 +148,28 @@ const NewAddressScreenWithMap = (props) => {
 
       <div
         id='mobile-map'
-        style={{ width: mapWidth, height: mapHeight, padding: 5 }}
-      ></div>
+        style={{ width: map.width, height: map.height, padding: 5 }}
+      >
+        {mapLoading && (
+          <Segment placeholder loading>
+            <Image src='/img/paragraph.png' />
+          </Segment>
+        )}
+      </div>
     </React.Fragment>
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
+  // console.log(state, 'state');
   return {
-    city: state.Zmap.city,
-    placeMarkCoords: state.Zmap.placeMarkCoords,
-    placeMarkProperties: state.Zmap.placeMarkProperties,
-    mapCenter: state.Zmap.mapCenter,
-    zoom: state.Zmap.zoom,
-    mapIsLoading: state.Zmap.mapIsLoading,
+    city: state.address.city,
+    market: state.address.market,
+    map: state.address.map,
+    address: state.address.address
   };
 };
 
-export default connect(mapStateToProps, { setAnyObjectZmapReducer })(
+export default connect(mapStateToProps, { onGeocodeByCoords })(
   NewAddressScreenWithMap
 );

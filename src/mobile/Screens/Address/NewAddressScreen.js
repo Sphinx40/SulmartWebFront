@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Input, Table, List } from 'semantic-ui-react';
+import { Input, List } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { onGeocodeByText } from '../../../actions/addressActions';
 
-const NewAddressScreen = (props) => {
+const NewAddressScreen = props => {
   const ymaps = window.ymaps;
   const { history } = props;
-  const [house, setHouse] = useState('');
-  const [city, setCity] = useState('Алматы');
-  // const [coords, setHouse] = useState('');
-
-  const [longitude, setLongitude] = useState('');
-  const [latitude, setLatitude] = useState('');
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [house, setHouse] = useState('');
+
+  const { onGeocodeByText } = props;
+  const { city, map, address } = props;
 
   // useEffect(() => {
   //   if (
@@ -42,55 +41,21 @@ const NewAddressScreen = (props) => {
 
   // latitude:43.223790
   // longitude:76.842540
-  const onGeocodeByText = (street, house, city) => {
-    setLoading(true);
-    setError('');
-    let myGeocoder = ymaps.geocode(street + ', ' + house + ', ' + city);
-    myGeocoder.then(
-      (result) => {
-        setLoading(false);
-        let found = result.metaData.geocoder.found;
 
-        if (found > 0) {
-          let firstGeoObject = result.geoObjects.get(0);
-          let coords = firstGeoObject.geometry.getCoordinates();
-          let premiseNumber = firstGeoObject.getPremiseNumber();
-
-          if (premiseNumber !== undefined) {
-            setLatitude(coords[0]);
-            setLongitude(coords[1]);
-          } else {
-            setError('Адрес не найден');
-          }
-        } else setError('Адрес не найден');
-
-        // console.log(result, 'res');
-        // console.log(firstGeoObject, 'firstGeoObject');
-        // console.log(coords, 'coords');
-        // console.log(
-        //   firstGeoObject.getAddressLine(),
-        //   'firstGeoObject.getAddressLine()'
-        // );
-        // console.log(
-        //   firstGeoObject.getPremiseNumber(),
-        //   'firstGeoObject.getPremiseNumber()'
-        // );
-        // console.log(
-        //   firstGeoObject.getThoroughfare(),
-        //   'firstGeoObject.getThoroughfare()'
-        // );
-        // console.log(firstGeoObject.getPremise(), 'firstGeoObject.getPremise()');
-        // map.geoObjects.add(res.geoObjects);
-        // Taking the data resulting from geocoding the object
-        // and outputting it to the console.
-        // console.log(
-        //   res.geoObjects.get(0).properties.get('metaDataProperty').getAll()
-        // );
-      },
-      (err) => {
-        setError('Адрес не найден');
-        // error handling
-      }
+  const onSuccess = result => {
+    setError(result.error);
+    if (result.correctAddress) {
+      console.log('success');
+    }
+  };
+  const onContinue = (street, house) => {
+    onGeocodeByText(
+      ymaps,
+      street,
+      house,
+      onSuccess,
+      bool => setLoading(bool),
+      city.name
     );
   };
 
@@ -128,61 +93,23 @@ const NewAddressScreen = (props) => {
                   ? false
                   : true,
               size: 'mini',
-              onClick: () => onGeocodeByText(street, house, city),
-              loading: loading,
+              onClick: () => onContinue(street, house),
+              loading: loading
             }}
           />
         </List.Content>
       </List.Item>
     </List>
-    // <Table>
-    //   <Table.Body>
-    //     <Table.Row>
-    //       <Table.Cell>
-    //         <Input
-    //           icon='search'
-    //           iconPosition='left'
-    //           placeholder='Улица'
-    //           fluid
-    //           value={street}
-    //           onClick={() => history.push('/searchStreet')}
-    //         />
-    //       </Table.Cell>
-    //     </Table.Row>
-
-    //     <Table.Row>
-    //       <Table.Cell>
-    //         {error}
-    //         <Input
-    //           placeholder='Дом'
-    //           value={house}
-    //           onChange={({ target: { value } }) => setHouse(value)}
-    //           autoFocus={street.length > 0 ? true : false}
-    //           fluid
-    //           action={{
-    //             color: 'teal',
-    //             labelPosition: 'right',
-    //             icon: 'right arrow',
-    //             content: 'Выбрать',
-    //             disabled:
-    //               street.length > 0 && house.replace(/\s/g, '').length > 0
-    //                 ? false
-    //                 : true,
-    //             size: 'mini',
-    //             onClick: () => onGeocodeByText(street, house, city),
-    //             loading: loading,
-    //           }}
-    //         />
-    //       </Table.Cell>
-    //     </Table.Row>
-    //     <Table.Row></Table.Row>
-    //   </Table.Body>
-    // </Table>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {};
+const mapStateToProps = state => {
+  // console.log(state.address.address);
+  return {
+    city: state.address.city,
+    market: state.address.market,
+    address: state.address.address
+  };
 };
 
-export default connect(mapStateToProps, {})(NewAddressScreen);
+export default connect(mapStateToProps, { onGeocodeByText })(NewAddressScreen);

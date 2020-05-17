@@ -1,7 +1,7 @@
-export const splitByCommaAndReturnStreetName = (text) => {
+export const splitByCommaAndReturnStreetName = text => {
   let streetArray = text.split(',');
   let result = '';
-  streetArray.forEach((item) => {
+  streetArray.forEach(item => {
     if (
       item.includes('улица') ||
       item.includes('проспект') ||
@@ -12,7 +12,7 @@ export const splitByCommaAndReturnStreetName = (text) => {
     }
   });
   if (result === '') {
-    streetArray.forEach((item) => {
+    streetArray.forEach(item => {
       if (item.includes('микрорайон')) {
         result = item;
       }
@@ -22,7 +22,7 @@ export const splitByCommaAndReturnStreetName = (text) => {
   return result;
 };
 
-export const removeStreetWord = (text) => {
+export const removeStreetWord = text => {
   let tempText = text;
 
   tempText = tempText.replace('улица ', '');
@@ -43,7 +43,7 @@ export const removeStreetWord = (text) => {
   return tempText;
 };
 
-export const rad = (x) => {
+export const rad = x => {
   return (x * Math.PI) / 180;
 };
 
@@ -128,7 +128,7 @@ export const calculateDeliveryCost = (
   return result;
 };
 
-export const splitByCommaAndReturnFirstName = (text) => {
+export const splitByCommaAndReturnFirstName = text => {
   let streetArray = text.split(',');
   let result = '';
   if (streetArray.length > 0) {
@@ -138,7 +138,7 @@ export const splitByCommaAndReturnFirstName = (text) => {
   return result;
 };
 
-export const parseGeoObjectsHttp = (geoObjects) => {
+export const parseGeoObjectsHttp = geoObjects => {
   let address = { house: '', street: '', fullAddress: '' };
   if (geoObjects === null || geoObjects.length === 0) return address;
 
@@ -155,7 +155,7 @@ export const parseGeoObjectsHttp = (geoObjects) => {
 
     //getting names and removing duplicates
     let arrayAddressNames = Array.from(
-      new Set(restGeoObjects.map((item) => item.GeoObject.name))
+      new Set(restGeoObjects.map(item => item.GeoObject.name))
     );
 
     //concatenating into one string
@@ -165,7 +165,7 @@ export const parseGeoObjectsHttp = (geoObjects) => {
   return address;
 };
 
-const parseGeoObjectsHttpGetStreet = (text) => {
+const parseGeoObjectsHttpGetStreet = text => {
   if (text === null || text.length === 0) return '';
   let streetArray = text.split(',');
   let result = '';
@@ -176,7 +176,7 @@ const parseGeoObjectsHttpGetStreet = (text) => {
   return result;
 };
 
-const parseGeoObjectsHttpGetHouse = (text) => {
+const parseGeoObjectsHttpGetHouse = text => {
   if (text === null || text.length === 0) return '';
   let streetArray = text.split(',');
   let result = '';
@@ -188,5 +188,5 @@ const parseGeoObjectsHttpGetHouse = (text) => {
 };
 
 export const uniqByKeepLast = (data, key) => {
-  return [...new Map(data.map((x) => [key(x), x])).values()];
+  return [...new Map(data.map(x => [key(x), x])).values()];
 };

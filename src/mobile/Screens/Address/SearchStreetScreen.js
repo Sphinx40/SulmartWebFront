@@ -1,53 +1,27 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import {
-  Segment,
-  Header,
-  Input,
-  Grid,
-  Divider,
-  Button,
-  Table,
-  List,
-  Radio,
-  Icon,
-} from 'semantic-ui-react';
-import { doGet } from '../../../utils/axiosActions';
-import {
-  uniqByKeepLast,
-  parseGeoObjectsHttp,
-  splitByCommaAndReturnFirstName,
-} from '../../../utils/zmapMethods';
+import { Input, List, Icon } from 'semantic-ui-react';
+
+import { onSuggest } from '../../../actions/addressActions';
 
 import { debounce } from 'lodash';
 
-const SearchStreetScreen = (props) => {
+const SearchStreetScreen = props => {
   const ymaps = window.ymaps;
   const { history } = props;
-  const [city, setCity] = useState('Алматы');
-  const [apiKey, setApiKey] = useState('2d3f0fe3-34b2-40fb-bb05-cb559a74d6d6');
+  const { city, onSuggest } = props;
   const [loading, setLoading] = useState(false);
 
   const [suggestedData, setSuggestedData] = useState([]);
 
-  const onSuggest = debounce((text) => {
-    setLoading(true);
-
-    ymaps.ready(() => {
-      ymaps.suggest(city + ', ' + text).then((items) => {
-        setLoading(false);
-        let arrayOfDisplayNames = items.map((item) => {
-          return {
-            text: splitByCommaAndReturnFirstName(item.displayName),
-          };
-        });
-        arrayOfDisplayNames = uniqByKeepLast(
-          arrayOfDisplayNames,
-          (item) => item.text
-        );
-        setSuggestedData(arrayOfDisplayNames);
-      });
-    });
+  const onSuggestDebounce = debounce(text => {
+    onSuggest(
+      ymaps,
+      text,
+      bool => setLoading(bool),
+      city.name,
+      result => setSuggestedData(result)
+    );
   }, 1000);
   const backToPreviousPageIcon = () => {
     return (
@@ -68,7 +42,7 @@ const SearchStreetScreen = (props) => {
         placeholder='Улица'
         autoFocus
         fluid
-        onChange={(event) => onSuggest(event.target.value)}
+        onChange={event => onSuggestDebounce(event.target.value)}
         loading={loading}
       />
 
@@ -80,7 +54,7 @@ const SearchStreetScreen = (props) => {
               onClick={() => {
                 history.push({
                   pathname: '/newAddress',
-                  state: { street: item.text },
+                  state: { street: item.text }
                 });
               }}
             >
@@ -95,8 +69,10 @@ const SearchStreetScreen = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {};
+const mapStateToProps = state => {
+  return {
+    city: state.address.city
+  };
 };
 
-export default connect(mapStateToProps, {})(SearchStreetScreen);
+export default connect(mapStateToProps, { onSuggest })(SearchStreetScreen);
