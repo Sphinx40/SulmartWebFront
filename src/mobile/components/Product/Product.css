@@ -1,0 +1,25 @@
+.product {
+    height: 160px;
+    padding: 10px;
+    width: 150px;
+    background-color: rgb(100, 100, 100);
+}
+
+.productImage {
+    width: 200px;
+    height: 75px;
+    margin: auto;
+}
+
+.title {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 10px;
+    align-items: center;
+}

@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { Input, List } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
-import { onGeocodeByText } from '../../../actions/addressActions';
+import React, { useState } from "react";
+import { connect } from "react-redux";
+import { Input, List, Button } from "semantic-ui-react";
+import { Link } from "react-router-dom";
+import { onGeocodeByText } from "../../../actions/addressActions";
+import Spacer from "../../components/Spacer";
 
-const NewAddressScreen = props => {
+const NewAddressScreen = (props) => {
   const ymaps = window.ymaps;
   const { history } = props;
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [house, setHouse] = useState('');
+  const [house, setHouse] = useState("");
 
   const { onGeocodeByText } = props;
   const { city, map, address } = props;
@@ -29,7 +30,7 @@ const NewAddressScreen = props => {
   //   // }
   // }, [props.location.state]);
 
-  let street = '';
+  let street = "";
   if (
     props.location.state !== null &&
     props.location.state !== undefined &&
@@ -42,10 +43,10 @@ const NewAddressScreen = props => {
   // latitude:43.223790
   // longitude:76.842540
 
-  const onSuccess = result => {
+  const onSuccess = (result) => {
     setError(result.error);
     if (result.correctAddress) {
-      console.log('success');
+      console.log("success");
     }
   };
   const onContinue = (street, house) => {
@@ -54,61 +55,64 @@ const NewAddressScreen = props => {
       street,
       house,
       onSuccess,
-      bool => setLoading(bool),
+      (bool) => setLoading(bool),
       city.name
     );
   };
 
   return (
-    <List relaxed>
-      <List.Item>
-        <List.Content>
-          <Link to='/newAddressWithMap'>Выбрать на карте</Link>
-          <Input
-            icon='search'
-            iconPosition='left'
-            placeholder='Улица'
-            fluid
-            value={street}
-            onClick={() => history.push('/searchStreet')}
-          />
-        </List.Content>
-      </List.Item>
-      <List.Item>
-        <List.Content>
-          {error}
-          <Input
-            placeholder='Дом'
-            value={house}
-            onChange={({ target: { value } }) => setHouse(value)}
-            autoFocus={street.length > 0 ? true : false}
-            fluid
-            action={{
-              color: 'teal',
-              labelPosition: 'right',
-              icon: 'right arrow',
-              content: 'Выбрать',
-              disabled:
-                street.length > 0 && house.replace(/\s/g, '').length > 0
-                  ? false
-                  : true,
-              size: 'mini',
-              onClick: () => onContinue(street, house),
-              loading: loading
-            }}
-          />
-        </List.Content>
-      </List.Item>
-    </List>
+    <Spacer>
+      <List relaxed>
+        <List.Item>
+          <List.Content>
+            <Button color='teal' as={Link} to="/newAddressWithMap" size='small'>Выбрать на карте</Button>
+            <Spacer />
+            <Input
+              icon="search"
+              iconPosition="left"
+              placeholder="Улица"
+              fluid
+              value={street}
+              onClick={() => history.push("/searchStreet")}
+            />
+          </List.Content>
+        </List.Item>
+        <List.Item>
+          <List.Content>
+            {error}
+            <Input
+              placeholder="Дом"
+              value={house}
+              onChange={({ target: { value } }) => setHouse(value)}
+              autoFocus={street.length > 0 ? true : false}
+              fluid
+              action={{
+                color: "teal",
+                labelPosition: "right",
+                icon: "right arrow",
+                content: "Выбрать",
+                disabled:
+                  street.length > 0 && house.replace(/\s/g, "").length > 0
+                    ? false
+                    : true,
+                size: "mini",
+                onClick: () => onContinue(street, house),
+                loading: loading,
+              }}
+            />
+          </List.Content>
+        </List.Item>
+      </List>
+    </Spacer>
   );
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   // console.log(state.address.address);
   return {
     city: state.address.city,
     market: state.address.market,
-    address: state.address.address
+    address: state.address.address,
   };
 };
 

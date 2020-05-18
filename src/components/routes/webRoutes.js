@@ -7,7 +7,6 @@ import Nav from "../Nav/Nav";
 import ErrorNotification from "../../utils/ErrorNotification";
 import { createBrowserHistory } from "history";
 import Footer from "../Footer/Footer";
-import Mobile from "../../mobile/App/App";
 
 const history = createBrowserHistory();
 
@@ -53,10 +52,7 @@ const AsyncSuccessBasket = Loadable({
   loading: Loading,
 });
 
-const RenderRoutes = () => {
-  if (window.innerWidth <= 500) {
-    return <Mobile />;
-  }
+const webRoutes = () => {
   return (
     <Router basename="/customer" history={history}>
       <Nav />
@@ -84,4 +80,4 @@ const RenderRoutes = () => {
   );
 };
 
-export default RenderRoutes;
+export default webRoutes;

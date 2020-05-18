@@ -13,130 +13,132 @@ import {
   ADD_ADDRESS,
   CHANGE_MY_ORDERS,
   GET_POPULAR,
-  CHANGE_CLICKED_POPULAR_PRODUCT
-} from './types';
+  CHANGE_CLICKED_POPULAR_PRODUCT,
+  GET_ORDER_STATUSES,
+  SELECTED_ADDRESS
+} from "./types";
 
-import { doGet, doPost } from '../utils/axiosActions';
-export const HEROKU_URI = 'https://helix40.herokuapp.com/';
+import { doGet, doPost } from "../utils/axiosActions";
+export const HEROKU_URI = "https://helix40.herokuapp.com/";
 
-export const modifyLoader = boolean => {
+export const modifyLoader = (boolean) => {
   return {
     type: MODIFY_LOADER,
-    payload: boolean
+    payload: boolean,
   };
 };
 
-export const changeMenu = title => {
+export const changeMenu = (title) => {
   return {
     type: CHANGE_MENU_TITLE,
-    payload: title
+    payload: title,
   };
 };
 
-export const errorhandler = error => {
-  if (typeof error === 'string') {
+export const errorhandler = (error) => {
+  if (typeof error === "string") {
     return {
       type: PUSH_ERROR,
-      payload: error
+      payload: error,
     };
   } else {
     return {
       type: PUSH_ERROR,
-      payload: error.response.data.error
+      payload: error.response.data.error,
     };
   }
 };
 
 export const getCategories = () => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(modifyLoader(true));
     doGet(HEROKU_URI + `categories`)
       .then(({ data }) => {
         dispatch(modifyLoader(false));
         dispatch({
           type: GET_CATEGORIES,
-          payload: data.data
+          payload: data.data,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(modifyLoader(false));
         dispatch(errorhandler(err));
       });
   };
 };
 
-export const changeDelivery = number => {
+export const changeDelivery = (number) => {
   return {
     type: CHANGE_DELIVERY,
-    payload: number
+    payload: number,
   };
 };
 
 export const incrementToOrder = (product, quantity) => {
   return {
     type: INCREMENT_TO_ORDER,
-    payload: { product, quantity }
+    payload: { product, quantity },
   };
 };
 
 export const decrementFromOrder = (product, quantity) => {
   return {
     type: DECREMENT_FROM_ORDER,
-    payload: { product, quantity }
+    payload: { product, quantity },
   };
 };
 
 export const clearOrder = () => {
   return {
-    type: CLEAR_ORDER
+    type: CLEAR_ORDER,
   };
 };
 
-export const changeOrder = order => {
+export const changeOrder = (order) => {
   return {
     type: CHANGE_ORDER,
-    payload: order
+    payload: order,
   };
 };
 
-export const deleteFromOrder = idx => {
+export const deleteFromOrder = (idx) => {
   return {
     type: DELETE_FROM_ORDER,
-    payload: idx
+    payload: idx,
   };
 };
 
 export const changeAddresses = (addresses) => {
   return {
     type: CHANGE_ADDRESSES,
-    payload: addresses
+    payload: addresses,
   };
 };
 
 export const addToAddresses = (address) => {
   return {
     type: ADD_ADDRESS,
-    payload: address
+    payload: address,
   };
 };
 
-export const createOrder = (userLocation,myOrders,callback) => {
-  return dispatch => {
+export const createOrder = (userLocation, myOrders, callback) => {
+  return (dispatch) => {
     dispatch(modifyLoader(true));
     doPost(HEROKU_URI + `order`, userLocation)
-      .then(({data}) => {
+      .then(({ data }) => {
         dispatch(modifyLoader(false));
         const order = data.data;
-        const newState = [...myOrders, {...order}];
-        localStorage.setItem('myOrders',JSON.stringify(newState))
+        const newState = [...myOrders, { ...order }];
+        localStorage.setItem("myOrders", JSON.stringify(newState));
 
         dispatch({
           type: CHANGE_MY_ORDERS,
-          payload: newState
-        })
-        callback()
+          payload: newState,
+        });
+        callback();
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(modifyLoader(false));
         dispatch(errorhandler(err));
       });
@@ -146,7 +148,7 @@ export const createOrder = (userLocation,myOrders,callback) => {
 export const changeMyOrders = (orders) => {
   return {
     type: CHANGE_MY_ORDERS,
-    payload: orders
+    payload: orders,
   };
 };
 
@@ -158,28 +160,53 @@ export const getPopularDishes = () => {
         dispatch(modifyLoader(false));
         dispatch({
           type: GET_POPULAR,
-          payload: data.data
+          payload: data.data,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(modifyLoader(false));
         dispatch(errorhandler(err));
       });
-  }
+  };
 };
 
 export const changeClickedPopularProduct = (product) => {
   return {
     type: CHANGE_CLICKED_POPULAR_PRODUCT,
-    payload: product
-  }
-}
+    payload: product,
+  };
+};
 
-export const sendMessage = (text,callback) => {
+export const sendMessage = (text, callback) => {
   return () => {
-    doPost(HEROKU_URI + `comment`, { text })
-    .then(() => {
-      callback()
-    })
+    doPost(HEROKU_URI + `comment`, { text }).then(() => {
+      callback();
+    });
+  };
+};
+
+export const getOrderStatuses = () => {
+  return (dispatch) => {
+    doGet(HEROKU_URI + `orderStatuses`)
+      .then(({ data }) => {
+        dispatch({
+          type: GET_ORDER_STATUSES,
+          payload: data.data,
+        });
+      })
+      .catch((err) => {
+        dispatch(errorhandler(err));
+      });
+  };
+};
+
+export const selectAddress = (address) => {
+  return (dispatch) => {
+    dispatch(addToAddresses(address));
+    dispatch({
+      type: SELECTED_ADDRESS,
+      payload: address
+    });
+    localStorage.setItem("selectedAddress",address);
   }
 }

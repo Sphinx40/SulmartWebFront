@@ -13,7 +13,9 @@ import {
     ADD_ADDRESS,
     CHANGE_MY_ORDERS,
     GET_POPULAR,
-    CHANGE_CLICKED_POPULAR_PRODUCT
+    CHANGE_CLICKED_POPULAR_PRODUCT,
+    GET_ORDER_STATUSES,
+    SELECTED_ADDRESS
   } from "../actions/types";
   
   let initial = {
@@ -27,7 +29,9 @@ import {
     myOrders: [],
     deliveryDate: "",
     popularDishes: [],
-    clickedPopularProduct: {}
+    clickedPopularProduct: {},
+    orderStatuses: [],
+    selectedAddress: {}
   };
   
   const decrementFromOrder = (state, product, quantity) => {
@@ -155,6 +159,18 @@ import {
         return {
           ...state,
           clickedPopularProduct: { ...action.payload }
+        };
+
+      case GET_ORDER_STATUSES:
+        return {
+          ...state,
+          orderStatuses: [...action.payload]
+        };
+
+      case SELECTED_ADDRESS:
+        return {
+          ...state,
+          selectedAddress: {...action.payload}
         };
 
       default:
