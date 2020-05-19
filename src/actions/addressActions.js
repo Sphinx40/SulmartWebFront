@@ -2,20 +2,20 @@ import { SET_MAP, SET_ADDRESS } from '../reducers/addressReducer';
 import {
   splitByCommaAndReturnStreetName,
   splitByCommaAndReturnFirstName,
-  uniqByKeepLast
+  uniqByKeepLast,
 } from '../utils/addressMethods';
 
-export const setMap = payload => {
+export const setMap = (payload) => {
   return {
     type: SET_MAP,
-    payload
+    payload,
   };
 };
 
-export const setAddress = payload => {
+export const setAddress = (payload) => {
   return {
     type: SET_ADDRESS,
-    payload
+    payload,
   };
 };
 
@@ -32,15 +32,15 @@ export const onGeocodeByText = (
   setLoading(true);
   let result = {
     error: '',
-    iconCaption: ''
+    iconCaption: '',
   };
   // console.log(street, house, cityName);
 
-  return dispatch => {
+  return (dispatch) => {
     if (house && street && house.length > 0 && street.length > 0) {
       let myGeocoder = ymaps.geocode(street + ', ' + house + ', ' + cityName);
       myGeocoder.then(
-        geoCoderResult => {
+        (geoCoderResult) => {
           setLoading(false);
           let found = geoCoderResult.metaData.geocoder.found;
 
@@ -57,13 +57,15 @@ export const onGeocodeByText = (
                   street,
                   latitude: coords[0],
                   longitude: coords[1],
-                  correctAddress: true
-                }
+                  correctAddress: true,
+                },
               });
               result = {
                 error: '',
                 iconCaption: street + ' ' + house,
-                correctAddress: true
+                correctAddress: true,
+                latitude: coords[0],
+                longitude: coords[1],
               };
               setResult(result);
             } else {
@@ -74,13 +76,13 @@ export const onGeocodeByText = (
                   street: '',
                   latitude: '',
                   longitude: '',
-                  correctAddress: false
-                }
+                  correctAddress: false,
+                },
               });
               result = {
                 error: 'Адрес не найден',
                 iconCaption: 'Адрес не найден',
-                correctAddress: false
+                correctAddress: false,
               };
               setResult(result);
             }
@@ -92,18 +94,18 @@ export const onGeocodeByText = (
                 street: '',
                 latitude: '',
                 longitude: '',
-                correctAddress: false
-              }
+                correctAddress: false,
+              },
             });
             result = {
               error: 'Адрес не найден',
               iconCaption: 'Адрес не найден',
-              correctAddress: false
+              correctAddress: false,
             };
             setResult(result);
           }
         },
-        err => {
+        (err) => {
           dispatch({
             type: SET_ADDRESS,
             payload: {
@@ -111,13 +113,13 @@ export const onGeocodeByText = (
               street: '',
               latitude: '',
               longitude: '',
-              correctAddress: false
-            }
+              correctAddress: false,
+            },
           });
           result = {
             error: 'Адрес не найден',
             iconCaption: 'Адрес не найден',
-            correctAddress: false
+            correctAddress: false,
           };
           setResult(result);
           // error handling
@@ -183,12 +185,12 @@ export const onGeocodeByCoords = (
   setLoading(true);
   let result = {
     error: '',
-    iconCaption: ''
+    iconCaption: '',
   };
-  return dispatch => {
+  return (dispatch) => {
     let myGeocoder = ymaps.geocode(coords);
     myGeocoder.then(
-      geoCoderResult => {
+      (geoCoderResult) => {
         setLoading(false);
 
         let found = geoCoderResult.metaData.geocoder.found;
@@ -208,11 +210,11 @@ export const onGeocodeByCoords = (
                 street: '',
                 latitude: '',
                 longitude: '',
-                correctAddress: false
+                correctAddress: false,
               },
               error: 'Доставка только по городу Алматы!!!',
               iconCaption: 'Доставка только по городу Алматы!!!',
-              correctAddress: false
+              correctAddress: false,
             };
             setResult(result);
             return;
@@ -237,13 +239,13 @@ export const onGeocodeByCoords = (
                   street: '',
                   latitude: '',
                   longitude: '',
-                  correctAddress: false
-                }
+                  correctAddress: false,
+                },
               });
               result = {
                 error: 'Адрес не найден',
                 iconCaption: 'Адрес не найден',
-                correctAddress: false
+                correctAddress: false,
               };
               setResult(result);
               return;
@@ -255,14 +257,14 @@ export const onGeocodeByCoords = (
                   street: streetTemp,
                   latitude: coords[0],
                   longitude: coords[1],
-                  correctAddress: true
-                }
+                  correctAddress: true,
+                },
               });
 
               result = {
                 error: '',
                 iconCaption: streetTemp + ' ' + premiseNumber,
-                correctAddress: false
+                correctAddress: false,
               };
               setResult(result);
               return;
@@ -275,13 +277,13 @@ export const onGeocodeByCoords = (
                 street: '',
                 latitude: '',
                 longitude: '',
-                correctAddress: false
-              }
+                correctAddress: false,
+              },
             });
             result = {
               error: 'Адрес не найден',
               iconCaption: 'Адрес не найден',
-              correctAddress: false
+              correctAddress: false,
             };
             setResult(result);
           }
@@ -293,18 +295,18 @@ export const onGeocodeByCoords = (
               street: '',
               latitude: '',
               longitude: '',
-              correctAddress: false
-            }
+              correctAddress: false,
+            },
           });
           result = {
             error: 'Адрес не найден',
             iconCaption: 'Адрес не найден',
-            correctAddress: false
+            correctAddress: false,
           };
           setResult(result);
         }
       },
-      err => {
+      (err) => {
         dispatch({
           type: SET_ADDRESS,
           payload: {
@@ -312,13 +314,13 @@ export const onGeocodeByCoords = (
             street: '',
             latitude: '',
             longitude: '',
-            correctAddress: false
-          }
+            correctAddress: false,
+          },
         });
         result = {
           error: 'Адрес не найден',
           iconCaption: 'Адрес не найден',
-          correctAddress: false
+          correctAddress: false,
         };
         setResult(result);
         // error handling
@@ -329,18 +331,18 @@ export const onGeocodeByCoords = (
 
 export const onSuggest = (ymaps, text, setLoading, cityName, setResult) => {
   setLoading(true);
-  return dispatch => {
+  return (dispatch) => {
     ymaps.ready(() => {
-      ymaps.suggest(cityName + ', ' + text).then(items => {
+      ymaps.suggest(cityName + ', ' + text).then((items) => {
         setLoading(false);
-        let arrayOfDisplayNames = items.map(item => {
+        let arrayOfDisplayNames = items.map((item) => {
           return {
-            text: splitByCommaAndReturnFirstName(item.displayName)
+            text: splitByCommaAndReturnFirstName(item.displayName),
           };
         });
         arrayOfDisplayNames = uniqByKeepLast(
           arrayOfDisplayNames,
-          item => item.text
+          (item) => item.text
         );
         setResult(arrayOfDisplayNames);
       });

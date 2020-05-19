@@ -4,18 +4,16 @@ export const SET_ADDRESS = 'SET_ADDRESS';
 let initial = {
   city: {
     coords: [43.24946867986241, 76.91736506700802],
-    name: 'Алматы'
+    name: 'Алматы',
   },
   market: {
     coords: [43.231612405843514, 76.76930712938592],
-    name: 'Altyn Orda'
+    name: 'Altyn Orda',
   },
   map: {
     ymaps: {},
     center: [],
     zoom: 12,
-    height: 300,
-    width: 300
   },
 
   address: {
@@ -24,8 +22,8 @@ let initial = {
     street: '',
     latitude: '',
     longitude: '',
-    deliveryPrice: 0
-  }
+    deliveryPrice: 0,
+  },
 };
 
 const AddressReducer = (state = initial, action) => {
@@ -33,13 +31,13 @@ const AddressReducer = (state = initial, action) => {
     case SET_MAP:
       return {
         ...state,
-        map: { ...state.map, ...action.payload }
+        map: { ...state.map, ...action.payload },
       };
 
     case SET_ADDRESS:
       return {
         ...state,
-        address: { ...state.address, ...action.payload }
+        address: { ...state.address, ...action.payload },
       };
     default:
       return state;

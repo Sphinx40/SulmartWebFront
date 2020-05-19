@@ -1,15 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  Segment,
-  Header,
-  Input,
-  Grid,
-  Divider,
-  Button,
-  Table,
-  Dropdown,
-} from 'semantic-ui-react';
+import {} from 'semantic-ui-react';
 
 const AddreesListScreen = (props) => {
   const { history, ymaps } = props;

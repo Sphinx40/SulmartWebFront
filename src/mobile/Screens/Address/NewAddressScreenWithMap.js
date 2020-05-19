@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
-import { Input, List, Icon } from "semantic-ui-react";
-import { Image, Segment } from "semantic-ui-react";
-import queryString from "query-string";
-import "./address.css";
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { Input, Icon } from 'semantic-ui-react';
+import { Image, Segment } from 'semantic-ui-react';
+import queryString from 'query-string';
+import './address.css';
 
-import { onGeocodeByCoords } from "../../../actions/addressActions";
+import { onGeocodeByCoords } from '../../../actions/addressActions';
 
-import Spacer from "../../components/Spacer";
-import ScreenHeader from "../../components/ScreenHeader/ScreenHeader";
+import Spacer from '../../components/Spacer';
+import ScreenHeader from '../../components/ScreenHeader/ScreenHeader';
 
 const NewAddressScreenWithMap = (props) => {
   const ymaps = window.ymaps;
   const { history } = props;
-  const [error, setError] = useState("");
+  //   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [mapLoading, setMapLoading] = useState(false);
 
@@ -46,34 +46,34 @@ const NewAddressScreenWithMap = (props) => {
         );
       }
       myMap = new ymaps.Map(
-        "mobile-map",
+        'mobile-map',
         {
           //   center: [43.24946867986241, 76.91736506700802],
           center: initCoords,
           zoom: initZoom,
-          controls: ["zoomControl", "searchControl"],
+          controls: ['zoomControl', 'searchControl'],
         },
         {
-          searchControlProvider: "yandex#search",
+          searchControlProvider: 'yandex#search',
         }
       );
 
       let myPlacemark = new ymaps.Placemark(
         initCoords,
         {
-          iconCaption: "",
+          iconCaption: '',
         },
         { draggable: true }
       );
 
-      myPlacemark.events.add("dragend", (e) => {
-        let coords = [...e.get("target").geometry.getCoordinates()];
+      myPlacemark.events.add('dragend', (e) => {
+        let coords = [...e.get('target').geometry.getCoordinates()];
 
         onGeocodeByCoords(
           ymaps,
           coords,
           ({ error, iconCaption }) => {
-            setError(error);
+            // setError(error);
             myPlacemark.properties.set({ iconCaption });
           },
           (bool) => setLoading(bool),
@@ -81,15 +81,15 @@ const NewAddressScreenWithMap = (props) => {
         );
       });
 
-      myMap.events.add("click", (e) => {
-        let coords = e.get("coords");
+      myMap.events.add('click', (e) => {
+        let coords = e.get('coords');
         // console.log(coords);
         myPlacemark.geometry.setCoordinates(coords);
         onGeocodeByCoords(
           ymaps,
           coords,
           ({ error, iconCaption }) => {
-            setError(error);
+            // setError(error);
             myPlacemark.properties.set({ iconCaption });
           },
           (bool) => setLoading(bool),
@@ -107,41 +107,47 @@ const NewAddressScreenWithMap = (props) => {
   return (
     <React.Fragment>
       <ScreenHeader
-        leftAccessories={() => <Icon onClick={() => history.push("/newAddress")} name="arrow left" />}
+        leftAccessories={() => (
+          <Icon onClick={() => history.push('/newAddress')} name='arrow left' />
+        )}
         centerAccessories={() => (
           <h6 style={{ marginTop: 10 }}>Новый адрес с картой</h6>
         )}
       >
         <Spacer>
-          <Input readOnly placeholder="Улица" fluid value={address.street} />
+          <Input readOnly placeholder='Улица' fluid value={address.street} />
           <Spacer />
           <Input
             readOnly
-            placeholder="Дом"
+            placeholder='Дом'
             value={address.house}
             fluid
             action={{
-              color: "teal",
-              labelPosition: "right",
-              icon: "right arrow",
-              content: "Выбрать",
+              color: 'teal',
+              labelPosition: 'right',
+              icon: 'right arrow',
+              content: 'Выбрать',
               disabled:
                 address.street.length > 0 &&
-                address.house.replace(/\s/g, "").length > 0
+                address.house.replace(/\s/g, '').length > 0
                   ? false
                   : true,
-              size: "mini",
+              size: 'mini',
               loading: loading,
             }}
           />
 
           <div
-            id="mobile-map"
-            style={{ width: map.width, height: map.height, padding: 5 }}
+            id='mobile-map'
+            style={{
+              width: window.innerWidth - 20,
+              height: window.innerHeight - 205,
+              padding: 5,
+            }}
           >
             {mapLoading && (
               <Segment placeholder loading>
-                <Image src="/img/paragraph.png" />
+                <Image src='/img/paragraph.png' />
               </Segment>
             )}
           </div>
