@@ -34,7 +34,7 @@ export const onGeocodeByText = (
     error: '',
     iconCaption: '',
   };
-  // console.log(street, house, cityName);
+  console.log(street, house, cityName);
 
   return (dispatch) => {
     if (house && street && house.length > 0 && street.length > 0) {

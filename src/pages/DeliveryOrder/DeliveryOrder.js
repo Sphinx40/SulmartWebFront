@@ -31,6 +31,10 @@ import { debounce } from 'lodash';
 
 const { Step } = Steps;
 
+const INPUT_NOT_EDITABLE = 'INPUT_NOT_EDITABLE';
+const INPUT_HOUSE_CLICKED = 'INPUT_HOUSE_CLICKED';
+const INPUT_STREET_CLICKED = 'INPUT_STREET_CLICKED';
+
 const DeliveryOrder = (props) => {
   const { state, addToAddresses, createOrder, history, clearOrder } = props;
   const { order, addresses, myOrders } = state;
@@ -44,7 +48,6 @@ const DeliveryOrder = (props) => {
   let recaptcha;
   const [errors, setErrors] = useState([]);
   const [addressesOptions, setAddressesOptions] = useState([]);
-  const [activeAddressDropdown, setActiveAddressDropdown] = useState(false);
 
   const ymaps = window.ymaps;
   const { city, map, address } = props;
@@ -57,8 +60,10 @@ const DeliveryOrder = (props) => {
   } = props;
   const [mapLoading, setMapLoading] = useState(false);
   const [suggestLoading, setSuggestLoading] = useState(false);
-  const [inputSelected, setInputSelected] = useState('dropdown');
   const [onGeocodeByTextLoading, setOnGeocodeByTextLoading] = useState(false);
+
+  const [inputClicked, setInputClicked] = useState(INPUT_NOT_EDITABLE);
+  const [selectedSavedAddress, setSelectedSavedAddress] = useState(0);
 
   const myMapRef = useRef();
   const myPlacemarkRef = useRef();
@@ -71,67 +76,71 @@ const DeliveryOrder = (props) => {
     let myMap;
     let myPlacemark;
     // Waiting for the API to load and DOM to be ready.
-    ymaps.ready(() => {
-      setMapLoading(false);
-      myMap = new ymaps.Map(
-        'web-map',
-        {
-          //   center: [43.24946867986241, 76.91736506700802],
-          center: initCoords,
-          zoom: initZoom,
-          controls: ['zoomControl', 'searchControl'],
-        },
-        {
-          searchControlProvider: 'yandex#search',
-        }
-      );
-
-      myPlacemark = new ymaps.Placemark(
-        initCoords,
-        {
-          iconCaption: '',
-        },
-        { draggable: true }
-      );
-
-      myPlacemark.events.add('dragend', (e) => {
-        let coords = [...e.get('target').geometry.getCoordinates()];
-        setInputSelected('input');
-        onGeocodeByCoords(
-          ymaps,
-          coords,
-          ({ error, iconCaption }) => {
-            // setError(error);
-            myPlacemark.properties.set({ iconCaption });
+    if (ymaps) {
+      ymaps.ready(() => {
+        setMapLoading(false);
+        myMap = new ymaps.Map(
+          'web-map',
+          {
+            //   center: [43.24946867986241, 76.91736506700802],
+            center: initCoords,
+            zoom: initZoom,
+            controls: ['zoomControl'],
           },
-          // (bool) => setLoading(bool),
-          (bool) => {},
-          city.name
+          {
+            searchControlProvider: 'yandex#search',
+          }
         );
-      });
 
-      myMap.events.add('click', (e) => {
-        let coords = e.get('coords');
-        // console.log(coords);
-        setInputSelected('input');
-        myPlacemark.geometry.setCoordinates(coords);
-        onGeocodeByCoords(
-          ymaps,
-          coords,
-          ({ error, iconCaption }) => {
-            // setError(error);
-            myPlacemark.properties.set({ iconCaption });
+        myPlacemark = new ymaps.Placemark(
+          initCoords,
+          {
+            iconCaption: '',
           },
-          // (bool) => setLoading(bool),
-          (bool) => {},
-          city.name
+          { draggable: true }
         );
+
+        myPlacemark.events.add('dragend', (e) => {
+          let coords = [...e.get('target').geometry.getCoordinates()];
+          setInputClicked(INPUT_NOT_EDITABLE);
+          setSelectedSavedAddress(0);
+          onGeocodeByCoords(
+            ymaps,
+            coords,
+            ({ error, iconCaption }) => {
+              // setError(error);
+              myPlacemark.properties.set({ iconCaption });
+            },
+            // (bool) => setLoading(bool),
+            (bool) => {},
+            city.name
+          );
+        });
+
+        myMap.events.add('click', (e) => {
+          let coords = e.get('coords');
+          // console.log(coords);
+          setInputClicked(INPUT_NOT_EDITABLE);
+          setSelectedSavedAddress(0);
+          myPlacemark.geometry.setCoordinates(coords);
+          onGeocodeByCoords(
+            ymaps,
+            coords,
+            ({ error, iconCaption }) => {
+              // setError(error);
+              myPlacemark.properties.set({ iconCaption });
+            },
+            // (bool) => setLoading(bool),
+            (bool) => {},
+            city.name
+          );
+        });
+        myMap.geoObjects.add(myPlacemark);
+        myPlacemarkRef.current = myPlacemark;
+        myMapRef.current = myMap;
+        // setMyMap
       });
-      myMap.geoObjects.add(myPlacemark);
-      myPlacemarkRef.current = myPlacemark;
-      myMapRef.current = myMap;
-      // setMyMap
-    });
+    }
     //eslint-disable-next-line
     return () => {
       setMapLoading(true);
@@ -165,23 +174,20 @@ const DeliveryOrder = (props) => {
   useEffect(() => {
     if (addresses.length !== 0) {
       const addAnotherAddress = [
+        {
+          house: '',
+          street: 'Добавить другой адрес',
+          longitude: '',
+          latitude: '',
+        },
         ...addresses,
-        { title: 'Добавить другой адрес' },
       ];
       const lastAdresses = addAnotherAddress.map((item, id) => {
-        if (item.title === 'Добавить другой адрес') {
-          return {
-            key: id,
-            text: item.title,
-            value: id,
-          };
-        } else {
-          return {
-            key: id,
-            text: item.street + ' ' + item.house,
-            value: id,
-          };
-        }
+        return {
+          key: id,
+          text: item.street + ' ' + item.house,
+          value: id,
+        };
       });
       setAddressesOptions(lastAdresses);
     }
@@ -234,9 +240,13 @@ const DeliveryOrder = (props) => {
   };
 
   const onChangeDeliveryAddress = (idx) => {
-    if (addressesOptions.length - 1 !== idx) {
-      setActiveAddressDropdown(true);
-      const address = addresses.find(({}, id) => id === idx);
+    setSelectedSavedAddress(idx);
+    if (idx > 0) {
+      setInputClicked(INPUT_NOT_EDITABLE);
+      // const address = addressesOptions[idx];
+      // console.log(addresses, 'addresses');
+      // console.log(address, 'address');
+      const address = addresses.find(({}, id) => id === idx - 1);
 
       setAddress({
         house: address.house,
@@ -256,15 +266,16 @@ const DeliveryOrder = (props) => {
       myPlacemarkRef.current.geometry.setCoordinates(coords);
       myPlacemarkRef.current.properties.set({ iconCaption: address.street });
       myMapRef.current.setCenter(coords, 16);
-    } else {
-      setAddress({
-        house: '',
-        street: '',
-        longitude: '',
-        latitude: '',
-      });
-      setActiveAddressDropdown(false);
     }
+    // else {
+    //   setAddress({
+    //     house: '',
+    //     street: '',
+    //     longitude: '',
+    //     latitude: '',
+    //   });
+    //   setActiveAddressDropdown(false);
+    // }
   };
 
   const [suggestedData, setSuggestedData] = useState([]);
@@ -311,6 +322,7 @@ const DeliveryOrder = (props) => {
   };
 
   const onHouseDebounce = debounce((value) => {
+    console.log('test', value);
     onGeocodeByText(
       ymaps,
       address.street,
@@ -344,9 +356,13 @@ const DeliveryOrder = (props) => {
                             options={addressesOptions}
                             selection
                             placeholder='Сохраненные адреса'
+                            value={selectedSavedAddress || 0}
                             onChange={(e, { value }) =>
                               onChangeDeliveryAddress(value)
                             }
+                            onClick={() => {
+                              setInputClicked(INPUT_NOT_EDITABLE);
+                            }}
                           />
                         </Table.Cell>
                       </Table.Row>
@@ -360,6 +376,9 @@ const DeliveryOrder = (props) => {
                           onChange={(e) =>
                             setUser({ ...user, name: e.target.value })
                           }
+                          onClick={() => {
+                            setInputClicked(INPUT_NOT_EDITABLE);
+                          }}
                         />
                       </Table.Cell>
                     </Table.Row>
@@ -374,6 +393,9 @@ const DeliveryOrder = (props) => {
                           fluid
                           mask='_'
                           placeholder='Телефон номер'
+                          onClick={() => {
+                            setInputClicked(INPUT_NOT_EDITABLE);
+                          }}
                         />
                       </Table.Cell>
                     </Table.Row>
@@ -389,14 +411,120 @@ const DeliveryOrder = (props) => {
                           fluid
                           mask='_'
                           placeholder='Дополнительный телефон номер'
+                          onClick={() => {
+                            setInputClicked(INPUT_NOT_EDITABLE);
+                          }}
                         />
                       </Table.Cell>
                     </Table.Row>
 
-                    <Table.Row>
+                    {/* OPTION 1 *******************************************************/}
+                    {inputClicked === INPUT_NOT_EDITABLE && (
+                      <Table.Row>
+                        <Table.Cell>
+                          <Input
+                            value={address.street}
+                            placeholder='Улица'
+                            readOnly
+                            fluid
+                            onClick={() => {
+                              setInputClicked(INPUT_STREET_CLICKED);
+                              onChangeDeliveryAddress(0);
+                            }}
+                          />
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                    {inputClicked === INPUT_NOT_EDITABLE && (
+                      <Table.Row>
+                        <Table.Cell>
+                          <Input
+                            value={address.house}
+                            placeholder='Дом'
+                            readOnly
+                            fluid
+                            onClick={() => {
+                              setInputClicked(INPUT_HOUSE_CLICKED);
+                              onChangeDeliveryAddress(0);
+                            }}
+                          />
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+
+                    {/* OPTION 2 *******************************************************/}
+                    {inputClicked === INPUT_STREET_CLICKED && (
+                      <Table.Row>
+                        <Table.Cell>
+                          <Dropdown
+                            autoComplete='something-randomsadasdasd'
+                            placeholder='Улица'
+                            search
+                            selection
+                            options={suggestedData}
+                            onChange={(e, { value }) =>
+                              setAddress({ street: value })
+                            }
+                            onSearchChange={(e) =>
+                              onSuggestDebounce(e.target.value)
+                            }
+                            loading={suggestLoading}
+                            text={address.street}
+                            noResultsMessage='Не найден'
+                            fluid
+                          />
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                    {inputClicked === INPUT_STREET_CLICKED && (
+                      <Table.Row>
+                        <Table.Cell>
+                          <Input
+                            value={address.house}
+                            placeholder='Дом'
+                            readOnly
+                            fluid
+                            onClick={() => {
+                              setInputClicked(INPUT_HOUSE_CLICKED);
+                              onChangeDeliveryAddress(0);
+                            }}
+                          />
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                    {/* OPTION 3 *******************************************************/}
+                    {inputClicked === INPUT_HOUSE_CLICKED && (
+                      <Table.Row>
+                        <Table.Cell>
+                          <Input
+                            value={address.street}
+                            placeholder='Улица'
+                            readOnly
+                            fluid
+                            onClick={() => {
+                              setInputClicked(INPUT_STREET_CLICKED);
+                              onChangeDeliveryAddress(0);
+                            }}
+                          />
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                    {inputClicked === INPUT_HOUSE_CLICKED && (
+                      <Table.Row>
+                        <Table.Cell>
+                          <Input
+                            placeholder={address.house ? address.house : 'Дом'}
+                            fluid
+                            loading={onGeocodeByTextLoading}
+                            onChange={(e) => onHouseDebounce(e.target.value)}
+                          />
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                    {/* <Table.Row>
                       <Table.Cell>
                         {activeAddressDropdown === false &&
-                          inputSelected === 'dropdown' && (
+                          houseInput === 'suggest' && (
                             <Dropdown
                               autoComplete='something-randomsadasdasd'
                               placeholder='Улица'
@@ -416,13 +544,13 @@ const DeliveryOrder = (props) => {
                             />
                           )}
                         {activeAddressDropdown === false &&
-                          inputSelected === 'input' && (
+                          houseInput === 'map' && (
                             <Input
                               value={address.street}
                               readOnly
                               fluid
                               onClick={() => {
-                                setInputSelected('dropdown');
+                                setHouseInput('suggest');
                                 setSuggestedData([
                                   {
                                     key: 0,
@@ -442,19 +570,31 @@ const DeliveryOrder = (props) => {
                     <Table.Row>
                       <Table.Cell>
                         {activeAddressDropdown === false &&
-                          inputSelected === 'dropdown' && (
+                          houseInput === 'suggest' && (
                             <Input
                               placeholder='Дом'
                               fluid
                               loading={onGeocodeByTextLoading}
                               onChange={(e) => onHouseDebounce(e.target.value)}
+                              text={address.house}
                             />
                           )}
+                        {activeAddressDropdown === false &&
+                        houseInput === 'map' ? (
+                          <Input
+                            value={address.house}
+                            readOnly
+                            fluid
+                            onClick={() => {
+                              setHouseInput('suggest');
+                            }}
+                          />
+                        ) : null}
                         {activeAddressDropdown === true ? (
                           <Input value={address.house} readOnly fluid />
                         ) : null}
                       </Table.Cell>
-                    </Table.Row>
+                    </Table.Row> */}
 
                     <Table.Row>
                       <Table.Cell>
@@ -465,6 +605,9 @@ const DeliveryOrder = (props) => {
                           onChange={(e) =>
                             setUser({ ...user, appartment: e.target.value })
                           }
+                          onClick={() => {
+                            setInputClicked(INPUT_NOT_EDITABLE);
+                          }}
                         />
                       </Table.Cell>
                     </Table.Row>
