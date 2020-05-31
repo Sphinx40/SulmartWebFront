@@ -1,9 +1,11 @@
-import { SET_MAP, SET_ADDRESS } from '../reducers/addressReducer';
+import { SET_MAP, SET_ADDRESS } from "../reducers/addressReducer";
 import {
   splitByCommaAndReturnStreetName,
   splitByCommaAndReturnFirstName,
   uniqByKeepLast,
-} from '../utils/addressMethods';
+  calculateDeliveryCost,
+} from "../utils/addressMethods";
+import { selectAddress } from "./index";
 
 export const setMap = (payload) => {
   return {
@@ -25,20 +27,22 @@ export const onGeocodeByText = (
   house,
   setResult,
   setLoading,
-  cityName
+  cityName,
+  cityCenterCoords,
+  marketCoords
 ) => {
   if (!ymaps.geocode) return;
 
   setLoading(true);
   let result = {
-    error: '',
-    iconCaption: '',
+    error: "",
+    iconCaption: "",
   };
-  console.log(street, house, cityName);
+
 
   return (dispatch) => {
     if (house && street && house.length > 0 && street.length > 0) {
-      let myGeocoder = ymaps.geocode(street + ', ' + house + ', ' + cityName);
+      let myGeocoder = ymaps.geocode(street + ", " + house + ", " + cityName);
       myGeocoder.then(
         (geoCoderResult) => {
           setLoading(false);
@@ -48,21 +52,28 @@ export const onGeocodeByText = (
             let firstGeoObject = geoCoderResult.geoObjects.get(0);
             let coords = firstGeoObject.geometry.getCoordinates();
             let premiseNumber = firstGeoObject.getPremiseNumber();
-
+            const deliveryPrice = calculateDeliveryCost(
+              cityCenterCoords,
+              marketCoords,
+              coords
+            ).deliveryPrice;
             if (premiseNumber !== undefined) {
+              const payload = {
+                house,
+                street,
+                latitude: coords[0],
+                longitude: coords[1],
+                correctAddress: true,
+                deliveryPrice,
+              }
               dispatch({
                 type: SET_ADDRESS,
-                payload: {
-                  house,
-                  street,
-                  latitude: coords[0],
-                  longitude: coords[1],
-                  correctAddress: true,
-                },
+                payload
               });
+              dispatch(selectAddress(payload)); // for mobile asyncStorage
               result = {
-                error: '',
-                iconCaption: street + ' ' + house,
+                error: "",
+                iconCaption: street + " " + house,
                 correctAddress: true,
                 latitude: coords[0],
                 longitude: coords[1],
@@ -72,16 +83,16 @@ export const onGeocodeByText = (
               dispatch({
                 type: SET_ADDRESS,
                 payload: {
-                  house: '',
-                  street: '',
-                  latitude: '',
-                  longitude: '',
+                  house: "",
+                  street: "",
+                  latitude: "",
+                  longitude: "",
                   correctAddress: false,
                 },
               });
               result = {
-                error: 'Адрес не найден',
-                iconCaption: 'Адрес не найден',
+                error: "Адрес не найден",
+                iconCaption: "Адрес не найден",
                 correctAddress: false,
               };
               setResult(result);
@@ -90,16 +101,16 @@ export const onGeocodeByText = (
             dispatch({
               type: SET_ADDRESS,
               payload: {
-                house: '',
-                street: '',
-                latitude: '',
-                longitude: '',
+                house: "",
+                street: "",
+                latitude: "",
+                longitude: "",
                 correctAddress: false,
               },
             });
             result = {
-              error: 'Адрес не найден',
-              iconCaption: 'Адрес не найден',
+              error: "Адрес не найден",
+              iconCaption: "Адрес не найден",
               correctAddress: false,
             };
             setResult(result);
@@ -109,16 +120,16 @@ export const onGeocodeByText = (
           dispatch({
             type: SET_ADDRESS,
             payload: {
-              house: '',
-              street: '',
-              latitude: '',
-              longitude: '',
+              house: "",
+              street: "",
+              latitude: "",
+              longitude: "",
               correctAddress: false,
             },
           });
           result = {
-            error: 'Адрес не найден',
-            iconCaption: 'Адрес не найден',
+            error: "Адрес не найден",
+            iconCaption: "Адрес не найден",
             correctAddress: false,
           };
           setResult(result);
@@ -180,13 +191,16 @@ export const onGeocodeByCoords = (
   coords,
   setResult,
   setLoading,
-  cityName
+  cityName,
+  deliveryPrice
 ) => {
   setLoading(true);
+
   let result = {
-    error: '',
-    iconCaption: '',
+    error: "",
+    iconCaption: "",
   };
+
   return (dispatch) => {
     let myGeocoder = ymaps.geocode(coords);
     myGeocoder.then(
@@ -197,7 +211,7 @@ export const onGeocodeByCoords = (
         // console.log(found, 'found');
         if (found > 0) {
           let firstGeoObject = geoCoderResult.geoObjects.get(0);
-          let streetTemp = '';
+          let streetTemp = "";
           let adminAreas = firstGeoObject.getAdministrativeAreas();
           if (
             adminAreas === null ||
@@ -206,14 +220,14 @@ export const onGeocodeByCoords = (
           ) {
             result = {
               address: {
-                house: '',
-                street: '',
-                latitude: '',
-                longitude: '',
+                house: "",
+                street: "",
+                latitude: "",
+                longitude: "",
                 correctAddress: false,
               },
-              error: 'Доставка только по городу Алматы!!!',
-              iconCaption: 'Доставка только по городу Алматы!!!',
+              error: "Доставка только по городу Алматы!!!",
+              iconCaption: "Доставка только по городу Алматы!!!",
               correctAddress: false,
             };
             setResult(result);
@@ -229,41 +243,43 @@ export const onGeocodeByCoords = (
           if (premiseNumber !== undefined) {
             if (
               streetTemp === null ||
-              streetTemp === '' ||
+              streetTemp === "" ||
               streetTemp.length === 0
             ) {
               dispatch({
                 type: SET_ADDRESS,
                 payload: {
-                  house: '',
-                  street: '',
-                  latitude: '',
-                  longitude: '',
+                  house: "",
+                  street: "",
+                  latitude: "",
+                  longitude: "",
                   correctAddress: false,
                 },
               });
               result = {
-                error: 'Адрес не найден',
-                iconCaption: 'Адрес не найден',
+                error: "Адрес не найден",
+                iconCaption: "Адрес не найден",
                 correctAddress: false,
               };
               setResult(result);
               return;
             } else {
+              const payload = {
+                house: premiseNumber,
+                street: streetTemp,
+                latitude: coords[0],
+                longitude: coords[1],
+                correctAddress: true,
+                deliveryPrice,
+              };
               dispatch({
                 type: SET_ADDRESS,
-                payload: {
-                  house: premiseNumber,
-                  street: streetTemp,
-                  latitude: coords[0],
-                  longitude: coords[1],
-                  correctAddress: true,
-                },
+                payload
               });
-
+              dispatch(selectAddress(payload)); // for mobile asyncStorage
               result = {
-                error: '',
-                iconCaption: streetTemp + ' ' + premiseNumber,
+                error: "",
+                iconCaption: streetTemp + " " + premiseNumber,
                 correctAddress: false,
               };
               setResult(result);
@@ -273,16 +289,16 @@ export const onGeocodeByCoords = (
             dispatch({
               type: SET_ADDRESS,
               payload: {
-                house: '',
-                street: '',
-                latitude: '',
-                longitude: '',
+                house: "",
+                street: "",
+                latitude: "",
+                longitude: "",
                 correctAddress: false,
               },
             });
             result = {
-              error: 'Адрес не найден',
-              iconCaption: 'Адрес не найден',
+              error: "Адрес не найден",
+              iconCaption: "Адрес не найден",
               correctAddress: false,
             };
             setResult(result);
@@ -291,16 +307,16 @@ export const onGeocodeByCoords = (
           dispatch({
             type: SET_ADDRESS,
             payload: {
-              house: '',
-              street: '',
-              latitude: '',
-              longitude: '',
+              house: "",
+              street: "",
+              latitude: "",
+              longitude: "",
               correctAddress: false,
             },
           });
           result = {
-            error: 'Адрес не найден',
-            iconCaption: 'Адрес не найден',
+            error: "Адрес не найден",
+            iconCaption: "Адрес не найден",
             correctAddress: false,
           };
           setResult(result);
@@ -310,16 +326,16 @@ export const onGeocodeByCoords = (
         dispatch({
           type: SET_ADDRESS,
           payload: {
-            house: '',
-            street: '',
-            latitude: '',
-            longitude: '',
+            house: "",
+            street: "",
+            latitude: "",
+            longitude: "",
             correctAddress: false,
           },
         });
         result = {
-          error: 'Адрес не найден',
-          iconCaption: 'Адрес не найден',
+          error: "Адрес не найден",
+          iconCaption: "Адрес не найден",
           correctAddress: false,
         };
         setResult(result);
@@ -333,7 +349,7 @@ export const onSuggest = (ymaps, text, setLoading, cityName, setResult) => {
   setLoading(true);
   return (dispatch) => {
     ymaps.ready(() => {
-      ymaps.suggest(cityName + ', ' + text).then((items) => {
+      ymaps.suggest(cityName + ", " + text).then((items) => {
         setLoading(false);
         let arrayOfDisplayNames = items.map((item) => {
           return {

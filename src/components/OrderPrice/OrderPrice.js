@@ -2,14 +2,12 @@ import React from "react";
 import { List, Button, Segment } from "semantic-ui-react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { changeMenu } from "../../actions";
 
 const OrderPrice = ({
   order,
   notShowButton,
-  changeMenu,
   totalPrice,
-  deliveryPrice,
+  deliveryPrice = 0,
 }) => {
   let orderTotal = 0;
   let total = deliveryPrice;
@@ -51,7 +49,6 @@ const OrderPrice = ({
         <Button
           color="violet"
           as={Link}
-          onClick={() => changeMenu("delivery")}
           to="/delivery"
         >
           Оформить заказ
@@ -67,4 +64,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { changeMenu })(OrderPrice);
+export default connect(mapStateToProps, {})(OrderPrice);

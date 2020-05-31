@@ -207,6 +207,6 @@ export const selectAddress = (address) => {
       type: SELECTED_ADDRESS,
       payload: address
     });
-    localStorage.setItem("selectedAddress",address);
+    localStorage.setItem("selectedAddress",JSON.stringify(address));
   }
 }

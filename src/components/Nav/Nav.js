@@ -17,7 +17,7 @@ const Nav = (props) => {
         <Menu secondary stackable>
           <Menu.Item
             name="Main"
-            active={menu === "Main" || menu === ""}
+            active={menu === "Main" || menu === "/" || menu === ""}
             onClick={handleItemClick}
             as={Link}
             to={`/`}
@@ -57,7 +57,7 @@ const Nav = (props) => {
           >
             Мои заказы
           </Menu.Item>
-          <Menu.Item position="right">Алматы. Рынок "Алтын Орда"</Menu.Item>
+          <Menu.Item position="right">+77777777</Menu.Item>
         </Menu>
       </div>
     </Segment>

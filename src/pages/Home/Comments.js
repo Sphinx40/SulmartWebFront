@@ -17,7 +17,7 @@ const Comments = ({ sendMessage }) => {
   return (
     <Fragment>
       <Header as="h3" dividing>
-        Оставьте отзыв
+        Оставить отзыв
       </Header>
 
       <Form reply>

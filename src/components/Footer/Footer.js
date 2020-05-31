@@ -15,8 +15,6 @@ const Footer = () => (
         <Grid.Column>
           <Header inverted as='h4' content='Контакты' />
           <List link inverted>
-            <List.Item as='a'>г. Алматы, Рынок Алтын орда</List.Item>
-            <List.Item as='a'>+7 707 992 90 94</List.Item>
             <List.Item as='a'>390503@mail.ru</List.Item>
             <List.Item as='a'>Ежедневно с 8:00 до 18:00</List.Item>
           </List>

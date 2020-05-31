@@ -14,7 +14,7 @@ const OrderMenu = ({ myOrders, getOrderDetails, activeOrder }) => {
             name={item.orderNumber.toString()}
             active={activeOrder === item.orderNumber}
             onClick={() => getOrderDetails(item)}
-          ><Label color="teal">KZT {item.totalPrice}</Label> 
+          ><Label color="teal">KZT {item.totalPrice}</Label>
             {date}
             {item.currency}
             

@@ -3,7 +3,7 @@ import { doGet } from "../../../utils/axiosActions";
 import { HEROKU_URI } from "../../../actions/index";
 import { connect } from "react-redux";
 import Spacer from "../../components/Spacer";
-import { List, Image, Divider, Icon } from "semantic-ui-react";
+import { List, Image, Divider, Icon, Loader, Header } from "semantic-ui-react";
 import OrderPrice from "../../../components/OrderPrice/OrderPrice";
 import ScreenHeader from "../../components/ScreenHeader/ScreenHeader";
 import { withRouter } from "react-router-dom";
@@ -29,7 +29,7 @@ const OrderDetailsScreen = (props) => {
         leftAccessories={() => (
           <Icon name="arrow left" onClick={() => history.push("/orders")} />
         )}
-        centerAccessories={() => <h6 style={{ marginTop: 10 }}>Заказ</h6>}
+        centerAccessories={() => <h6>Заказ</h6>}
       >
         <Spacer>
           {order ? (
@@ -44,11 +44,11 @@ const OrderDetailsScreen = (props) => {
                 horizontal
                 style={{ textTransform: "uppercase" }}
               >
-                <h6>Продукты</h6>
+                Продукты
               </Divider>
               <List>
                 {order.products.map((item, idx) => (
-                  <List.Item>
+                  <List.Item key={idx}>
                     <Image
                       src={item.imageUrl}
                       style={{ width: 80, height: 50, borderRadius: 10 }}
@@ -67,7 +67,7 @@ const OrderDetailsScreen = (props) => {
                 notShowButton
               />
             </div>
-          ) : null}
+          ) : <Loader active inline='centered' />}
         </Spacer>
       </ScreenHeader>
     </div>

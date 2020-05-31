@@ -11,11 +11,10 @@ const BasketScreen = (props) => {
   const { order = [] } = props;
 
   return (
-    <ResponsiveContainer>
       <ScreenHeader
         bars
         centerAccessories={() => (
-          <div style={{ display: "flex", flexDirection: "row", marginTop: 10 }}>
+          <div style={{ display: "flex", flexDirection: "row" }}>
             <h6>Корзина</h6>
             <Icon name="shopping cart" color='violet' />
           </div>
@@ -23,9 +22,9 @@ const BasketScreen = (props) => {
       >
           {
             order.length === 0 ?
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' }}>
-              <Image src='/img/EmptyShoppingBasket.png' size='medium'/>
-              <h6>Ваша корзина пуста</h6>
+            <div>
+              <Image src='/img/EmptyShoppingBasket.png' size='medium' style={{ margin: 'auto' }}/>
+              <h6 style={{ textAlign: 'center' }}>Ваша корзина пуста</h6>
             </div> : 
             <div>
             <QuantityProduct />
@@ -34,7 +33,6 @@ const BasketScreen = (props) => {
           }
             
       </ScreenHeader>
-    </ResponsiveContainer>
   );
 };
 

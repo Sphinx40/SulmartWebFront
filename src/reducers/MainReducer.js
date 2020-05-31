@@ -17,6 +17,8 @@ import {
     GET_ORDER_STATUSES,
     SELECTED_ADDRESS
   } from "../actions/types";
+
+  let selectedAddress = JSON.parse(localStorage.getItem("selectedAddress"));
   
   let initial = {
     menu: "",
@@ -31,7 +33,7 @@ import {
     popularDishes: [],
     clickedPopularProduct: {},
     orderStatuses: [],
-    selectedAddress: {}
+    selectedAddress: selectedAddress
   };
   
   const decrementFromOrder = (state, product, quantity) => {
@@ -168,6 +170,7 @@ import {
         };
 
       case SELECTED_ADDRESS:
+        console.log(action.payload)
         return {
           ...state,
           selectedAddress: {...action.payload}

@@ -104,6 +104,10 @@ const NewAddressScreenWithMap = (props) => {
   // latitude:43.223790
   // longitude:76.842540
 
+  const onContinue = () => {
+    history.push("/")
+  };
+
   return (
     <React.Fragment>
       <ScreenHeader
@@ -111,7 +115,7 @@ const NewAddressScreenWithMap = (props) => {
           <Icon onClick={() => history.push('/newAddress')} name='arrow left' />
         )}
         centerAccessories={() => (
-          <h6 style={{ marginTop: 10 }}>Новый адрес с картой</h6>
+          <h6>Новый адрес с картой</h6>
         )}
       >
         <Spacer>
@@ -134,6 +138,7 @@ const NewAddressScreenWithMap = (props) => {
                   : true,
               size: 'mini',
               loading: loading,
+              onClick: () => onContinue()
             }}
           />
 

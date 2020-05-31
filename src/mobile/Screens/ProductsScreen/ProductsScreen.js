@@ -52,11 +52,12 @@ const ProductsScreen = (props) => {
   };
 
   return (
-    <div>
-      <ScreenHeader
-        centerAccessories={() => <h6 style={{ marginTop: 10 }}>Продукты</h6>}
-        leftAccessories={() => <Icon name="arrow left" onClick={() => history.push("/")} />}
-      />
+    <ScreenHeader
+      centerAccessories={() => <h6>Продукты</h6>}
+      leftAccessories={() => (
+        <Icon name="arrow left" onClick={() => history.push("/")} />
+      )}
+    >
       <Spacer>
         <Input
           placeholder="Продукт"
@@ -65,6 +66,7 @@ const ProductsScreen = (props) => {
           onChange={(e) => onChangeSearch(e.target.value)}
           onKeyDown={onSearch}
         />
+        <Spacer />
         <div style={{ marginLeft: 25, marginTop: 10 }}>
           <Grid columns={2}>
             <Grid.Row>
@@ -77,7 +79,7 @@ const ProductsScreen = (props) => {
           </Grid>
         </div>
       </Spacer>
-    </div>
+    </ScreenHeader>
   );
 };
 

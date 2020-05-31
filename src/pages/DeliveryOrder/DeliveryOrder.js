@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
   Segment,
   Header,
@@ -9,40 +9,40 @@ import {
   Table,
   Dropdown,
   Image,
-} from 'semantic-ui-react';
-import OrderPrice from '../../components/OrderPrice/OrderPrice';
-import { connect } from 'react-redux';
-import NumberFormat from 'react-number-format';
-import OutputErrors from '../../utils/OutputErrors';
-import Recaptcha from 'react-google-invisible-recaptcha';
+} from "semantic-ui-react";
+import OrderPrice from "../../components/OrderPrice/OrderPrice";
+import { connect } from "react-redux";
+import NumberFormat from "react-number-format";
+import OutputErrors from "../../utils/OutputErrors";
+import Recaptcha from "react-google-invisible-recaptcha";
 import {
   onGeocodeByCoords,
   onSuggest,
   setAddress,
   setMap,
   onGeocodeByText,
-} from '../../actions/addressActions';
-import { addToAddresses, createOrder, clearOrder } from '../../actions';
-import { withRouter } from 'react-router-dom';
-import { Steps } from 'antd';
-import { calculateDeliveryCost } from '../../utils/addressMethods';
-import ResponsiveContainer from '../../components/ResponsiveContainer/ResponsiveContainer';
-import { debounce } from 'lodash';
+} from "../../actions/addressActions";
+import { addToAddresses, createOrder, clearOrder } from "../../actions";
+import { withRouter } from "react-router-dom";
+import { Steps } from "antd";
+import { calculateDeliveryCost } from "../../utils/addressMethods";
+import ResponsiveContainer from "../../components/ResponsiveContainer/ResponsiveContainer";
+import { debounce } from "lodash";
 
 const { Step } = Steps;
 
-const INPUT_NOT_EDITABLE = 'INPUT_NOT_EDITABLE';
-const INPUT_HOUSE_CLICKED = 'INPUT_HOUSE_CLICKED';
-const INPUT_STREET_CLICKED = 'INPUT_STREET_CLICKED';
+const INPUT_NOT_EDITABLE = "INPUT_NOT_EDITABLE";
+const INPUT_HOUSE_CLICKED = "INPUT_HOUSE_CLICKED";
+const INPUT_STREET_CLICKED = "INPUT_STREET_CLICKED";
 
 const DeliveryOrder = (props) => {
   const { state, addToAddresses, createOrder, history, clearOrder } = props;
   const { order, addresses, myOrders } = state;
   const [user, setUser] = useState({
-    name: '',
-    phone: '',
-    extraPhone: '',
-    appartment: '',
+    name: "",
+    phone: "",
+    extraPhone: "",
+    appartment: "",
   });
 
   let recaptcha;
@@ -50,7 +50,7 @@ const DeliveryOrder = (props) => {
   const [addressesOptions, setAddressesOptions] = useState([]);
 
   const ymaps = window.ymaps;
-  const { city, map, address } = props;
+  const { city, map, address, market } = props;
   const {
     onGeocodeByCoords,
     onSuggest,
@@ -80,28 +80,28 @@ const DeliveryOrder = (props) => {
       ymaps.ready(() => {
         setMapLoading(false);
         myMap = new ymaps.Map(
-          'web-map',
+          "web-map",
           {
             //   center: [43.24946867986241, 76.91736506700802],
             center: initCoords,
             zoom: initZoom,
-            controls: ['zoomControl'],
+            controls: ["zoomControl"],
           },
           {
-            searchControlProvider: 'yandex#search',
+            searchControlProvider: "yandex#search",
           }
         );
 
         myPlacemark = new ymaps.Placemark(
           initCoords,
           {
-            iconCaption: '',
+            iconCaption: "",
           },
           { draggable: true }
         );
 
-        myPlacemark.events.add('dragend', (e) => {
-          let coords = [...e.get('target').geometry.getCoordinates()];
+        myPlacemark.events.add("dragend", (e) => {
+          let coords = [...e.get("target").geometry.getCoordinates()];
           setInputClicked(INPUT_NOT_EDITABLE);
           setSelectedSavedAddress(0);
           onGeocodeByCoords(
@@ -117,9 +117,8 @@ const DeliveryOrder = (props) => {
           );
         });
 
-        myMap.events.add('click', (e) => {
-          let coords = e.get('coords');
-          // console.log(coords);
+        myMap.events.add("click", (e) => {
+          let coords = e.get("coords");
           setInputClicked(INPUT_NOT_EDITABLE);
           setSelectedSavedAddress(0);
           myPlacemark.geometry.setCoordinates(coords);
@@ -132,7 +131,8 @@ const DeliveryOrder = (props) => {
             },
             // (bool) => setLoading(bool),
             (bool) => {},
-            city.name
+            city.name,
+            calculateDeliveryCost(initCoords,market.coords,coords).deliveryPrice
           );
         });
         myMap.geoObjects.add(myPlacemark);
@@ -173,19 +173,10 @@ const DeliveryOrder = (props) => {
 
   useEffect(() => {
     if (addresses.length !== 0) {
-      const addAnotherAddress = [
-        {
-          house: '',
-          street: 'Добавить другой адрес',
-          longitude: '',
-          latitude: '',
-        },
-        ...addresses,
-      ];
-      const lastAdresses = addAnotherAddress.map((item, id) => {
+      const lastAdresses = addresses.map((item, id) => {
         return {
           key: id,
-          text: item.street + ' ' + item.house,
+          text: item.street + " " + item.house,
           value: id,
         };
       });
@@ -197,22 +188,22 @@ const DeliveryOrder = (props) => {
     let errors = [];
 
     if (order.length === 0) {
-      errors.push('Выберите продукты');
+      errors.push("Выберите продукты");
     }
-    if (user.name === '') {
-      errors.push('Заполните имя');
+    if (user.name === "") {
+      errors.push("Заполните имя");
     }
-    if (user.phone === '') {
-      errors.push('Заполните телефон');
+    if (user.phone === "") {
+      errors.push("Заполните телефон");
     }
-    if (user.street === '') {
-      errors.push('Выберите улицу');
+    if (user.street === "") {
+      errors.push("Выберите улицу");
     }
-    if (user.house === '') {
-      errors.push('Выберите дом');
+    if (user.house === "") {
+      errors.push("Выберите дом");
     }
     if (user.longitude === 0 || user.latitude === 0) {
-      errors.push('Адрес неправильно');
+      errors.push("Адрес неправильно");
     }
 
     return errors;
@@ -225,13 +216,13 @@ const DeliveryOrder = (props) => {
       recaptcha.execute().then((data) => {
         if (data) {
           addToAddresses({
-            house: user.house,
-            street: user.street,
-            longitude: user.longitude,
-            latitude: user.latitude,
+            house: address.house,
+            street: address.street,
+            longitude: address.longitude,
+            latitude: address.latitude,
           });
-          createOrder({ ...user, products: order }, myOrders, () => {
-            history.push('/successBasket');
+          createOrder({ ...user, ...address, products: order }, myOrders, () => {
+            history.push("/successBasket");
             clearOrder();
           });
         }
@@ -248,13 +239,6 @@ const DeliveryOrder = (props) => {
       // console.log(address, 'address');
       const address = addresses.find(({}, id) => id === idx - 1);
 
-      setAddress({
-        house: address.house,
-        street: address.street,
-        longitude: address.longitude,
-        latitude: address.latitude,
-      });
-
       let coords = [];
       coords.push(address.latitude);
       coords.push(address.longitude);
@@ -263,24 +247,23 @@ const DeliveryOrder = (props) => {
         zoom: 16,
       });
 
+      setAddress({
+        house: address.house,
+        street: address.street,
+        longitude: address.longitude,
+        latitude: address.latitude,
+        deliveryPrice: calculateDeliveryCost(city.coords,market.coords,coords).deliveryPrice
+      });
+
       myPlacemarkRef.current.geometry.setCoordinates(coords);
       myPlacemarkRef.current.properties.set({ iconCaption: address.street });
       myMapRef.current.setCenter(coords, 16);
     }
-    // else {
-    //   setAddress({
-    //     house: '',
-    //     street: '',
-    //     longitude: '',
-    //     latitude: '',
-    //   });
-    //   setActiveAddressDropdown(false);
-    // }
   };
 
   const [suggestedData, setSuggestedData] = useState([]);
+
   const onSuggestDebounce = debounce((text) => {
-    // console.log('onSuggestDebounce');
     onSuggest(
       ymaps,
       text,
@@ -305,7 +288,7 @@ const DeliveryOrder = (props) => {
       let coords = [];
       coords.push(result.latitude);
       coords.push(result.longitude);
-      console.log('success');
+      console.log("success");
 
       myPlacemarkRef.current.geometry.setCoordinates(coords);
       myPlacemarkRef.current.properties.set({
@@ -322,32 +305,35 @@ const DeliveryOrder = (props) => {
   };
 
   const onHouseDebounce = debounce((value) => {
-    console.log('test', value);
+    console.log("test", value);
     onGeocodeByText(
       ymaps,
       address.street,
       value,
       onGeocodeByTextSuccess,
       (bool) => setOnGeocodeByTextLoading(bool),
-      city.name
+      city.name,
+      city.coords,
+      market.coords
     );
   }, 1000);
+
   return (
     <ResponsiveContainer>
-      <Segment padded='very' color='violet' style={{ margin: 20 }}>
-        <Steps style={{ width: 500, margin: 'auto' }} size='small' current={1}>
-          <Step status='finish' />
-          <Step status='process' />
-          <Step status='wait' />
+      <Segment padded="very" color="violet" style={{ margin: 20 }}>
+        <Steps style={{ width: 500, margin: "auto" }} size="small" current={1}>
+          <Step status="finish" />
+          <Step status="process" />
+          <Step status="wait" />
         </Steps>
-        <Header content='Доставка' textAlign='center' />
+        <Header content="Доставка" textAlign="center" />
         <Divider />
 
         <Segment loading={mapLoading} basic>
           <Grid stackable columns={2} divided>
             <Grid.Row>
               <Grid.Column>
-                <Table loading='true'>
+                <Table loading="true">
                   <Table.Body>
                     {addresses.length === 0 ? null : (
                       <Table.Row>
@@ -355,7 +341,7 @@ const DeliveryOrder = (props) => {
                           <Dropdown
                             options={addressesOptions}
                             selection
-                            placeholder='Сохраненные адреса'
+                            placeholder="Сохраненные адреса"
                             value={selectedSavedAddress || 0}
                             onChange={(e, { value }) =>
                               onChangeDeliveryAddress(value)
@@ -371,7 +357,7 @@ const DeliveryOrder = (props) => {
                     <Table.Row>
                       <Table.Cell>
                         <Input
-                          placeholder='Имя'
+                          placeholder="Имя"
                           fluid
                           onChange={(e) =>
                             setUser({ ...user, name: e.target.value })
@@ -385,14 +371,14 @@ const DeliveryOrder = (props) => {
                     <Table.Row>
                       <Table.Cell>
                         <NumberFormat
-                          format='+7 (###) ###-##-##'
+                          format="+7 (###) ###-##-##"
                           customInput={Input}
                           onValueChange={(e) =>
                             setUser({ ...user, phone: e.value })
                           }
                           fluid
-                          mask='_'
-                          placeholder='Телефон номер'
+                          mask="_"
+                          placeholder="Телефон номер"
                           onClick={() => {
                             setInputClicked(INPUT_NOT_EDITABLE);
                           }}
@@ -403,14 +389,14 @@ const DeliveryOrder = (props) => {
                     <Table.Row>
                       <Table.Cell>
                         <NumberFormat
-                          format='+7 (###) ###-##-##'
+                          format="+7 (###) ###-##-##"
                           customInput={Input}
                           onValueChange={(e) =>
                             setUser({ ...user, extraPhone: e.value })
                           }
                           fluid
-                          mask='_'
-                          placeholder='Дополнительный телефон номер'
+                          mask="_"
+                          placeholder="Дополнительный телефон номер"
                           onClick={() => {
                             setInputClicked(INPUT_NOT_EDITABLE);
                           }}
@@ -424,7 +410,7 @@ const DeliveryOrder = (props) => {
                         <Table.Cell>
                           <Input
                             value={address.street}
-                            placeholder='Улица'
+                            placeholder="Улица"
                             readOnly
                             fluid
                             onClick={() => {
@@ -440,7 +426,7 @@ const DeliveryOrder = (props) => {
                         <Table.Cell>
                           <Input
                             value={address.house}
-                            placeholder='Дом'
+                            placeholder="Дом"
                             readOnly
                             fluid
                             onClick={() => {
@@ -457,8 +443,8 @@ const DeliveryOrder = (props) => {
                       <Table.Row>
                         <Table.Cell>
                           <Dropdown
-                            autoComplete='something-randomsadasdasd'
-                            placeholder='Улица'
+                            autoComplete="something-randomsadasdasd"
+                            placeholder="Улица"
                             search
                             selection
                             options={suggestedData}
@@ -470,7 +456,7 @@ const DeliveryOrder = (props) => {
                             }
                             loading={suggestLoading}
                             text={address.street}
-                            noResultsMessage='Не найден'
+                            noResultsMessage="Не найден"
                             fluid
                           />
                         </Table.Cell>
@@ -481,7 +467,7 @@ const DeliveryOrder = (props) => {
                         <Table.Cell>
                           <Input
                             value={address.house}
-                            placeholder='Дом'
+                            placeholder="Дом"
                             readOnly
                             fluid
                             onClick={() => {
@@ -498,7 +484,7 @@ const DeliveryOrder = (props) => {
                         <Table.Cell>
                           <Input
                             value={address.street}
-                            placeholder='Улица'
+                            placeholder="Улица"
                             readOnly
                             fluid
                             onClick={() => {
@@ -513,7 +499,7 @@ const DeliveryOrder = (props) => {
                       <Table.Row>
                         <Table.Cell>
                           <Input
-                            placeholder={address.house ? address.house : 'Дом'}
+                            placeholder={address.house ? address.house : "Дом"}
                             fluid
                             loading={onGeocodeByTextLoading}
                             onChange={(e) => onHouseDebounce(e.target.value)}
@@ -599,7 +585,7 @@ const DeliveryOrder = (props) => {
                     <Table.Row>
                       <Table.Cell>
                         <Input
-                          placeholder='Квартира'
+                          placeholder="Квартира"
                           fluid
                           value={user.appartment}
                           onChange={(e) =>
@@ -616,20 +602,20 @@ const DeliveryOrder = (props) => {
                 <OrderPrice
                   order={order}
                   notShowButton={true}
-                  deliveryPrice={user.deliveryPrice}
+                  deliveryPrice={address.deliveryPrice}
                   totalPrice
                 />
                 <Divider />
                 <OutputErrors errors={errors} />
                 <Recaptcha
                   ref={(ref) => (recaptcha = ref)}
-                  sitekey='6LfKV-0UAAAAACSPnzDikZx_bEnI0qL_IMdqAF2e'
+                  sitekey="6LfKV-0UAAAAACSPnzDikZx_bEnI0qL_IMdqAF2e"
                 />
-                <Button color='violet' type='submit' onClick={toOrder}>
+                <Button color="violet" type="submit" onClick={toOrder}>
                   Заказать
                 </Button>
               </Grid.Column>
-              <Grid.Column id='web-map' style={{ height: 400 }}>
+              <Grid.Column id="web-map" style={{ height: 400 }}>
                 {/* <div className='Parent' ref={parentRef}>
                   <h2>I'm the parent.</h2>
                   <p>I have height and width.</p>

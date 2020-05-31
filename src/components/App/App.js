@@ -10,6 +10,7 @@ import {
 } from "../../actions";
 import WebRoutes from "../routes/webRoutes";
 import MobileRoutes from "../routes/mobileRoutes";
+import { getCookie } from "../../utils/helpers";
 
 const App = (props) => {
   const {
@@ -18,10 +19,12 @@ const App = (props) => {
     changeMyOrders,
     getCategories,
     getOrderStatuses,
+    selectedAddress,
   } = props;
   const url = window.location.pathname.replace("/customer/", "");
   const addresses = JSON.parse(localStorage.getItem("addresses")) || [];
   const myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
+  let cookie = false;
 
   useEffect(() => {
     getCategories();
@@ -31,15 +34,21 @@ const App = (props) => {
     getOrderStatuses();
   }, []);
 
-  if (window.innerWidth <= 500) {
-    return <MobileRoutes />;
+  if (getCookie("isMobile")) {
+    cookie = true
+  }
+
+  if (cookie) {
+    return <MobileRoutes selectedAddress={selectedAddress} />;
   } else {
     return <WebRoutes />;
   }
 };
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    selectedAddress: state.Main.selectedAddress,
+  };
 };
 
 export default connect(mapStateToProps, {

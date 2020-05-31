@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Input, List, Icon } from 'semantic-ui-react';
-
+import { Input, List, Icon, Image } from 'semantic-ui-react';
+import Spacer from "../../components/Spacer";
 import { onSuggest } from '../../../actions/addressActions';
 
 import { debounce } from 'lodash';
@@ -35,7 +35,7 @@ const SearchStreetScreen = props => {
     );
   };
   return (
-    <div>
+    <Spacer>
       <Input
         icon={backToPreviousPageIcon}
         iconPosition='left'
@@ -65,7 +65,13 @@ const SearchStreetScreen = props => {
           );
         })}
       </List>
-    </div>
+      {
+        suggestedData.length === 0 ?
+        <Image src="/img/Search.png" style={{ margin: "auto" }} />
+        :
+        null
+      }
+    </Spacer>
   );
 };
 

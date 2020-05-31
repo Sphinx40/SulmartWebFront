@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Loadable from "react-loadable";
 import Loading from "../Loading/Loading";
 import { BrowserRouter as Router, Route } from "react-router-dom";
@@ -86,8 +86,16 @@ const AsyncNewAddressScreenWithMap = Loadable({
   loading: Loading,
 });
 
-const mobileRoutes = () => {
-  if (localStorage.getItem("selectedAddress")) {
+const AsyncSuccessBasket = Loadable({
+  loader: () =>
+    import(
+      "../../mobile/Screens/SuccesssBasketScreen/SuccessBasketScreen" /* webpackChunkName: "AsyncSuccessBasket" */
+    ),
+  loading: Loading,
+});
+
+const mobileRoutes = ({ selectedAddress }) => {
+  if (selectedAddress !== null && Object.keys(selectedAddress).length !== 0) {
     return (
       <Router basename="/customer/">
         <Route path="/addressList" component={AsyncAddressListScreen} />
@@ -115,10 +123,11 @@ const mobileRoutes = () => {
             return <AsyncOrderDetails orderNumberRandom={orderNumberRandom} />;
           }}
         />
+        <Route path="/successBasket" component={AsyncSuccessBasket} />
       </Router>
     );
   } else {
-    history.push("/newAddress")
+    history.push("/newAddress");
     return (
       <Router history={history}>
         <Route path="/newAddress" component={AsyncNewAddressScreen} exact />

@@ -4,21 +4,21 @@ import { withRouter } from "react-router-dom";
 import "./ScreenHeader.css";
 import { connect } from "react-redux";
 
-const ScreenHeader = ({ quantityOfOrder, bars, centerAccessories, leftAccessories, rightAccessories, history, children }) => {
+const ScreenHeader = ({ quantityOfOrder, bars, centerAccessories, leftAccessories, rightAccessories, history, children, notShowDivider }) => {
   const [visible, setVisible] = useState(false);
 
   return (
     <div>      
       <Sidebar.Pushable>
-      <div style={{ display: "flex", flexDirection: "row", marginTop: 10, justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: "flex", flexDirection: "row", alignItems: 'center', marginLeft: 10 }}>
+      <div style={{ display: "flex", flexDirection: "row", marginTop: 20, justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: "flex", flexDirection: "row", alignItems: 'center', marginLeft: 10, marginBottom: 10 }}>
           {bars ? <Icon name="bars" onClick={() => setVisible(true)}/> : null}
           {leftAccessories ? leftAccessories()  : null}
         </div>
-        {centerAccessories ? <div style={{ marginRight: 30 }}>{centerAccessories()}</div> : <div/>}
-        {rightAccessories ? <div style={{ marginRight: 30 }}>{rightAccessories()}</div> : <div/>}
+        {centerAccessories ? <div>{centerAccessories()}</div> : <div style={{ marginRight: 30 }}/>}
+        {rightAccessories ? <div style={{ marginRight: 10, marginBottom: 10 }}>{rightAccessories()}</div> : <div style={{ marginRight: 30 }}/>}
       </div>
-      <Divider />
+      {notShowDivider ? null : <Divider />}
         <Sidebar
           as={Menu}
           animation="overlay"
@@ -30,7 +30,7 @@ const ScreenHeader = ({ quantityOfOrder, bars, centerAccessories, leftAccessorie
             as="a"
             onClick={() => {
               setVisible(false);
-              history.push("/home");
+              history.push("/");
             }}
           >
             <Icon name="home" />
@@ -62,8 +62,8 @@ const ScreenHeader = ({ quantityOfOrder, bars, centerAccessories, leftAccessorie
           </Menu.Item>
         </Sidebar>
         <Sidebar.Pusher>
-          <div style={{ height: 1000 }}>
-          {children}
+          <div style={{ height: window.innerHeight }}>
+            {children}
           </div>
         </Sidebar.Pusher>
       </Sidebar.Pushable>

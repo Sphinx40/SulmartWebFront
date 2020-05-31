@@ -15,10 +15,17 @@ const ProductCard = (props) => {
   const [image, setImage] = useState("");
 
   useEffect(() => {
+    getImageOfProduct()
+    return () => {
+      setImage("")
+    }
+  }, []);
+
+  const getImageOfProduct = () => {
     doGet(HEROKU_URI + `image/PRODUCT/${product._id}`).then(({ data }) => {
       setImage(data.data[0].dataUrl);
     });
-  }, []);
+  }
 
     order.forEach((element) => {
       if (element._id === product._id) {

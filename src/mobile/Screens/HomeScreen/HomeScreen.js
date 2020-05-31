@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import { Image, Header, Divider, Grid, Icon } from "semantic-ui-react";
+import React from "react";
+import { Image, Header, Grid, Button } from "semantic-ui-react";
 import { connect } from "react-redux";
 import "./HomeScreen.css";
 import Spacer from "../../components/Spacer";
-import ResponsiveContainer from "../../components/ResponsiveContainer";
 import { withRouter } from "react-router-dom";
 import ScreenHeader from "../../components/ScreenHeader/ScreenHeader";
 
 const HomeScreen = (props) => {
   const { categories, history } = props;
   return (
-    <ResponsiveContainer>
       <ScreenHeader bars centerAccessories={() => <Image src="/img/sulmart.png" size="small" />}>
 
         <Spacer>
+          <Button color="teal" content="Мои местоположения" icon="map outline" onClick={() => history.push("addressList")} />
+          <Spacer size={20} />
           <Grid columns={2} stackable>
             {categories.map((item, idx) => (
               <Grid.Column
@@ -32,7 +32,6 @@ const HomeScreen = (props) => {
         </Spacer>
 
       </ScreenHeader>
-    </ResponsiveContainer>
   );
 };
 
